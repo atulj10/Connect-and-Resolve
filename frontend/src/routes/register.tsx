@@ -3,14 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { ArrowLeft, BadgeCheck, Landmark, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -32,60 +25,32 @@ export const Route = createFileRoute("/register")({
   component: RegisterPage,
 });
 
-const STATES = [
-  "Andhra Pradesh",
-  "Bihar",
-  "Delhi",
-  "Gujarat",
-  "Karnataka",
-  "Kerala",
-  "Madhya Pradesh",
-  "Maharashtra",
-  "Rajasthan",
-  "Tamil Nadu",
-  "Telangana",
-  "Uttar Pradesh",
-  "West Bengal",
-];
-
-const DISTRICTS: Record<string, string[]> = {
-  Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik", "Thane"],
-  Karnataka: ["Bengaluru Urban", "Mysuru", "Mangaluru", "Hubballi"],
-  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli"],
-  Delhi: ["New Delhi", "North Delhi", "South Delhi", "East Delhi"],
-};
-
 function RegisterPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    fullName: "",
-    mobile: "",
-    email: "",
-    address: "",
-    state: "",
-    district: "",
-  });
-  const [mobileVerified, setMobileVerified] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(false);
-  const [mobileOtpSent, setMobileOtpSent] = useState(false);
-  const [emailOtpSent, setEmailOtpSent] = useState(false);
-  const [mobileOtp, setMobileOtp] = useState("");
-  const [emailOtp, setEmailOtp] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [method, setMethod] = useState<"mobile" | "email">("mobile");
+  const [mobile, setMobile] = useState("");
+  const [email, setEmail] = useState("");
+  const [verified, setVerified] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const set = (k: keyof typeof form, v: string) =>
-    setForm((f) => ({ ...f, [k]: v, ...(k === "state" ? { district: "" } : {}) }));
+  const identifier = method === "mobile" ? mobile : email;
 
-  const identifier = form.mobile || form.email;
-
-  const sendMobileOtp = async () => {
-    if (!/^\d{10}$/.test(form.mobile)) return toast.error("Enter a valid 10-digit mobile number");
+  const sendOtp = async () => {
+    if (method === "mobile") {
+      if (!/^\d{10}$/.test(mobile)) return toast.error("Enter a valid 10-digit mobile number");
+    } else {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        return toast.error("Enter a valid email address");
+    }
     setLoading(true);
     try {
-      await authApi.sendOtp(form.mobile, "REGISTER");
-      setMobileOtpSent(true);
-      setMobileOtp("");
-      toast.success("OTP sent to your mobile");
+      await authApi.sendOtp(identifier, "REGISTER");
+      setOtpSent(true);
+      setOtp("");
+      toast.success(`OTP sent to your ${method === "mobile" ? "mobile" : "email"}`);
     } catch (err: unknown) {
       toast.error(getApiError(err, "Failed to send OTP"));
     } finally {
@@ -93,91 +58,41 @@ function RegisterPage() {
     }
   };
 
-  const confirmMobileOtp = async () => {
-    if (mobileOtp.length !== 6) return toast.error("Enter the 6-digit mobile OTP");
+  const confirmOtp = async () => {
+    if (otp.length !== 6) return toast.error("Enter the 6-digit OTP");
+    if (!fullName.trim()) return toast.error("Full name is required");
     setLoading(true);
     try {
-      await authApi.verifyOtpAndRegister(form.mobile, mobileOtp, {
-        fullName: form.fullName,
-        mobileNumber: form.mobile,
-        email: form.email || undefined,
-        address: form.address || undefined,
-      });
-      setMobileVerified(true);
-      setMobileOtpSent(false);
-      toast.success("Mobile verified successfully");
-    } catch (err: unknown) {
-      toast.error(getApiError(err, "Verification failed"));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const sendEmailOtp = async () => {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      return toast.error("Enter a valid email address");
-    setLoading(true);
-    try {
-      await authApi.sendOtp(form.email, "REGISTER");
-      setEmailOtpSent(true);
-      setEmailOtp("");
-      toast.success("OTP sent to your email");
-    } catch (err: unknown) {
-      toast.error(getApiError(err, "Failed to send OTP"));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const confirmEmailOtp = async () => {
-    if (emailOtp.length !== 6) return toast.error("Enter the 6-digit email OTP");
-    setLoading(true);
-    try {
-      await authApi.verifyOtpAndRegister(form.email, emailOtp, {
-        fullName: form.fullName,
-        mobileNumber: form.mobile,
-        email: form.email || undefined,
-        address: form.address || undefined,
-      });
-      setEmailVerified(true);
-      setEmailOtpSent(false);
-      toast.success("Email verified successfully");
-    } catch (err: unknown) {
-      toast.error(getApiError(err, "Verification failed"));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.fullName.trim()) return toast.error("Full name is required");
-    if (!form.mobile && !form.email) return toast.error("Provide at least Mobile or Email");
-    if (form.mobile && !mobileVerified) return toast.error("Please verify your mobile number");
-    if (form.email && !emailVerified) return toast.error("Please verify your email address");
-    if (!form.state || !form.district) return toast.error("Select your state and district");
-
-    setLoading(true);
-    try {
-      const identifier = form.mobile || form.email;
-      const code = form.mobile ? mobileOtp : emailOtp;
-      const result = await authApi.verifyOtpAndRegister(identifier, code, {
-        fullName: form.fullName,
-        mobileNumber: form.mobile,
-        email: form.email || undefined,
-        address: form.address || undefined,
+      const result = await authApi.verifyOtpAndRegister(identifier, otp, {
+        fullName,
+        mobileNumber: method === "mobile" ? mobile : "",
+        email: method === "email" ? email : undefined,
       });
       setStoredUser(result.user, result.token);
       toast.success("Account created successfully!");
       navigate({ to: "/dashboard" });
     } catch (err: unknown) {
-      toast.error(getApiError(err, "Registration failed"));
+      toast.error(getApiError(err, "Verification failed"));
     } finally {
       setLoading(false);
     }
   };
 
-  const districts = DISTRICTS[form.state] ?? ["District 1", "District 2", "District 3"];
+  const handleTabChange = (v: string) => {
+    setMethod(v as "mobile" | "email");
+    setVerified(false);
+    setOtpSent(false);
+    setOtp("");
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fullName.trim()) return toast.error("Full name is required");
+    if (!identifier) return toast.error("Provide your mobile or email");
+    if (!verified) {
+      sendOtp();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -209,8 +124,8 @@ function RegisterPage() {
           onSubmit={handleSubmit}
           className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-card sm:p-8"
         >
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div className="space-y-2 sm:col-span-2">
+          <div className="space-y-6">
+            <div className="space-y-2">
               <Label htmlFor="fullName">
                 Full Name <span className="text-destructive">*</span>
               </Label>
@@ -218,190 +133,141 @@ function RegisterPage() {
                 id="fullName"
                 placeholder="Aarav Sharma"
                 maxLength={100}
-                value={form.fullName}
-                onChange={(e) => set("fullName", e.target.value)}
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 required
               />
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="mobile">Mobile Number</Label>
-                {mobileVerified && (
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
-                    <BadgeCheck className="h-3.5 w-3.5" /> Verified
-                  </span>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  id="mobile"
-                  type="tel"
-                  inputMode="numeric"
-                  maxLength={10}
-                  placeholder="98765 43210"
-                  value={form.mobile}
-                  onChange={(e) => {
-                    set("mobile", e.target.value.replace(/\D/g, ""));
-                    setMobileVerified(false);
-                    setMobileOtpSent(false);
-                  }}
-                  disabled={mobileVerified || mobileOtpSent}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={sendMobileOtp}
-                  disabled={mobileVerified || !form.mobile || loading}
-                >
-                  {mobileOtpSent ? "Resend" : "Send OTP"}
-                </Button>
-              </div>
-              {mobileOtpSent && !mobileVerified && (
-                <div className="mt-3 rounded-lg border border-border bg-secondary/40 p-3 space-y-3">
-                  <p className="text-xs text-muted-foreground">
-                    Enter the 6-digit code sent to +91 {form.mobile}
-                  </p>
-                  <InputOTP maxLength={6} value={mobileOtp} onChange={setMobileOtp}>
-                    <InputOTPGroup>
-                      {[0, 1, 2, 3, 4, 5].map((i) => (
-                        <InputOTPSlot key={i} index={i} />
-                      ))}
-                    </InputOTPGroup>
-                  </InputOTP>
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={confirmMobileOtp}
-                    className="w-full"
-                    disabled={loading}
-                  >
-                    {loading ? "Verifying..." : "Verify Mobile OTP"}
-                  </Button>
+            <Tabs value={method} onValueChange={handleTabChange}>
+              <TabsList className="w-full">
+                <TabsTrigger value="mobile" className="flex-1">
+                  Mobile
+                </TabsTrigger>
+                <TabsTrigger value="email" className="flex-1">
+                  Email
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="mobile" className="space-y-3 mt-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="mobile">Mobile Number</Label>
+                  {verified && (
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
+                      <BadgeCheck className="h-3.5 w-3.5" /> Verified
+                    </span>
+                  )}
                 </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="email">Email Address</Label>
-                {emailVerified && (
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
-                    <BadgeCheck className="h-3.5 w-3.5" /> Verified
-                  </span>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  maxLength={255}
-                  value={form.email}
-                  onChange={(e) => {
-                    set("email", e.target.value);
-                    setEmailVerified(false);
-                    setEmailOtpSent(false);
-                  }}
-                  disabled={emailVerified || emailOtpSent}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={sendEmailOtp}
-                  disabled={emailVerified || !form.email || loading}
-                >
-                  {emailOtpSent ? "Resend" : "Send OTP"}
-                </Button>
-              </div>
-              {emailOtpSent && !emailVerified && (
-                <div className="mt-3 rounded-lg border border-border bg-secondary/40 p-3 space-y-3">
-                  <p className="text-xs text-muted-foreground">
-                    Enter the 6-digit code sent to {form.email}
-                  </p>
-                  <InputOTP maxLength={6} value={emailOtp} onChange={setEmailOtp}>
-                    <InputOTPGroup>
-                      {[0, 1, 2, 3, 4, 5].map((i) => (
-                        <InputOTPSlot key={i} index={i} />
-                      ))}
-                    </InputOTPGroup>
-                  </InputOTP>
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={confirmEmailOtp}
-                    className="w-full"
-                    disabled={loading}
-                  >
-                    {loading ? "Verifying..." : "Verify Email OTP"}
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            <p className="-mt-2 text-xs text-muted-foreground sm:col-span-2">
-              At least one of Mobile or Email is required and must be verified.
-            </p>
-
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="address">
-                Address <span className="text-muted-foreground font-normal">(Optional)</span>
-              </Label>
-              <Textarea
-                id="address"
-                placeholder="House no, Street, Locality"
-                maxLength={500}
-                rows={3}
-                value={form.address}
-                onChange={(e) => set("address", e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>
-                State <span className="text-destructive">*</span>
-              </Label>
-              <Select value={form.state} onValueChange={(v) => set("state", v)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select state" />
-                </SelectTrigger>
-                <SelectContent>
-                  {STATES.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {s}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>
-                District <span className="text-destructive">*</span>
-              </Label>
-              <Select
-                value={form.district}
-                onValueChange={(v) => set("district", v)}
-                disabled={!form.state}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={form.state ? "Select district" : "Select state first"}
+                <div className="flex gap-2">
+                  <Input
+                    id="mobile"
+                    type="tel"
+                    inputMode="numeric"
+                    maxLength={10}
+                    placeholder="98765 43210"
+                    value={mobile}
+                    onChange={(e) => {
+                      setMobile(e.target.value.replace(/\D/g, ""));
+                      setVerified(false);
+                      setOtpSent(false);
+                    }}
+                    disabled={verified || otpSent}
                   />
-                </SelectTrigger>
-                <SelectContent>
-                  {districts.map((d) => (
-                    <SelectItem key={d} value={d}>
-                      {d}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={sendOtp}
+                    disabled={verified || !mobile || loading}
+                  >
+                    {otpSent ? "Resend" : "Send OTP"}
+                  </Button>
+                </div>
+                {otpSent && !verified && (
+                  <div className="rounded-lg border border-border bg-secondary/40 p-3 space-y-3">
+                    <p className="text-xs text-muted-foreground">
+                      Enter the 6-digit code sent to +91 {mobile}
+                    </p>
+                    <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                      <InputOTPGroup>
+                        {[0, 1, 2, 3, 4, 5].map((i) => (
+                          <InputOTPSlot key={i} index={i} />
+                        ))}
+                      </InputOTPGroup>
+                    </InputOTP>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={confirmOtp}
+                      className="w-full"
+                      disabled={loading}
+                    >
+                      {loading ? "Verifying..." : "Verify Mobile OTP"}
+                    </Button>
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="email" className="space-y-3 mt-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="email">Email Address</Label>
+                  {verified && (
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
+                      <BadgeCheck className="h-3.5 w-3.5" /> Verified
+                    </span>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    maxLength={255}
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setVerified(false);
+                      setOtpSent(false);
+                    }}
+                    disabled={verified || otpSent}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={sendOtp}
+                    disabled={verified || !email || loading}
+                  >
+                    {otpSent ? "Resend" : "Send OTP"}
+                  </Button>
+                </div>
+                {otpSent && !verified && (
+                  <div className="rounded-lg border border-border bg-secondary/40 p-3 space-y-3">
+                    <p className="text-xs text-muted-foreground">
+                      Enter the 6-digit code sent to {email}
+                    </p>
+                    <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                      <InputOTPGroup>
+                        {[0, 1, 2, 3, 4, 5].map((i) => (
+                          <InputOTPSlot key={i} index={i} />
+                        ))}
+                      </InputOTPGroup>
+                    </InputOTP>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={confirmOtp}
+                      className="w-full"
+                      disabled={loading}
+                    >
+                      {loading ? "Verifying..." : "Verify Email OTP"}
+                    </Button>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
           </div>
 
           <Button type="submit" size="lg" className="mt-8 w-full" disabled={loading}>
-            {loading ? "Creating account..." : "Create Account"}
+            {loading ? "Sending..." : verified ? "Verified ✓" : otpSent ? "Resend OTP" : "Send OTP"}
           </Button>
 
           <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">

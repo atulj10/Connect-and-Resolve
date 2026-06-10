@@ -63,6 +63,12 @@ export const verifyOtpSchema = z.object({
   purpose: z.enum(["REGISTER", "LOGIN"]),
 });
 
+export const verifyOtpRegisterSchema = verifyOtpSchema.extend({
+  fullName: z.string().min(1, "Full name is required").max(80),
+  mobileNumber: z.string().regex(/^\d{10}$/, "Enter a valid 10-digit mobile number").optional().or(z.literal("")),
+  email: z.string().email("Invalid email").optional().or(z.literal("")),
+});
+
 export const loginSchema = z.object({
   identifier: z.string().min(1, "Mobile or email is required"),
   code: z.string().length(6, "OTP must be 6 digits"),

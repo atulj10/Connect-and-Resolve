@@ -30,7 +30,12 @@ export const authApi = {
     data: { fullName: string; mobileNumber: string; email?: string; address?: string },
   ) {
     return apiClient
-      .post<AuthResponse>("/auth/verify-otp-register", { identifier, code, ...data })
+      .post<AuthResponse>("/auth/verify-otp-register", {
+        identifier,
+        code,
+        purpose: "REGISTER",
+        ...data,
+      })
       .then((r) => r.data);
   },
 

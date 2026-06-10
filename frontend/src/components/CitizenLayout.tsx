@@ -1,4 +1,5 @@
 import { useState, type ComponentType } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -17,6 +18,7 @@ import {
   Menu,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getStoredUser, clearStoredAuth } from "@/lib/auth";
 
 type Tab = "analytics" | "applications";
 
@@ -31,10 +33,17 @@ const NAV: NavItem[] = [
   { label: "Applications", tab: "applications", icon: FileText },
 ];
 
-const CITIZEN = {
-  name: "Aarav Sharma",
-  email: "aarav.sharma@mail.com",
-  initials: "AS",
+const currentUser = () => {
+  const u = getStoredUser();
+  const name = u?.fullName ?? "Citizen";
+  const email = u?.email ?? "";
+  const initials = name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  return { name, email, initials };
 };
 
 export function CitizenLayout({
@@ -50,6 +59,13 @@ export function CitizenLayout({
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
+  const user = currentUser();
+
+  const handleLogout = () => {
+    clearStoredAuth();
+    navigate({ to: "/" });
+  };
 
   return (
     <div className="min-h-screen bg-secondary/30 flex">
@@ -60,7 +76,13 @@ export function CitizenLayout({
           collapsed ? "w-[76px]" : "w-[260px]",
         )}
       >
-        <SidebarInner collapsed={collapsed} activeTab={activeTab} onTabChange={onTabChange} />
+        <SidebarInner
+          collapsed={collapsed}
+          activeTab={activeTab}
+          onTabChange={onTabChange}
+          user={user}
+          onLogout={handleLogout}
+        />
         <div className="px-3 pb-3">
           <button
             type="button"
@@ -102,6 +124,8 @@ export function CitizenLayout({
                       onTabChange(tab);
                       setMobileOpen(false);
                     }}
+                    user={user}
+                    onLogout={handleLogout}
                   />
                 </SheetContent>
               </Sheet>
@@ -121,7 +145,7 @@ export function CitizenLayout({
             </div>
             <div className="flex items-center gap-2">
               <div className="h-9 w-9 rounded-full bg-primary/10 text-primary font-semibold flex items-center justify-center text-sm">
-                {CITIZEN.initials}
+                {user.initials}
               </div>
             </div>
           </div>
@@ -139,10 +163,14 @@ function SidebarInner({
   collapsed,
   activeTab,
   onTabChange,
+  user,
+  onLogout,
 }: {
   collapsed: boolean;
   activeTab: Tab;
   onTabChange: (tab: Tab) => void;
+  user: { name: string; email: string; initials: string };
+  onLogout: () => void;
 }) {
   return (
     <div className="flex flex-col h-full min-h-0">
@@ -173,18 +201,18 @@ function SidebarInner({
         {collapsed ? (
           <div
             className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-[#7C73FF] text-primary-foreground font-semibold flex items-center justify-center text-sm"
-            title={`${CITIZEN.name} — ${CITIZEN.email}`}
+            title={`${user.name} — ${user.email}`}
           >
-            {CITIZEN.initials}
+            {user.initials}
           </div>
         ) : (
           <div className="flex items-center gap-3 rounded-xl bg-secondary/50 p-2.5">
             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-[#7C73FF] text-primary-foreground font-semibold flex items-center justify-center text-sm shrink-0">
-              {CITIZEN.initials}
+              {user.initials}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold truncate">{CITIZEN.name}</p>
-              <p className="text-xs text-muted-foreground truncate">{CITIZEN.email}</p>
+              <p className="text-sm font-semibold truncate">{user.name}</p>
+              <p className="text-xs text-muted-foreground truncate">{user.email}</p>
             </div>
           </div>
         )}
@@ -224,7 +252,7 @@ function SidebarInner({
       <div className="px-3 py-3 border-t border-border">
         <button
           type="button"
-          onClick={() => {}}
+          onClick={onLogout}
           className={cn(
             "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors w-full text-left",
             collapsed && "justify-center px-0",
