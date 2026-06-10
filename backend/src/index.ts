@@ -5,6 +5,14 @@ import { prisma } from "./lib/prisma.js";
 
 const app = createApp();
 
+try {
+  await prisma.$connect();
+  console.log("✅ Database connected successfully");
+} catch (error) {
+  console.error("❌ Database connection failed:", error);
+  process.exit(1);
+}
+
 app.listen(env.port, () => {
   console.log(`🚀 Server running at http://localhost:${env.port}`);
   console.log(`📋 Health check: http://localhost:${env.port}/api/health`);
