@@ -156,8 +156,9 @@ export const applicationService = {
       throw new Error("Mobile number is required to create application on behalf of citizen");
     }
 
+    const { mobileNumber, adminUserId, ...appData } = data;
     return this.create({
-      ...data,
+      ...appData,
       userId,
       applicationSource: "ADMIN",
     });
