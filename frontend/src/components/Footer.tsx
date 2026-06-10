@@ -95,9 +95,7 @@ export function Footer() {
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} Citizen Connect Portal. All rights reserved.
           </p>
-          <p className="text-xs text-muted-foreground">
-            A Government of India Initiative
-          </p>
+          <p className="text-xs text-muted-foreground">A Government of India Initiative</p>
         </div>
       </div>
     </footer>

@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  fullName       String
+  mobileNumber   String   @unique
+  email          String?
+  address        String?
+  password       String?
+  role           String   @default("CITIZEN")
+  mobileVerified Boolean  @default(false)
+  emailVerified  Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  applications   Application[]
+  statusChanges  ApplicationStatusHistory[]
+  auditLogs      AuditLog[]
+}
+
+model Application {
+  id                String   @id @default(cuid())
+  referenceNumber   String   @unique
+  applicationSource String   @default("CITIZEN")
+  applicantName     String
+  fatherName        String
+  category          String
+  subject           String
+  description       String?
+  villageMohalla    String
+  panchayat         String
+  policeStation     String
+  block             String
+  district          String
+  pincode           String
+  department        String
+  status            String   @default("Submitted")
+  adminRemarks      String?
+  internalNotes     String?
+  userId            String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user           User                          @relation(fields: [userId], references: [id])
+  attachments    Attachment[]
+  statusHistory  ApplicationStatusHistory[]
+  auditLogs      AuditLog[]
+
+  @@index([referenceNumber])
+  @@index([userId])
+  @@index([status])
+  @@index([category])
+  @@index([department])
+  @@index([district])
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  publicId  String
+  url       String
+  fileName  String
+  mimeType  String
+  size      Int
+  applicationId String
+  createdAt DateTime @default(now())
+
+  application Application @relation(fields: [applicationId], references: [id])
+
+  @@index([applicationId])
+}
+
+model ApplicationStatusHistory {
+  id            String   @id @default(cuid())
+  applicationId String
+  oldStatus     String?
+  newStatus     String
+  changedById   String
+  createdAt     DateTime @default(now())
+
+  application Application @relation(fields: [applicationId], references: [id])
+  changedBy   User        @relation(fields: [changedById], references: [id])
+
+  @@index([applicationId])
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  applicationId String
+  userId        String
+  action        String
+  details       String?
+  createdAt     DateTime @default(now())
+
+  application Application @relation(fields: [applicationId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
+
+  @@index([applicationId])
+  @@index([userId])
+}
+
+model Otp {
+  id        String   @id @default(cuid())
+  identifier String
+  code      String
+  purpose   String
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([identifier, purpose])
+}
+
+model ReferenceCounter {
+  id    String @id @default(cuid())
+  year  Int
+  count Int
+
+  @@unique([year])
+}

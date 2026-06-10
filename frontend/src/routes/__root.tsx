@@ -78,10 +78,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Citizen Connect — Grievance Management Portal" },
-      { name: "description", content: "Connecting citizens with better governance. Submit complaints, grievances, suggestions, and assistance requests." },
+      {
+        name: "description",
+        content:
+          "Connecting citizens with better governance. Submit complaints, grievances, suggestions, and assistance requests.",
+      },
       { name: "author", content: "Citizen Connect" },
       { property: "og:title", content: "Citizen Connect — Grievance Management Portal" },
-      { property: "og:description", content: "Connecting citizens with better governance. Submit complaints, grievances, suggestions, and assistance requests." },
+      {
+        property: "og:description",
+        content:
+          "Connecting citizens with better governance. Submit complaints, grievances, suggestions, and assistance requests.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@CitizenConnect" },

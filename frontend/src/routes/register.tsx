@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,21 +14,38 @@ import {
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { ArrowLeft, BadgeCheck, Landmark, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { authApi } from "@/lib/api/auth";
+import { getApiError } from "@/lib/api/client";
+import { setStoredUser } from "@/lib/auth";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
     meta: [
       { title: "Create Account — Citizen Connect" },
-      { name: "description", content: "Register on Citizen Connect to submit grievances, track applications and engage with your government." },
+      {
+        name: "description",
+        content:
+          "Register on Citizen Connect to submit grievances, track applications and engage with your government.",
+      },
     ],
   }),
   component: RegisterPage,
 });
 
 const STATES = [
-  "Andhra Pradesh", "Bihar", "Delhi", "Gujarat", "Karnataka",
-  "Kerala", "Madhya Pradesh", "Maharashtra", "Rajasthan",
-  "Tamil Nadu", "Telangana", "Uttar Pradesh", "West Bengal",
+  "Andhra Pradesh",
+  "Bihar",
+  "Delhi",
+  "Gujarat",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Rajasthan",
+  "Tamil Nadu",
+  "Telangana",
+  "Uttar Pradesh",
+  "West Bengal",
 ];
 
 const DISTRICTS: Record<string, string[]> = {
@@ -39,6 +56,7 @@ const DISTRICTS: Record<string, string[]> = {
 };
 
 function RegisterPage() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     fullName: "",
     mobile: "",
@@ -53,46 +71,110 @@ function RegisterPage() {
   const [emailOtpSent, setEmailOtpSent] = useState(false);
   const [mobileOtp, setMobileOtp] = useState("");
   const [emailOtp, setEmailOtp] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const set = (k: keyof typeof form, v: string) =>
     setForm((f) => ({ ...f, [k]: v, ...(k === "state" ? { district: "" } : {}) }));
 
-  const sendMobileOtp = () => {
+  const identifier = form.mobile || form.email;
+
+  const sendMobileOtp = async () => {
     if (!/^\d{10}$/.test(form.mobile)) return toast.error("Enter a valid 10-digit mobile number");
-    setMobileOtpSent(true);
-    setMobileOtp("");
-    toast.success("OTP sent to your mobile");
+    setLoading(true);
+    try {
+      await authApi.sendOtp(form.mobile, "REGISTER");
+      setMobileOtpSent(true);
+      setMobileOtp("");
+      toast.success("OTP sent to your mobile");
+    } catch (err: unknown) {
+      toast.error(getApiError(err, "Failed to send OTP"));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const confirmMobileOtp = () => {
+  const confirmMobileOtp = async () => {
     if (mobileOtp.length !== 6) return toast.error("Enter the 6-digit mobile OTP");
-    setMobileVerified(true);
-    setMobileOtpSent(false);
-    toast.success("Mobile verified successfully");
+    setLoading(true);
+    try {
+      await authApi.verifyOtpAndRegister(form.mobile, mobileOtp, {
+        fullName: form.fullName,
+        mobileNumber: form.mobile,
+        email: form.email || undefined,
+        address: form.address || undefined,
+      });
+      setMobileVerified(true);
+      setMobileOtpSent(false);
+      toast.success("Mobile verified successfully");
+    } catch (err: unknown) {
+      toast.error(getApiError(err, "Verification failed"));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const sendEmailOtp = () => {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return toast.error("Enter a valid email address");
-    setEmailOtpSent(true);
-    setEmailOtp("");
-    toast.success("OTP sent to your email");
+  const sendEmailOtp = async () => {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      return toast.error("Enter a valid email address");
+    setLoading(true);
+    try {
+      await authApi.sendOtp(form.email, "REGISTER");
+      setEmailOtpSent(true);
+      setEmailOtp("");
+      toast.success("OTP sent to your email");
+    } catch (err: unknown) {
+      toast.error(getApiError(err, "Failed to send OTP"));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const confirmEmailOtp = () => {
+  const confirmEmailOtp = async () => {
     if (emailOtp.length !== 6) return toast.error("Enter the 6-digit email OTP");
-    setEmailVerified(true);
-    setEmailOtpSent(false);
-    toast.success("Email verified successfully");
+    setLoading(true);
+    try {
+      await authApi.verifyOtpAndRegister(form.email, emailOtp, {
+        fullName: form.fullName,
+        mobileNumber: form.mobile,
+        email: form.email || undefined,
+        address: form.address || undefined,
+      });
+      setEmailVerified(true);
+      setEmailOtpSent(false);
+      toast.success("Email verified successfully");
+    } catch (err: unknown) {
+      toast.error(getApiError(err, "Verification failed"));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.fullName.trim()) return toast.error("Full name is required");
     if (!form.mobile && !form.email) return toast.error("Provide at least Mobile or Email");
     if (form.mobile && !mobileVerified) return toast.error("Please verify your mobile number");
     if (form.email && !emailVerified) return toast.error("Please verify your email address");
     if (!form.state || !form.district) return toast.error("Select your state and district");
-    toast.success("Account created successfully!");
+
+    setLoading(true);
+    try {
+      const identifier = form.mobile || form.email;
+      const code = form.mobile ? mobileOtp : emailOtp;
+      const result = await authApi.verifyOtpAndRegister(identifier, code, {
+        fullName: form.fullName,
+        mobileNumber: form.mobile,
+        email: form.email || undefined,
+        address: form.address || undefined,
+      });
+      setStoredUser(result.user, result.token);
+      toast.success("Account created successfully!");
+      navigate({ to: "/dashboard" });
+    } catch (err: unknown) {
+      toast.error(getApiError(err, "Registration failed"));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const districts = DISTRICTS[form.state] ?? ["District 1", "District 2", "District 3"];
@@ -118,7 +200,8 @@ function RegisterPage() {
         <div className="mt-10">
           <h1 className="text-3xl font-bold tracking-tight">Create your citizen account</h1>
           <p className="mt-2 text-muted-foreground">
-            Register to submit applications, track grievances, and stay connected with your representatives.
+            Register to submit applications, track grievances, and stay connected with your
+            representatives.
           </p>
         </div>
 
@@ -128,7 +211,9 @@ function RegisterPage() {
         >
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="fullName">Full Name <span className="text-destructive">*</span></Label>
+              <Label htmlFor="fullName">
+                Full Name <span className="text-destructive">*</span>
+              </Label>
               <Input
                 id="fullName"
                 placeholder="Aarav Sharma"
@@ -167,7 +252,7 @@ function RegisterPage() {
                   type="button"
                   variant="outline"
                   onClick={sendMobileOtp}
-                  disabled={mobileVerified || !form.mobile}
+                  disabled={mobileVerified || !form.mobile || loading}
                 >
                   {mobileOtpSent ? "Resend" : "Send OTP"}
                 </Button>
@@ -184,8 +269,14 @@ function RegisterPage() {
                       ))}
                     </InputOTPGroup>
                   </InputOTP>
-                  <Button type="button" size="sm" onClick={confirmMobileOtp} className="w-full">
-                    Verify Mobile OTP
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={confirmMobileOtp}
+                    className="w-full"
+                    disabled={loading}
+                  >
+                    {loading ? "Verifying..." : "Verify Mobile OTP"}
                   </Button>
                 </div>
               )}
@@ -218,7 +309,7 @@ function RegisterPage() {
                   type="button"
                   variant="outline"
                   onClick={sendEmailOtp}
-                  disabled={emailVerified || !form.email}
+                  disabled={emailVerified || !form.email || loading}
                 >
                   {emailOtpSent ? "Resend" : "Send OTP"}
                 </Button>
@@ -235,8 +326,14 @@ function RegisterPage() {
                       ))}
                     </InputOTPGroup>
                   </InputOTP>
-                  <Button type="button" size="sm" onClick={confirmEmailOtp} className="w-full">
-                    Verify Email OTP
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={confirmEmailOtp}
+                    className="w-full"
+                    disabled={loading}
+                  >
+                    {loading ? "Verifying..." : "Verify Email OTP"}
                   </Button>
                 </div>
               )}
@@ -247,7 +344,9 @@ function RegisterPage() {
             </p>
 
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="address">Address <span className="text-muted-foreground font-normal">(Optional)</span></Label>
+              <Label htmlFor="address">
+                Address <span className="text-muted-foreground font-normal">(Optional)</span>
+              </Label>
               <Textarea
                 id="address"
                 placeholder="House no, Street, Locality"
@@ -259,28 +358,50 @@ function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>State <span className="text-destructive">*</span></Label>
+              <Label>
+                State <span className="text-destructive">*</span>
+              </Label>
               <Select value={form.state} onValueChange={(v) => set("state", v)}>
-                <SelectTrigger><SelectValue placeholder="Select state" /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select state" />
+                </SelectTrigger>
                 <SelectContent>
-                  {STATES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  {STATES.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label>District <span className="text-destructive">*</span></Label>
-              <Select value={form.district} onValueChange={(v) => set("district", v)} disabled={!form.state}>
-                <SelectTrigger><SelectValue placeholder={form.state ? "Select district" : "Select state first"} /></SelectTrigger>
+              <Label>
+                District <span className="text-destructive">*</span>
+              </Label>
+              <Select
+                value={form.district}
+                onValueChange={(v) => set("district", v)}
+                disabled={!form.state}
+              >
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={form.state ? "Select district" : "Select state first"}
+                  />
+                </SelectTrigger>
                 <SelectContent>
-                  {districts.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                  {districts.map((d) => (
+                    <SelectItem key={d} value={d}>
+                      {d}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          <Button type="submit" size="lg" className="mt-8 w-full">
-            Create Account
+          <Button type="submit" size="lg" className="mt-8 w-full" disabled={loading}>
+            {loading ? "Creating account..." : "Create Account"}
           </Button>
 
           <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">

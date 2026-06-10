@@ -6,12 +6,19 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Eye, EyeOff, Landmark, Lock, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import adminIllustration from "@/assets/admin-illustration.png";
+import { authApi } from "@/lib/api/auth";
+import { getApiError } from "@/lib/api/client";
+import { setStoredUser } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/login")({
   head: () => ({
     meta: [
       { title: "Admin Login — Minister Office Dashboard" },
-      { name: "description", content: "Secure administrative login for Minister Office personnel managing citizen grievances." },
+      {
+        name: "description",
+        content:
+          "Secure administrative login for Minister Office personnel managing citizen grievances.",
+      },
     ],
   }),
   component: AdminLoginPage,
@@ -22,19 +29,29 @@ function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toast.error("Enter a valid email address");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return toast.error("Enter a valid email address");
     if (password.length < 8) return toast.error("Password must be at least 8 characters");
-    toast.success("Welcome back, Administrator");
-    navigate({ to: "/admin/dashboard" });
+    setLoading(true);
+    try {
+      const result = await authApi.adminLogin(email, password);
+      setStoredUser(result.user, result.token);
+      toast.success("Welcome back, Administrator");
+      navigate({ to: "/admin/dashboard" });
+    } catch (err: unknown) {
+      toast.error(getApiError(err, "Invalid credentials"));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="grid min-h-screen lg:grid-cols-2">
-        {/* Form */}
         <div className="flex flex-col px-6 py-10 sm:px-12 lg:px-16 order-2 lg:order-1">
           <Link to="/" className="flex items-center gap-2.5 w-fit">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
@@ -57,10 +74,8 @@ function AdminLoginPage() {
             </Link>
 
             <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium">
-              <Lock className="h-3 w-3 text-primary" />
-              Restricted Access
+              <Lock className="h-3 w-3 text-primary" /> Restricted Access
             </div>
-
             <h1 className="mt-4 text-3xl font-bold tracking-tight">Administrator Login</h1>
             <p className="mt-2 text-muted-foreground">
               Sign in to the Minister Office Dashboard to manage citizen applications.
@@ -84,7 +99,6 @@ function AdminLoginPage() {
                     required
                   />
                 </div>
-
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="admin-password">Password</Label>
@@ -119,14 +133,12 @@ function AdminLoginPage() {
                   </div>
                 </div>
               </div>
-
-              <Button type="submit" size="lg" className="mt-6 w-full">
-                Login to Dashboard
+              <Button type="submit" size="lg" className="mt-6 w-full" disabled={loading}>
+                {loading ? "Logging in..." : "Login to Dashboard"}
               </Button>
-
               <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-                All sessions are monitored and audited.
+                <ShieldCheck className="h-3.5 w-3.5 text-primary" /> All sessions are monitored and
+                audited.
               </div>
             </form>
 
@@ -139,16 +151,14 @@ function AdminLoginPage() {
           </div>
         </div>
 
-        {/* Illustration */}
         <div className="hidden lg:flex flex-col justify-between gradient-primary-soft p-12 order-1 lg:order-2">
           <div className="ml-auto inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-1 text-xs font-medium backdrop-blur">
-            <span className="h-2 w-2 rounded-full bg-primary" />
-            Government Portal
+            <span className="h-2 w-2 rounded-full bg-primary" /> Government Portal
           </div>
           <div className="flex flex-col items-center text-center">
             <img
               src={adminIllustration}
-              alt="Minister office administration dashboard"
+              alt=""
               width={1024}
               height={1024}
               loading="lazy"
@@ -158,7 +168,8 @@ function AdminLoginPage() {
               Minister Office Dashboard
             </h2>
             <p className="mt-2 max-w-sm text-muted-foreground">
-              Review grievances, coordinate with departments, and drive faster resolutions for your constituents.
+              Review grievances, coordinate with departments, and drive faster resolutions for your
+              constituents.
             </p>
           </div>
           <div className="grid grid-cols-3 gap-4 text-center">
@@ -167,9 +178,14 @@ function AdminLoginPage() {
               { v: "2FA", l: "Available" },
               { v: "ISO 27001", l: "Compliant" },
             ].map((s) => (
-              <div key={s.l} className="rounded-xl border border-border bg-background/60 p-3 backdrop-blur">
+              <div
+                key={s.l}
+                className="rounded-xl border border-border bg-background/60 p-3 backdrop-blur"
+              >
                 <div className="text-sm font-bold text-foreground">{s.v}</div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.l}</div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {s.l}
+                </div>
               </div>
             ))}
           </div>

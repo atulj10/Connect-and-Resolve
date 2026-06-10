@@ -1,0 +1,708 @@
+[
+  {
+    "district": "Patna",
+    "block": [
+      "Patna",
+      "Dhanarua",
+      "Phulwarisharif",
+      "Bihta",
+      "Naubatpur",
+      "Paliganj",
+      "Barh",
+      "Mokama",
+      "Masaurhi",
+      "Punpun",
+      "Maner",
+      "Danapur",
+      "Bikram",
+      "Bakhtiyarpur",
+      "Pandarak",
+      "Fatuha",
+      "Daniawan",
+      "Khusrupur",
+      "Athmalgola",
+      "Belchhi",
+      "Ghoswari",
+      "Dulhinbazar",
+      "Sampatchak"
+    ]
+  },
+  {
+    "district": "Bhojpur",
+    "block": [
+      "Ara Sadar",
+      "Udwantnagar",
+      "Jagdishpur",
+      "Koilwar",
+      "Sahar",
+      "Barhara",
+      "Sandesh",
+      "Shahpur",
+      "Charpokhari",
+      "Piro",
+      "Tarari",
+      "Bihia",
+      "Agiawon",
+      "Garhani"
+    ]
+  },
+  {
+    "district": "Buxar",
+    "block": [
+      "Buxar",
+      "Dumraon",
+      "Simari",
+      "Brahmpur",
+      "Rajpur",
+      "Itarhi",
+      "Nawanagar",
+      "Chaungain",
+      "Chausa",
+      "Chakki",
+      "Kesath"
+    ]
+  },
+  {
+    "district": "Bhabhua",
+    "block": [
+      "Bhabhua",
+      "Ramgarh",
+      "Mohania",
+      "Durgawati",
+      "Adhaura",
+      "Bhagwanpur",
+      "Chand",
+      "Chainpur",
+      "Kudra",
+      "Rampur",
+      "Nuawon"
+    ]
+  },
+  {
+    "district": "Rohtas",
+    "block": [
+      "Nauhatta",
+      "Chenari",
+      "Nasriganj",
+      "Rohtas",
+      "Shivsagar",
+      "Dawath",
+      "Karakat",
+      "Nokha.",
+      "Vikramganj",
+      "Kargahar",
+      "Sasaram",
+      "Dihri",
+      "Dinara",
+      "Kochas",
+      "Akorhigola",
+      "Rajpur",
+      "Tilauthu",
+      "Suryapura",
+      "Sanjhauli"
+    ]
+  },
+  {
+    "district": "Nalanda",
+    "block": [
+      "Giriyak",
+      "Rahui",
+      "Nursarai",
+      "Harnaut",
+      "Chandi",
+      "Islampur",
+      "Rajgir",
+      "Asthawan",
+      "Sarmera",
+      "Hilsa",
+      "Biharsharif",
+      "Ekangarsarai",
+      "Ben",
+      "Nagarnausa",
+      "Karaiparsurai",
+      "Silao",
+      "Parwalpur",
+      "Katrisarai",
+      "Bind",
+      "Tharthari",
+      "Belaganj",
+      "Mohanpur",
+      "Konch",
+      "Barachatti",
+      "Manpur",
+      "Gurua",
+      "Tekari",
+      "Imamganj",
+      "Gaya Sadar",
+      "Wazirganj",
+      "Fatehpur",
+      "Paraiya",
+      "Sherghati",
+      "Bodh Gaya",
+      "Khizarsarai",
+      "Amas",
+      "Dumaria",
+      "Bankey Bazar",
+      "Dobhi",
+      "Tankuppa",
+      "Nimchakbathani",
+      "Guraru",
+      "Muhra"
+    ]
+  },
+  {
+    "district": "Jehanabad",
+    "block": [
+      "Ghosi",
+      "Jehanabad",
+      "Makhdumpur",
+      "Kako",
+      "Ratnifridpur",
+      "Hulasganj",
+      "Modanganj"
+    ]
+  },
+  {
+    "district": "Nawadah",
+    "block": [
+      "Kauakol",
+      "Varsaliganj",
+      "Nawadah",
+      "Rajouli",
+      "Akbarpur",
+      "Hisua",
+      "Narhat",
+      "Govindpur",
+      "Pakribarawan",
+      "Sirdalla",
+      "Kasichak",
+      "Roh",
+      "Nardiganj",
+      "Meskaur"
+    ]
+  },
+  {
+    "district": "Aurangabad",
+    "block": [
+      "Madanpur",
+      "Kutumbba",
+      "Daudnagar",
+      "Aurangabad",
+      "Barun",
+      "Obra",
+      "Dev",
+      "Nabinagar",
+      "Haspura",
+      "Goh",
+      "Rafiganj"
+    ]
+  },
+  {
+    "district": "Arwal",
+    "block": [
+      "Arwal",
+      "Kurtha",
+      "Karpi",
+      "Kaler",
+      "Sonebhadra Bansi Surjpur"
+    ]
+  },
+  {
+    "district": "Muzaffarpur",
+    "block": [
+      "Sakra",
+      "Muraul",
+      "Musahari",
+      "Gayghat",
+      "Sahebganj",
+      "Kurahni",
+      "Saraiya",
+      "Minapur",
+      "Bochaha",
+      "Aurai",
+      "Katra",
+      "Kanti",
+      "Motipur",
+      "Paru",
+      "Bandra",
+      "Marawan"
+    ]
+  },
+  {
+    "district": "Vaishali",
+    "block": [
+      "Mahnar",
+      "Vaishali",
+      "Bidupur",
+      "Goraul",
+      "Raghopur",
+      "Lalganj",
+      "Hazipur",
+      "Mahua",
+      "Jandaha",
+      "Patepur",
+      "Sahdeibuzurg",
+      "Razapakar",
+      "Bhagwanpur",
+      "Chehrakala",
+      "Patedhi-Belshar",
+      "Desari"
+    ]
+  },
+  {
+    "district": "W.Champaran",
+    "block": [
+      "Bettiah",
+      "Sikta",
+      "Mainatand",
+      "Chanpattia",
+      "Bairia",
+      "Lauria",
+      "Bagaha - 1",
+      "Bagaha - 2",
+      "Madhubani",
+      "Gaunaha",
+      "Narkatiaganj",
+      "Manjhaulia",
+      "Nautan",
+      "Jogapatti",
+      "Ramnagar",
+      "Thakraha",
+      "Bhitaha",
+      "Piprasi"
+    ]
+  },
+  {
+    "district": "E.Champaran",
+    "block": [
+      "Kesharia",
+      "Kalyanpur",
+      "Motihari",
+      "Sugauli",
+      "Harsiddhi",
+      "Pakridayal",
+      "Maheshi",
+      "Adapur",
+      "Chiraian",
+      "Paharpur",
+      "Raxaul",
+      "Turkaulia",
+      "Areraj",
+      "Ramgarhwa",
+      "Ghorasahan",
+      "Madhuban",
+      "Chakai",
+      "Patahi",
+      "Dhakha",
+      "Sangrampur",
+      "Phenhara",
+      "Tetaria",
+      "Vankatwa",
+      "Kotwa",
+      "Banjaria",
+      "Piprakothi",
+      "Chhauradano"
+    ]
+  },
+  {
+    "district": "Sitamarhi",
+    "block": [
+      "Bathnaha",
+      "Parihar",
+      "Nanpur",
+      "Bazpatti",
+      "Bairgania",
+      "Belsand",
+      "Riga",
+      "Sursand",
+      "Pupri",
+      "Sonbarsa",
+      "Dumra",
+      "Runni saidpur",
+      "Majorganj",
+      "Suppi",
+      "Parsauni",
+      "Bokhra",
+      "Chorout"
+    ]
+  },
+  {
+    "district": "Sheohar",
+    "block": [
+      "Sheohar",
+      "Tariyani",
+      "Piprahi",
+      "Dumrikatsari",
+      "Puranhia",
+      "Manjhi",
+      "Dighwara",
+      "Rivilganj",
+      "Parsa",
+      "Baniapur",
+      "Amnaur",
+      "Taraiya",
+      "Sonepur",
+      "Garkha",
+      "Ekma",
+      "Dariyapur",
+      "Jalalpur",
+      "Marhaura",
+      "Masarakh",
+      "Maker",
+      "Nagra",
+      "Panapur",
+      "Eisuapur",
+      "Lahladpur Jantabazar"
+    ]
+  },
+  {
+    "district": "Siwan",
+    "block": [
+      "Pachrukhi",
+      "Raghunathpur",
+      "Mairwan",
+      "Aandar",
+      "Guthani",
+      "Maharajganj",
+      "Darauli",
+      "Siswan",
+      "Daraunda",
+      "Husainaganj",
+      "Bhagwanpur Hat",
+      "Goriyakothi",
+      "Baraharia",
+      "Siwan Sadar",
+      "Basantpur",
+      "Lakari Nabiganj",
+      "Jiradei",
+      "Nautan",
+      "Hasanpur"
+    ]
+  },
+  {
+    "district": "Gopalganj",
+    "block": [
+      "Bhore",
+      "Gopalganj",
+      "Manjha",
+      "Uchakagaon",
+      "Kuchaikot",
+      "Kateya",
+      "Vijayeepur",
+      "Barauli",
+      "Hathua",
+      "Baikunthpur",
+      "Phulwaria",
+      "Thawe",
+      "Panchdevari",
+      "Sindhwalia"
+    ]
+  },
+  {
+    "district": "Darbhanga",
+    "block": [
+      "Bahadurpur",
+      "Jale",
+      "Hayaghat",
+      "Singhwara",
+      "Benipur",
+      "Ghanshyampur",
+      "Baheri",
+      "Kewati",
+      "Manigachhi",
+      "Darbhanga",
+      "Biraul",
+      "Kusheswarsthan",
+      "Alinagar",
+      "Kusheswarsthan East",
+      "Gaura Vauram",
+      "Kiratpur",
+      "Tardih",
+      "HanumanNagar"
+    ]
+  },
+  {
+    "district": "Madhubani",
+    "block": [
+      "Jainagar",
+      "Pandaul",
+      "Rahika",
+      "Bisfi",
+      "Benipatti",
+      "Basopatti",
+      "Babubarhi",
+      "Rajnagar",
+      "Madhepur",
+      "Khutauna",
+      "Khajauli",
+      "Jhanjharpur",
+      "Ghoghardiha",
+      "Ladania",
+      "Madhwapur",
+      "Harlakhi",
+      "Laukahi",
+      "Andharatharhi",
+      "Lakhnaur",
+      "Phulparas",
+      "Kaluahi"
+    ]
+  },
+  {
+    "district": "Samastipur",
+    "block": [
+      "Jitwarpur",
+      "Kalyanpur",
+      "Warisnagar",
+      "Rosara",
+      "Tajpur Morwa",
+      "Patori",
+      "Sarairanjan",
+      "Pusa",
+      "Ujiyarpur",
+      "Dalsinghsarai",
+      "Singhia",
+      "Hasanpur",
+      "Mohiuddinnagar",
+      "Bibhutipur",
+      "Bithan",
+      "Tajpur",
+      "Shivajinagar",
+      "Vidyapatinagar",
+      "Khanpur",
+      "Mohanpur"
+    ]
+  },
+  {
+    "district": "Munger",
+    "block": [
+      "Haveli kharagpur",
+      "Dharhara",
+      "Munger",
+      "Jamalpur",
+      "Tarapur",
+      "Sangrampur",
+      "Bariarpur",
+      "Tetiabamber",
+      "Asarganj"
+    ]
+  },
+  {
+    "district": "Lakhisarai",
+    "block": [
+      "Halsi",
+      "Lakhisarai",
+      "Barahia",
+      "Suryagarha",
+      "Piparia",
+      "Raigarh Chowk",
+      "Chanan Banu Bagicha"
+    ]
+  },
+  {
+    "district": "Sheikhpura",
+    "block": [
+      "Ariari",
+      "Sheikpura",
+      "Barbigha",
+      "Ghatkusumba",
+      "Chebara",
+      "Shekhopur Sarai"
+    ]
+  },
+  {
+    "district": "Begusarai",
+    "block": [
+      "Bhagawanpur",
+      "Teghra",
+      "Bakhri",
+      "Begusarai",
+      "Barauni",
+      "Bachwara",
+      "Cheria Bariyarpur",
+      "Balia",
+      "Khodabandpur",
+      "Sahebpur Kamal",
+      "Matihani",
+      "Garhpura",
+      "Navkothi",
+      "Birpur",
+      "Mansurchak",
+      "Chhourahi",
+      "Dandari",
+      "Samho-Akaha-Kurha"
+    ]
+  },
+  {
+    "district": "Jamui",
+    "block": [
+      "Jamui",
+      "Chakai",
+      "Laxmipur",
+      "Jhajha",
+      "Sono",
+      "Khaira",
+      "Sikandra",
+      "Barhat",
+      "Asalmanagar Aliganj",
+      "Gidhaur"
+    ]
+  },
+  {
+    "district": "Khagaria",
+    "block": [
+      "Gogari",
+      "Parwatta",
+      "Khagaria",
+      "Alauli",
+      "Chautham",
+      "Beldaur",
+      "Mansi"
+    ]
+  },
+  {
+    "district": "Bhagalpur",
+    "block": [
+      "Pirpainti",
+      "Kahalgoan",
+      "Sanhaula",
+      "Sabour",
+      "Nathnagar",
+      "Jagdishpur",
+      "Sultanganj",
+      "Sahkund",
+      "Bihpur",
+      "Navgachia",
+      "Gopalpur",
+      "Kharik",
+      "Narayanpur",
+      "Gauradih",
+      "Ismailpur",
+      "Rangrachowk"
+    ]
+  },
+  {
+    "district": "Banka",
+    "block": [
+      "Banka",
+      "Rajon",
+      "Amarpur",
+      "Dhoraiya",
+      "Katoria",
+      "Bausi",
+      "Shambhuganj",
+      "Barahat",
+      "Belhar",
+      "Chandan",
+      "Phulidumar"
+    ]
+  },
+  {
+    "district": "Saharsa",
+    "block": [
+      "Nauhatta",
+      "Simari bakhatiyarpur",
+      "Salkhua",
+      "Kahra",
+      "Mahishi",
+      "Sonbarsa",
+      "Saurbazar",
+      "Patarghat",
+      "Sattar Kateya",
+      "Banma Itahari"
+    ]
+  },
+  {
+    "district": "Madhepura",
+    "block": [
+      "Madhepura",
+      "Sigheshwarsthan",
+      "Murliganj",
+      "Chausa",
+      "Kumarkhand",
+      "Alamnagar",
+      "Udakishanganj",
+      "Shankarpur",
+      "Gwalpara",
+      "Bihariganj",
+      "Puraini",
+      "Dhelarh",
+      "Gamharia"
+    ]
+  },
+  {
+    "district": "Supaul",
+    "block": [
+      "Supaul",
+      "Triveniganj",
+      "Pipara",
+      "Marauna",
+      "Kishunpur",
+      "Raghopur",
+      "Nirmali",
+      "Basantpur",
+      "Chhatapur",
+      "Saraigarh Bhaptiyahi",
+      "Pratapganj"
+    ]
+  },
+  {
+    "district": "Purnia",
+    "block": [
+      "Purnia",
+      "Amaur",
+      "Bhawanipur",
+      "Banmankhi",
+      "Dhamdaha",
+      "Baisa",
+      "Vaisi",
+      "Barharakothi"
+    ]
+  },
+  {
+    "district": "Kishanganj",
+    "block": [
+      "Kishanganj",
+      "Kochadhaman",
+      "Bahadurganj",
+      "Terhagachhi",
+      "Dighalbank",
+      "Thakurganj",
+      "Pothia"
+    ]
+  },
+  {
+    "district": "Katihar",
+    "block": [
+      "Katihar",
+      "Warsoi",
+      "Kadwa",
+      "Amdabad",
+      "Manihari",
+      "Balrampur",
+      "Korha",
+      "Falka",
+      "Alamnagar",
+      "Barari",
+      "Pranpur",
+      "Mansahi",
+      "Samaili",
+      "Kursaila",
+      "Hasanganj",
+      "Dandkhora"
+    ]
+  },
+  {
+    "district": "Araria",
+    "block": [
+      "Araria",
+      "Raniganj",
+      "Bharganwan",
+      "Kursakata",
+      "Sikti",
+      "Narpatganj",
+      "Farbisganj",
+      "Palasi",
+      "Jokihat"
+    ]
+  }
+]

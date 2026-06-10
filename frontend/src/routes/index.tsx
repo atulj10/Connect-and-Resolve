@@ -20,9 +20,17 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Citizen Connect — Grievance Management Portal" },
-      { name: "description", content: "Connecting citizens with better governance. Submit complaints, grievances, suggestions, and assistance requests." },
+      {
+        name: "description",
+        content:
+          "Connecting citizens with better governance. Submit complaints, grievances, suggestions, and assistance requests.",
+      },
       { property: "og:title", content: "Citizen Connect — Grievance Management Portal" },
-      { property: "og:description", content: "Connecting citizens with better governance. Submit complaints, grievances, suggestions, and assistance requests." },
+      {
+        property: "og:description",
+        content:
+          "Connecting citizens with better governance. Submit complaints, grievances, suggestions, and assistance requests.",
+      },
     ],
   }),
   component: Index,
@@ -59,22 +67,26 @@ const features = [
 const steps = [
   {
     title: "Submit Application",
-    description: "File complaints, grievances, suggestions, or assistance requests through our easy-to-use digital portal.",
+    description:
+      "File complaints, grievances, suggestions, or assistance requests through our easy-to-use digital portal.",
     icon: Send,
   },
   {
     title: "Review by Minister Office",
-    description: "Every application is reviewed by the concerned minister's office for authenticity and relevance.",
+    description:
+      "Every application is reviewed by the concerned minister's office for authenticity and relevance.",
     icon: Building2,
   },
   {
     title: "Department Action",
-    description: "Relevant departments are assigned to investigate and take necessary action on your submission.",
+    description:
+      "Relevant departments are assigned to investigate and take necessary action on your submission.",
     icon: Briefcase,
   },
   {
     title: "Resolution & Updates",
-    description: "Receive timely updates and final resolution with full transparency on the actions taken.",
+    description:
+      "Receive timely updates and final resolution with full transparency on the actions taken.",
     icon: CheckCircle2,
   },
 ];
@@ -95,8 +107,7 @@ function Index() {
                 Government of India Initiative
               </div>
               <h1 className="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                Connecting Citizens with{" "}
-                <span className="text-primary">Better Governance</span>
+                Connecting Citizens with <span className="text-primary">Better Governance</span>
               </h1>
               <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
                 A unified digital platform empowering citizens to submit complaints, grievances,
@@ -110,11 +121,7 @@ function Index() {
                 >
                   Register
                 </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-border px-8 hover:bg-accent"
-                >
+                <Button variant="outline" size="lg" className="border-border px-8 hover:bg-accent">
                   Login
                 </Button>
               </div>

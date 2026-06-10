@@ -1,11 +1,4 @@
-export const CITIZEN_DISTRICTS = [
-  "Mumbai",
-  "Pune",
-  "Nagpur",
-  "Nashik",
-  "Thane",
-  "Aurangabad",
-];
+export const CITIZEN_DISTRICTS = ["Mumbai", "Pune", "Nagpur", "Nashik", "Thane", "Aurangabad"];
 
 export type Citizen = {
   id: string;
@@ -21,15 +14,48 @@ export type Citizen = {
 };
 
 const FIRST = [
-  "Aarav", "Priya", "Rohan", "Ananya", "Vikram", "Sneha",
-  "Karan", "Meera", "Arjun", "Divya", "Rahul", "Pooja",
-  "Aditya", "Isha", "Sahil", "Neha", "Manish", "Kavya",
-  "Yash", "Riya", "Nikhil", "Sakshi", "Aman", "Tanvi",
+  "Aarav",
+  "Priya",
+  "Rohan",
+  "Ananya",
+  "Vikram",
+  "Sneha",
+  "Karan",
+  "Meera",
+  "Arjun",
+  "Divya",
+  "Rahul",
+  "Pooja",
+  "Aditya",
+  "Isha",
+  "Sahil",
+  "Neha",
+  "Manish",
+  "Kavya",
+  "Yash",
+  "Riya",
+  "Nikhil",
+  "Sakshi",
+  "Aman",
+  "Tanvi",
 ];
 const LAST = [
-  "Sharma", "Patel", "Mehta", "Singh", "Reddy", "Iyer",
-  "Joshi", "Nair", "Verma", "Gupta", "Kulkarni", "Desai",
-  "Bhatt", "Kapoor", "Malhotra", "Chopra",
+  "Sharma",
+  "Patel",
+  "Mehta",
+  "Singh",
+  "Reddy",
+  "Iyer",
+  "Joshi",
+  "Nair",
+  "Verma",
+  "Gupta",
+  "Kulkarni",
+  "Desai",
+  "Bhatt",
+  "Kapoor",
+  "Malhotra",
+  "Chopra",
 ];
 
 function seeded(i: number) {

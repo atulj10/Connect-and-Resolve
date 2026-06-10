@@ -19,13 +19,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { StatusBadge } from "@/components/StatusBadge";
-import {
-  DEPARTMENTS,
-  STATUSES,
-  formatDate,
-  type AppStatus,
-  type Application,
-} from "@/lib/applications";
+import { DEPARTMENTS, STATUSES, formatDate, type AppStatus } from "@/lib/applications";
+import { applicationsApi, type ApplicationDto } from "@/lib/api/applications";
+import { getApiError } from "@/lib/api/client";
 import { Paperclip, User, Phone, MapPin, X, Upload } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,7 +30,7 @@ export function AdminApplicationDialog({
   open,
   onOpenChange,
 }: {
-  app: Application | null;
+  app: ApplicationDto | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
@@ -44,18 +40,36 @@ export function AdminApplicationDialog({
   const [notes, setNotes] = useState("");
   const [attachments, setAttachments] = useState<string[]>([]);
   const [newAttachment, setNewAttachment] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (app) {
-      setStatus(app.status);
-      setDepartment(app.department);
-      setRemarks(app.remarks);
-      setNotes(app.internalNotes);
-      setAttachments(app.attachments);
+      setStatus((app.status as AppStatus) || "Submitted");
+      setDepartment(app.department || "");
+      setRemarks(app.adminRemarks || "");
+      setNotes(app.internalNotes || "");
+      setAttachments((app.attachments ?? []).map((a) => a.fileName));
     }
   }, [app]);
 
   if (!app) return null;
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await Promise.all([
+        applicationsApi.updateStatus(app.id, status),
+        applicationsApi.updateDepartment(app.id, department),
+        applicationsApi.addRemarks(app.id, { adminRemarks: remarks, internalNotes: notes }),
+      ]);
+      toast.success("Application updated successfully");
+      onOpenChange(false);
+    } catch (err: unknown) {
+      toast.error(getApiError(err, "Failed to update application"));
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -63,10 +77,10 @@ export function AdminApplicationDialog({
         <DialogHeader>
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <p className="text-xs font-mono text-muted-foreground">{app.refNo}</p>
+              <p className="text-xs font-mono text-muted-foreground">{app.referenceNumber}</p>
               <DialogTitle className="text-xl mt-1">{app.subject}</DialogTitle>
               <p className="text-xs text-muted-foreground mt-1">
-                Filed on {formatDate(app.createdAt)} • Category: {app.category}
+                Filed on {formatDate(app.createdAt)} &bull; Category: {app.category}
               </p>
             </div>
             <StatusBadge status={status} />
@@ -75,17 +89,27 @@ export function AdminApplicationDialog({
         </DialogHeader>
 
         <div className="rounded-xl border border-border bg-secondary/30 p-4">
-          <h3 className="text-sm font-semibold mb-3">Citizen Details</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-            <Info icon={User} text={app.citizenName} />
-            <Info icon={Phone} text={app.mobile} />
-            <Info icon={MapPin} text={app.district} />
+          <h3 className="text-sm font-semibold mb-3">Personal Information</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            <Info icon={User} text={`${app.applicantName} S/O ${app.fatherName}`} />
+            <Info icon={Phone} text={app.user?.mobileNumber ?? "—"} />
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-border bg-secondary/30 p-4">
+          <h3 className="text-sm font-semibold mb-3">Address Information</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            <Info icon={MapPin} text={`${app.villageMohalla}, ${app.panchayat}`} />
+            <Info icon={MapPin} text={`PS: ${app.policeStation}, Block: ${app.block}`} />
+            <Info icon={MapPin} text={`${app.district} - ${app.pincode}`} />
           </div>
         </div>
 
         <div>
           <h3 className="text-sm font-semibold mb-2">Description</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{app.description}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {app.description || "No description provided."}
+          </p>
         </div>
 
         <Separator />
@@ -94,25 +118,40 @@ export function AdminApplicationDialog({
           <div className="space-y-2">
             <Label>Assign Department</Label>
             <Select value={department} onValueChange={setDepartment}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                {DEPARTMENTS.map((d) => (
+                  <SelectItem key={d} value={d}>
+                    {d}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
             <Label>Update Status</Label>
             <Select value={status} onValueChange={(v) => setStatus(v as AppStatus)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                {STATUSES.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {s}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="remarks">Admin Remarks <span className="text-xs text-muted-foreground font-normal">(visible to citizen)</span></Label>
+          <Label htmlFor="remarks">
+            Admin Remarks{" "}
+            <span className="text-xs text-muted-foreground font-normal">(visible to citizen)</span>
+          </Label>
           <Textarea
             id="remarks"
             rows={3}
@@ -124,7 +163,10 @@ export function AdminApplicationDialog({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="notes">Internal Notes <span className="text-xs text-muted-foreground font-normal">(office only)</span></Label>
+          <Label htmlFor="notes">
+            Internal Notes{" "}
+            <span className="text-xs text-muted-foreground font-normal">(office only)</span>
+          </Label>
           <Textarea
             id="notes"
             rows={3}
@@ -140,23 +182,27 @@ export function AdminApplicationDialog({
             <Paperclip className="h-3.5 w-3.5" /> Attachments
           </Label>
           <div className="flex flex-wrap gap-2">
-            {attachments.map((a) => (
-              <div
-                key={a}
-                className="text-xs rounded-md border border-border bg-secondary/40 pl-2.5 pr-1 py-1 flex items-center gap-1.5"
-              >
-                <Paperclip className="h-3 w-3 text-muted-foreground" />
-                {a}
-                <button
-                  type="button"
-                  onClick={() => setAttachments((as) => as.filter((x) => x !== a))}
-                  className="rounded p-0.5 hover:bg-background"
-                  aria-label="Remove"
+            {attachments.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No attachments</p>
+            ) : (
+              attachments.map((a) => (
+                <div
+                  key={a}
+                  className="text-xs rounded-md border border-border bg-secondary/40 pl-2.5 pr-1 py-1 flex items-center gap-1.5"
                 >
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-            ))}
+                  <Paperclip className="h-3 w-3 text-muted-foreground" />
+                  {a}
+                  <button
+                    type="button"
+                    onClick={() => setAttachments((as) => as.filter((x) => x !== a))}
+                    className="rounded p-0.5 hover:bg-background"
+                    aria-label="Remove"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))
+            )}
           </div>
           <div className="flex gap-2">
             <Input
@@ -180,9 +226,11 @@ export function AdminApplicationDialog({
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2 sm:justify-end pt-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={() => { toast.success("Application updated successfully"); onOpenChange(false); }}>
-            Save Changes
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </DialogContent>
@@ -190,7 +238,13 @@ export function AdminApplicationDialog({
   );
 }
 
-function Info({ icon: Icon, text }: { icon: React.ComponentType<{ className?: string }>; text: string }) {
+function Info({
+  icon: Icon,
+  text,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  text: string;
+}) {
   return (
     <div className="flex items-center gap-2">
       <Icon className="h-4 w-4 text-primary" />

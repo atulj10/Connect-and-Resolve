@@ -1,82 +1,78 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AdminApplicationDialog } from "@/components/AdminApplicationDialog";
 import { NewApplicationDialog } from "@/components/NewApplicationDialog";
-import {
-  CATEGORIES, DEPARTMENTS, STATUSES, formatDate, generateApplications, type Application,
-} from "@/lib/applications";
-import {
-  ArrowUpDown, ChevronLeft, ChevronRight, Eye, Plus, Search,
-} from "lucide-react";
+import { CATEGORIES, DEPARTMENTS, STATUSES, formatDate } from "@/lib/applications";
+import { applicationsApi, type ApplicationDto } from "@/lib/api/applications";
+import { ChevronLeft, ChevronRight, Eye, Plus, Search } from "lucide-react";
 
 export const Route = createFileRoute("/admin/applications")({
   head: () => ({
     meta: [
       { title: "Applications — Minister Office Admin" },
-      { name: "description", content: "Review, assign and manage citizen applications and grievances." },
+      {
+        name: "description",
+        content: "Review, assign and manage citizen applications and grievances.",
+      },
     ],
   }),
   component: AdminApplications,
 });
 
-type SortKey = "createdAt" | "assignedAt" | "citizenName" | "status";
-type SortDir = "asc" | "desc";
-
 function AdminApplications() {
-  const all = useMemo(() => generateApplications(48), []);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [department, setDepartment] = useState("all");
   const [status, setStatus] = useState("all");
-  const [sortKey, setSortKey] = useState<SortKey>("createdAt");
-  const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
-  const [selected, setSelected] = useState<Application | null>(null);
+  const [selected, setSelected] = useState<ApplicationDto | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [appData, setAppData] = useState<{
+    applications: ApplicationDto[];
+    total: number;
+    totalPages: number;
+  }>({ applications: [], total: 0, totalPages: 0 });
 
-  const filtered = useMemo(() => {
-    const rows = all.filter((a) => {
-      if (category !== "all" && a.category !== category) return false;
-      if (department !== "all" && a.department !== department) return false;
-      if (status !== "all" && a.status !== status) return false;
-      if (search) {
-        const q = search.toLowerCase();
-        if (
-          !a.refNo.toLowerCase().includes(q) &&
-          !a.subject.toLowerCase().includes(q) &&
-          !a.citizenName.toLowerCase().includes(q) &&
-          !a.mobile.includes(q)
-        ) return false;
-      }
-      return true;
-    });
-    rows.sort((a, b) => {
-      const av = a[sortKey];
-      const bv = b[sortKey];
-      const cmp = av < bv ? -1 : av > bv ? 1 : 0;
-      return sortDir === "asc" ? cmp : -cmp;
-    });
-    return rows;
-  }, [all, category, department, status, search, sortKey, sortDir]);
+  const fetchApps = useCallback(() => {
+    setLoading(true);
+    const params: Record<string, string | number | undefined> = { page, pageSize };
+    if (search) params.search = search;
+    if (category !== "all") params.category = category;
+    if (department !== "all") params.department = department;
+    if (status !== "all") params.status = status;
+    applicationsApi
+      .list(params)
+      .then((r) =>
+        setAppData({ applications: r.applications, total: r.total, totalPages: r.totalPages }),
+      )
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [page, pageSize, search, category, department, status]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const pageRows = filtered.slice((page - 1) * pageSize, page * pageSize);
-
-  const toggleSort = (k: SortKey) => {
-    if (k === sortKey) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    else { setSortKey(k); setSortDir("desc"); }
-  };
+  useEffect(() => {
+    fetchApps();
+  }, [fetchApps]);
 
   return (
     <AdminLayout title="Applications">
@@ -97,7 +93,9 @@ function AdminApplications() {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
               <h2 className="text-lg font-semibold">All Applications</h2>
-              <p className="text-xs text-muted-foreground">{filtered.length} of {all.length} applications</p>
+              <p className="text-xs text-muted-foreground">
+                {appData.total} application{appData.total !== 1 && "s"} found
+              </p>
             </div>
             <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
               <div className="relative col-span-2 sm:col-span-1">
@@ -105,29 +103,68 @@ function AdminApplications() {
                 <Input
                   placeholder="Search ref no, citizen, mobile..."
                   value={search}
-                  onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
                   className="pl-9 sm:w-72"
                 />
               </div>
-              <Select value={category} onValueChange={(v) => { setCategory(v); setPage(1); }}>
-                <SelectTrigger className="sm:w-40"><SelectValue placeholder="Category" /></SelectTrigger>
+              <Select
+                value={category}
+                onValueChange={(v) => {
+                  setCategory(v);
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger className="sm:w-40">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  {CATEGORIES.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-              <Select value={department} onValueChange={(v) => { setDepartment(v); setPage(1); }}>
-                <SelectTrigger className="sm:w-44"><SelectValue placeholder="Department" /></SelectTrigger>
+              <Select
+                value={department}
+                onValueChange={(v) => {
+                  setDepartment(v);
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger className="sm:w-44">
+                  <SelectValue placeholder="Department" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Departments</SelectItem>
-                  {DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                  {DEPARTMENTS.map((d) => (
+                    <SelectItem key={d} value={d}>
+                      {d}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-              <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1); }}>
-                <SelectTrigger className="sm:w-40"><SelectValue placeholder="Status" /></SelectTrigger>
+              <Select
+                value={status}
+                onValueChange={(v) => {
+                  setStatus(v);
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger className="sm:w-40">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Statuses</SelectItem>
-                  {STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  {STATUSES.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -138,45 +175,62 @@ function AdminApplications() {
           <Table>
             <TableHeader>
               <TableRow className="bg-secondary/40 hover:bg-secondary/40">
-                <TableHead className="font-semibold">Reference No.</TableHead>
-                <TableHead className="font-semibold">
-                  <SortBtn label="Citizen" active={sortKey === "citizenName"} dir={sortDir} onClick={() => toggleSort("citizenName")} />
-                </TableHead>
-                <TableHead className="font-semibold">Mobile</TableHead>
+                <TableHead className="font-semibold whitespace-nowrap">Created</TableHead>
+                <TableHead className="font-semibold whitespace-nowrap">Reference No.</TableHead>
+                <TableHead className="font-semibold">Applicant</TableHead>
+                <TableHead className="font-semibold">Subject</TableHead>
                 <TableHead className="font-semibold">Category</TableHead>
-                <TableHead className="font-semibold">Department</TableHead>
-                <TableHead className="font-semibold">
-                  <SortBtn label="Status" active={sortKey === "status"} dir={sortDir} onClick={() => toggleSort("status")} />
-                </TableHead>
-                <TableHead className="font-semibold">
-                  <SortBtn label="Created" active={sortKey === "createdAt"} dir={sortDir} onClick={() => toggleSort("createdAt")} />
-                </TableHead>
-                <TableHead className="font-semibold">
-                  <SortBtn label="Assigned" active={sortKey === "assignedAt"} dir={sortDir} onClick={() => toggleSort("assignedAt")} />
-                </TableHead>
+                <TableHead className="font-semibold">Status</TableHead>
                 <TableHead className="font-semibold text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {pageRows.length === 0 ? (
-                <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">No applications match your filters.</TableCell></TableRow>
-              ) : pageRows.map((a) => (
-                <TableRow key={a.refNo} className="hover:bg-secondary/30">
-                  <TableCell className="font-mono text-xs text-primary whitespace-nowrap">{a.refNo}</TableCell>
-                  <TableCell className="font-medium whitespace-nowrap">{a.citizenName}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{a.mobile}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{a.category}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{a.department}</TableCell>
-                  <TableCell><StatusBadge status={a.status} /></TableCell>
-                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{formatDate(a.createdAt)}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{formatDate(a.assignedAt)}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="gap-1.5" onClick={() => setSelected(a)}>
-                      <Eye className="h-4 w-4" /> Manage
-                    </Button>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                    Loading...
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : appData.applications.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                    No applications match your filters.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                appData.applications.map((a) => (
+                  <TableRow key={a.id} className="hover:bg-secondary/30">
+                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                      {formatDate(a.createdAt)}
+                    </TableCell>
+                    <TableCell className="font-mono text-xs text-primary whitespace-nowrap">
+                      {a.referenceNumber}
+                    </TableCell>
+                    <TableCell className="font-medium whitespace-nowrap">
+                      {a.user?.fullName ?? a.applicantName}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground max-w-[300px] truncate">
+                      {a.subject.length > 100 ? a.subject.slice(0, 100) + "..." : a.subject}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                      {a.category}
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge status={a.status} />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="gap-1.5"
+                        onClick={() => setSelected(a)}
+                      >
+                        <Eye className="h-4 w-4" /> Manage
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
@@ -184,41 +238,59 @@ function AdminApplications() {
         <div className="p-4 sm:px-6 flex flex-col sm:flex-row gap-3 items-center justify-between border-t border-border">
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span>Rows per page</span>
-            <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
-              <SelectTrigger className="h-8 w-20"><SelectValue /></SelectTrigger>
+            <Select
+              value={String(pageSize)}
+              onValueChange={(v) => {
+                setPageSize(Number(v));
+                setPage(1);
+              }}
+            >
+              <SelectTrigger className="h-8 w-20">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {[5, 10, 20, 50].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
+                {[5, 10, 20, 50].map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {n}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <span>
-              Showing {filtered.length === 0 ? 0 : (page - 1) * pageSize + 1}–{Math.min(page * pageSize, filtered.length)} of {filtered.length}
+              Showing {appData.total === 0 ? 0 : (page - 1) * pageSize + 1}–
+              {Math.min(page * pageSize, appData.total)} of {appData.total}
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page === 1}
+              onClick={() => setPage((p) => p - 1)}
+            >
               <ChevronLeft className="h-4 w-4" /> Prev
             </Button>
-            <span className="text-xs text-muted-foreground px-2">Page {page} of {totalPages}</span>
-            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
+            <span className="text-xs text-muted-foreground px-2">
+              Page {page} of {appData.totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page >= appData.totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
               Next <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </section>
 
-      <AdminApplicationDialog app={selected} open={!!selected} onOpenChange={(o) => !o && setSelected(null)} />
+      <AdminApplicationDialog
+        app={selected}
+        open={!!selected}
+        onOpenChange={(o) => !o && setSelected(null)}
+      />
       <NewApplicationDialog mode="admin" open={createOpen} onOpenChange={setCreateOpen} />
     </AdminLayout>
-  );
-}
-
-function SortBtn({
-  label, active, dir, onClick,
-}: { label: string; active: boolean; dir: SortDir; onClick: () => void }) {
-  return (
-    <button type="button" onClick={onClick} className="inline-flex items-center gap-1 hover:text-foreground">
-      {label}
-      <ArrowUpDown className={`h-3 w-3 ${active ? "text-primary" : "text-muted-foreground/60"} ${active && dir === "asc" ? "rotate-180" : ""}`} />
-    </button>
   );
 }

@@ -1,15 +1,22 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { formatDate, type Citizen } from "@/lib/citizens";
-import { Mail, MapPin, Phone, User, FileText, Calendar } from "lucide-react";
+import { formatDate } from "@/lib/applications";
+import type { UserDto } from "@/lib/api/users";
+import { Mail, Phone, User, Shield, Calendar, CheckCircle, XCircle } from "lucide-react";
 
 export function CitizenDetailsDialog({
   citizen,
   open,
   onOpenChange,
 }: {
-  citizen: Citizen | null;
+  citizen: UserDto | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
@@ -20,14 +27,18 @@ export function CitizenDetailsDialog({
         <DialogHeader>
           <div className="flex items-center gap-4">
             <div className="h-14 w-14 rounded-full bg-gradient-to-br from-primary to-[#7C73FF] text-primary-foreground font-semibold flex items-center justify-center text-lg">
-              {citizen.fullName.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+              {citizen.fullName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)}
             </div>
             <div className="min-w-0">
               <DialogTitle className="text-xl">{citizen.fullName}</DialogTitle>
               <p className="text-xs font-mono text-muted-foreground mt-0.5">{citizen.id}</p>
             </div>
-            <Badge variant={citizen.active ? "default" : "secondary"} className="ml-auto">
-              {citizen.active ? "Active" : "Inactive"}
+            <Badge variant={citizen.role === "ADMIN" ? "default" : "secondary"} className="ml-auto">
+              {citizen.role}
             </Badge>
           </div>
           <DialogDescription className="sr-only">Citizen details</DialogDescription>
@@ -36,12 +47,21 @@ export function CitizenDetailsDialog({
         <Separator />
 
         <div className="space-y-3 text-sm">
-          <Row icon={Mail} label="Email" value={citizen.email} />
-          <Row icon={Phone} label="Mobile" value={citizen.mobile} />
-          <Row icon={MapPin} label="Location" value={`${citizen.district}, ${citizen.state}`} />
-          <Row icon={User} label="Address" value={citizen.address} />
-          <Row icon={FileText} label="Total Applications" value={String(citizen.totalApplications)} />
-          <Row icon={Calendar} label="Registered On" value={formatDate(citizen.registeredAt)} />
+          <Row icon={Mail} label="Email" value={citizen.email ?? "—"} />
+          <Row icon={Phone} label="Mobile" value={citizen.mobileNumber} />
+          <Row icon={User} label="Address" value={citizen.address ?? "—"} />
+          <Row icon={Shield} label="Role" value={citizen.role} />
+          <Row
+            icon={CheckCircle}
+            label="Mobile Verified"
+            value={citizen.mobileVerified ? "Yes" : "No"}
+          />
+          <Row
+            icon={CheckCircle}
+            label="Email Verified"
+            value={citizen.emailVerified ? "Yes" : "No"}
+          />
+          <Row icon={Calendar} label="Registered On" value={formatDate(citizen.createdAt)} />
         </div>
       </DialogContent>
     </Dialog>
@@ -49,8 +69,14 @@ export function CitizenDetailsDialog({
 }
 
 function Row({
-  icon: Icon, label, value,
-}: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }) {
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+}) {
   return (
     <div className="flex items-start gap-3">
       <div className="h-8 w-8 rounded-md bg-secondary/60 text-primary flex items-center justify-center shrink-0">

@@ -39,14 +39,7 @@ export const DEPARTMENTS = [
   "Revenue Department",
 ] as const;
 
-export const DISTRICTS = [
-  "Mumbai",
-  "Pune",
-  "Nagpur",
-  "Nashik",
-  "Thane",
-  "Aurangabad",
-];
+export const DISTRICTS = ["Mumbai", "Pune", "Nagpur", "Nashik", "Thane", "Aurangabad"];
 
 export type Application = {
   refNo: string;
@@ -57,10 +50,16 @@ export type Application = {
   createdAt: string;
   updatedAt: string;
   assignedAt: string;
-  citizenName: string;
+  applicantName: string;
+  fatherName: string;
   mobile: string;
+  villageMohalla: string;
+  panchayat: string;
+  policeStation: string;
+  block: string;
   district: string;
-  description: string;
+  pincode: string;
+  description?: string;
   remarks: string;
   internalNotes: string;
   attachments: string[];
@@ -113,6 +112,31 @@ function daysAgo(n: number) {
   return d.toISOString();
 }
 
+const fatherNames = [
+  "Rajesh Sharma",
+  "Sunil Patel",
+  "Mahesh Mehta",
+  "Ramesh Singh",
+  "Suresh Reddy",
+  "Dinesh Iyer",
+  "Ganesh Joshi",
+  "Kishore Nair",
+  "Lalit Verma",
+  "Prakash Gupta",
+  "Vinod Kulkarni",
+  "Sanjay Desai",
+];
+
+const villages = ["Shiv Nagar", "Gandhi Colony", "Indira Vihar", "Netaji Chowk", "Ambedkar Basti"];
+const panchayats = ["Gram Panchayat A", "Gram Panchayat B", "Gram Panchayat C", "Gram Panchayat D"];
+const policeStations = [
+  "City Police Station",
+  "Sadar Police Station",
+  "Rural Police Station",
+  "Model Police Station",
+];
+const blocks = ["Block 1", "Block 2", "Block 3", "Block 4", "Block 5"];
+
 export function generateApplications(count = 48): Application[] {
   const r = seeded(42);
   return Array.from({ length: count }, (_, i) => {
@@ -124,6 +148,7 @@ export function generateApplications(count = 48): Application[] {
     const status = STATUSES[Math.floor(r() * STATUSES.length)];
     const subject = subjects[Math.floor(r() * subjects.length)];
     const name = names[Math.floor(r() * names.length)];
+    const father = fatherNames[Math.floor(r() * fatherNames.length)];
     const district = DISTRICTS[Math.floor(r() * DISTRICTS.length)];
     return {
       refNo: `CCG-2026-${String(10000 + i).padStart(5, "0")}`,
@@ -134,11 +159,19 @@ export function generateApplications(count = 48): Application[] {
       createdAt: daysAgo(created),
       updatedAt: daysAgo(updated),
       assignedAt: daysAgo(assigned),
-      citizenName: name,
+      applicantName: name,
+      fatherName: father,
       mobile: `98${Math.floor(10000000 + r() * 89999999)}`,
+      villageMohalla: villages[Math.floor(r() * villages.length)],
+      panchayat: panchayats[Math.floor(r() * panchayats.length)],
+      policeStation: policeStations[Math.floor(r() * policeStations.length)],
+      block: blocks[Math.floor(r() * blocks.length)],
       district,
+      pincode: `${400000 + Math.floor(r() * 100000)}`,
       description:
-        "Detailed description of the issue reported by the citizen, including location, time of occurrence, and impact on the community.",
+        Math.random() > 0.3
+          ? "Detailed description of the issue reported by the citizen, including location, time of occurrence, and impact on the community."
+          : undefined,
       remarks:
         status === "Resolved" || status === "Closed"
           ? "Issue has been addressed by the concerned department. Follow-up inspection scheduled."

@@ -8,12 +8,19 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { ArrowLeft, Landmark, Mail, Smartphone, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import authIllustration from "@/assets/auth-illustration.png";
+import { authApi } from "@/lib/api/auth";
+import { getApiError } from "@/lib/api/client";
+import { setStoredUser } from "@/lib/auth";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Citizen Login — Citizen Connect" },
-      { name: "description", content: "Securely log in to the Citizen Connect grievance portal using mobile or email OTP." },
+      {
+        name: "description",
+        content:
+          "Securely log in to the Citizen Connect grievance portal using mobile or email OTP.",
+      },
     ],
   }),
   component: LoginPage,
@@ -25,29 +32,46 @@ function LoginPage() {
   const [contact, setContact] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     if (!contact.trim()) {
       toast.error(method === "mobile" ? "Enter your mobile number" : "Enter your email");
       return;
     }
-    setOtpSent(true);
-    toast.success(`OTP sent to your ${method === "mobile" ? "mobile" : "email"}`);
+    setLoading(true);
+    try {
+      await authApi.sendOtp(contact.trim(), "LOGIN");
+      setOtpSent(true);
+      toast.success(`OTP sent to your ${method === "mobile" ? "mobile" : "email"}`);
+    } catch (err: unknown) {
+      toast.error(getApiError(err, "Failed to send OTP"));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     if (otp.length !== 6) {
       toast.error("Enter the 6-digit OTP");
       return;
     }
-    toast.success("Login successful");
-    navigate({ to: "/dashboard" });
+    setLoading(true);
+    try {
+      const result = await authApi.login(contact.trim(), otp);
+      setStoredUser(result.user, result.token);
+      toast.success("Login successful");
+      navigate({ to: "/dashboard" });
+    } catch (err: unknown) {
+      toast.error(getApiError(err, "Invalid OTP"));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="grid min-h-screen lg:grid-cols-2">
-        {/* Illustration */}
         <div className="hidden lg:flex flex-col justify-between gradient-primary-soft p-12">
           <Link to="/" className="flex items-center gap-2.5 w-fit">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
@@ -58,7 +82,7 @@ function LoginPage() {
           <div className="flex flex-col items-center text-center">
             <img
               src={authIllustration}
-              alt="Citizens engaging with digital government services"
+              alt=""
               width={1024}
               height={1024}
               loading="lazy"
@@ -77,7 +101,6 @@ function LoginPage() {
           </div>
         </div>
 
-        {/* Form */}
         <div className="flex flex-col px-6 py-10 sm:px-12 lg:px-16">
           <div className="lg:hidden mb-8 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2.5">
@@ -97,12 +120,18 @@ function LoginPage() {
             </Link>
 
             <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome back</h1>
-            <p className="mt-2 text-muted-foreground">
-              Login to access your citizen dashboard
-            </p>
+            <p className="mt-2 text-muted-foreground">Login to access your citizen dashboard</p>
 
             <div className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-card">
-              <Tabs value={method} onValueChange={(v) => { setMethod(v as "mobile" | "email"); setOtpSent(false); setContact(""); setOtp(""); }}>
+              <Tabs
+                value={method}
+                onValueChange={(v) => {
+                  setMethod(v as "mobile" | "email");
+                  setOtpSent(false);
+                  setContact("");
+                  setOtp("");
+                }}
+              >
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="mobile" className="gap-2">
                     <Smartphone className="h-4 w-4" /> Mobile OTP
@@ -111,7 +140,6 @@ function LoginPage() {
                     <Mail className="h-4 w-4" /> Email OTP
                   </TabsTrigger>
                 </TabsList>
-
                 <TabsContent value="mobile" className="mt-6 space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="mobile">Mobile Number</Label>
@@ -127,7 +155,6 @@ function LoginPage() {
                     />
                   </div>
                 </TabsContent>
-
                 <TabsContent value="email" className="mt-6 space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email Address</Label>
@@ -145,8 +172,13 @@ function LoginPage() {
               </Tabs>
 
               {!otpSent ? (
-                <Button onClick={handleSendOtp} className="mt-6 w-full" size="lg">
-                  Send OTP
+                <Button
+                  onClick={handleSendOtp}
+                  className="mt-6 w-full"
+                  size="lg"
+                  disabled={loading}
+                >
+                  {loading ? "Sending..." : "Send OTP"}
                 </Button>
               ) : (
                 <div className="mt-6 space-y-4">
@@ -167,8 +199,8 @@ function LoginPage() {
                       Resend OTP
                     </button>
                   </div>
-                  <Button onClick={handleVerify} className="w-full" size="lg">
-                    Verify & Login
+                  <Button onClick={handleVerify} className="w-full" size="lg" disabled={loading}>
+                    {loading ? "Verifying..." : "Verify & Login"}
                   </Button>
                 </div>
               )}
@@ -180,7 +212,6 @@ function LoginPage() {
                 Create an account
               </Link>
             </p>
-
             <p className="mt-2 text-center text-xs text-muted-foreground">
               Administrator?{" "}
               <Link to="/admin/login" className="text-primary hover:underline">

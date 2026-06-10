@@ -18,8 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FileText, Image as ImageIcon, Paperclip, Upload, X, MapPin } from "lucide-react";
+import { FileText, Image as ImageIcon, Paperclip, Upload, X } from "lucide-react";
 import { toast } from "sonner";
+import { applicationsApi } from "@/lib/api/applications";
+import { getApiError } from "@/lib/api/client";
+import { getStoredUser } from "@/lib/auth";
+import districtBlocks from "@/assets/district_blocks.json";
 
 export const APP_CATEGORIES = [
   "Complaint Registration",
@@ -29,17 +33,6 @@ export const APP_CATEGORIES = [
   "Public Representation",
   "Event/Meeting Requests",
 ] as const;
-
-export const STATE_DISTRICTS: Record<string, string[]> = {
-  Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik", "Thane", "Aurangabad"],
-  Karnataka: ["Bengaluru", "Mysuru", "Mangaluru", "Hubballi", "Belagavi"],
-  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem"],
-  Gujarat: ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar"],
-  Delhi: ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"],
-  "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Noida"],
-};
-
-const STATES = Object.keys(STATE_DISTRICTS);
 
 const MAX_FILES = 5;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -57,29 +50,57 @@ export function NewApplicationDialog({
   onOpenChange: (v: boolean) => void;
   mode: Mode;
 }) {
-  // Citizen fields (admin only)
-  const [fullName, setFullName] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
+  const user = getStoredUser();
+  const [applicantName, setApplicantName] = useState(
+    mode === "citizen" ? (user?.fullName ?? "") : "",
+  );
+  const [fatherName, setFatherName] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
 
-  // Application fields
   const [subject, setSubject] = useState("");
   const [category, setCategory] = useState<string>("");
   const [description, setDescription] = useState("");
-  const [state, setState] = useState<string>("");
-  const [district, setDistrict] = useState<string>("");
-  const [location, setLocation] = useState("");
+
+  const [villageMohalla, setVillageMohalla] = useState("");
+  const [panchayat, setPanchayat] = useState("");
+  const [policeStation, setPoliceStation] = useState("");
+  const [block, setBlock] = useState("");
+  const [district, setDistrict] = useState("");
+
+  const districtOptions = districtBlocks.map((d) => d.district);
+  const blockOptions = district
+    ? (districtBlocks.find((d) => d.district === district)?.block ?? [])
+    : [];
+
+  const handleDistrictChange = (value: string) => {
+    setDistrict(value);
+    setBlock("");
+  };
+  const [pincode, setPincode] = useState("");
+  const [address, setAddress] = useState("");
+
   const [files, setFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const reset = () => {
-    setFullName(""); setMobile(""); setEmail(""); setAddress("");
-    setSubject(""); setCategory(""); setDescription("");
-    setState(""); setDistrict(""); setLocation("");
-    setFiles([]); setErrors({});
+    setApplicantName(mode === "citizen" ? (user?.fullName ?? "") : "");
+    setFatherName("");
+    setMobileNumber("");
+    setSubject("");
+    setCategory("");
+    setDescription("");
+    setVillageMohalla("");
+    setPanchayat("");
+    setPoliceStation("");
+    setBlock("");
+    setDistrict("");
+    setPincode("");
+    setAddress("");
+    setFiles([]);
+    setErrors({});
   };
 
   const handleOpen = (v: boolean) => {
@@ -124,37 +145,63 @@ export function NewApplicationDialog({
 
   const validate = () => {
     const errs: Record<string, string> = {};
-    if (mode === "admin") {
-      if (!fullName.trim()) errs.fullName = "Full name is required";
-      if (!/^\d{10}$/.test(mobile)) errs.mobile = "Enter a valid 10-digit mobile number";
-      if (!/^\S+@\S+\.\S+$/.test(email)) errs.email = "Enter a valid email";
-      if (!address.trim()) errs.address = "Address is required";
-    }
-    if (!subject.trim() || subject.trim().length < 5) errs.subject = "Subject must be at least 5 characters";
+    if (!applicantName.trim()) errs.applicantName = "Applicant name is required";
+    if (!fatherName.trim()) errs.fatherName = "Father's name is required";
+    if (mode === "admin" && !/^\d{10}$/.test(mobileNumber.trim()))
+      errs.mobileNumber = "Enter a valid 10-digit mobile number";
+    if (!subject.trim() || subject.trim().length < 5)
+      errs.subject = "Subject must be at least 5 characters";
     if (!category) errs.category = "Select a category";
-    if (!description.trim() || description.trim().length < 20) errs.description = "Description must be at least 20 characters";
-    if (!state) errs.state = "Select a state";
-    if (!district) errs.district = "Select a district";
-    if (!location.trim()) errs.location = "Location is required";
+    if (!villageMohalla.trim()) errs.villageMohalla = "Village/Mohalla is required";
+    if (!panchayat.trim()) errs.panchayat = "Panchayat is required";
+    if (!policeStation.trim()) errs.policeStation = "Police station is required";
+    if (!block.trim()) errs.block = "Block is required";
+    if (!district.trim()) errs.district = "District is required";
+    if (!/^\d{6}$/.test(pincode)) errs.pincode = "Enter a valid 6-digit pincode";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!validate()) {
       toast.error("Please fix the highlighted fields");
       return;
     }
-    toast.success(
-      mode === "citizen"
-        ? "Application submitted successfully"
-        : "Application created on behalf of citizen",
-      { description: `Reference: CCG-2026-${Math.floor(10000 + Math.random() * 89999)}` },
-    );
-    handleOpen(false);
-  };
+    setSubmitting(true);
+    try {
+      const payload = {
+        applicantName: applicantName.trim(),
+        fatherName: fatherName.trim(),
+        category,
+        subject: subject.trim(),
+        description: description.trim() || undefined,
+        villageMohalla: villageMohalla.trim(),
+        panchayat: panchayat.trim(),
+        policeStation: policeStation.trim(),
+        block: block.trim(),
+        district: district.trim(),
+        pincode,
+        address: address.trim() || undefined,
+      };
+      const result =
+        mode === "admin"
+          ? await applicationsApi.createByAdmin({ ...payload, mobileNumber: mobileNumber.trim() })
+          : await applicationsApi.create(payload);
 
-  const districts = state ? STATE_DISTRICTS[state] : [];
+      const ref = result.referenceNumber || "";
+      toast.success(
+        mode === "citizen"
+          ? "Application submitted successfully"
+          : "Application created on behalf of citizen",
+        { description: `Reference: ${ref}` },
+      );
+      handleOpen(false);
+    } catch (err: unknown) {
+      toast.error(getApiError(err, "Failed to create application"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpen}>
@@ -170,200 +217,281 @@ export function NewApplicationDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {mode === "admin" && (
-          <>
-            <SectionHeading>Citizen Information</SectionHeading>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <Field label="Full Name" error={errors.fullName}>
+        <div className="space-y-6">
+          <section>
+            <SectionHeading>Personal Information</SectionHeading>
+            <div className="mt-3 grid sm:grid-cols-2 gap-4">
+              <Field label="Applicant Name" error={errors.applicantName}>
                 <Input
-                  value={fullName}
+                  value={applicantName}
                   maxLength={80}
-                  onChange={(e) => setFullName(e.target.value)}
+                  onChange={(e) => setApplicantName(e.target.value)}
                   placeholder="e.g. Aarav Sharma"
+                  readOnly={mode === "citizen"}
+                  className={
+                    mode === "citizen"
+                      ? "bg-secondary/40 text-muted-foreground cursor-not-allowed"
+                      : ""
+                  }
                 />
               </Field>
-              <Field label="Mobile Number" error={errors.mobile}>
+              <Field label="Father's Name" error={errors.fatherName}>
                 <Input
-                  inputMode="numeric"
-                  maxLength={10}
-                  value={mobile}
-                  onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
-                  placeholder="10-digit mobile"
+                  value={fatherName}
+                  maxLength={80}
+                  onChange={(e) => setFatherName(e.target.value)}
+                  placeholder="e.g. Rajesh Sharma"
                 />
               </Field>
-              <Field label="Email Address" error={errors.email}>
-                <Input
-                  type="email"
-                  value={email}
-                  maxLength={120}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="citizen@example.com"
-                />
-              </Field>
-              <Field label="Address" error={errors.address}>
-                <Input
-                  value={address}
+              {mode === "admin" && (
+                <Field label="Mobile Number" error={errors.mobileNumber}>
+                  <Input
+                    value={mobileNumber}
+                    maxLength={10}
+                    inputMode="numeric"
+                    onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ""))}
+                    placeholder="e.g. 9876543210"
+                  />
+                </Field>
+              )}
+            </div>
+          </section>
+
+          <Separator />
+
+          <section>
+            <SectionHeading>Address Information</SectionHeading>
+            <div className="mt-3 space-y-4">
+              <Field label="Address" error={errors.address} hint="Optional">
+                <Textarea
+                  rows={2}
                   maxLength={200}
+                  value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="House no., street, area"
+                  placeholder="House no, Street, Locality"
+                />
+              </Field>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Field label="Village/Mohalla" error={errors.villageMohalla}>
+                  <Input
+                    value={villageMohalla}
+                    maxLength={100}
+                    onChange={(e) => setVillageMohalla(e.target.value)}
+                    placeholder="e.g. Shiv Nagar"
+                  />
+                </Field>
+                <Field label="Panchayat" error={errors.panchayat}>
+                  <Input
+                    value={panchayat}
+                    maxLength={100}
+                    onChange={(e) => setPanchayat(e.target.value)}
+                    placeholder="e.g. Gram Panchayat A"
+                  />
+                </Field>
+                <Field label="Police Station" error={errors.policeStation}>
+                  <Input
+                    value={policeStation}
+                    maxLength={100}
+                    onChange={(e) => setPoliceStation(e.target.value)}
+                    placeholder="e.g. City Police Station"
+                  />
+                </Field>
+                <Field label="Pincode" error={errors.pincode}>
+                  <Input
+                    value={pincode}
+                    inputMode="numeric"
+                    maxLength={6}
+                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
+                    placeholder="e.g. 400001"
+                  />
+                </Field>
+                <Field label="District" error={errors.district}>
+                  <Select value={district} onValueChange={handleDistrictChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select district" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {districtOptions.map((d) => (
+                        <SelectItem key={d} value={d}>
+                          {d}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field label="Block" error={errors.block}>
+                  <Select value={block} onValueChange={setBlock} disabled={!district}>
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={district ? "Select block" : "Select district first"}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {blockOptions.map((b) => (
+                        <SelectItem key={b} value={b}>
+                          {b}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+              </div>
+            </div>
+          </section>
+
+          <Separator />
+
+          <section>
+            <SectionHeading>Application Information</SectionHeading>
+            <div className="mt-3 space-y-4">
+              <Field label="Subject" error={errors.subject}>
+                <Input
+                  value={subject}
+                  maxLength={120}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Brief title of the issue"
+                />
+              </Field>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Field label="Category" error={errors.category}>
+                  <Select value={category} onValueChange={setCategory}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category (Not Confirmed)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {APP_CATEGORIES.map((c) => (
+                        <SelectItem key={c} value={c}>
+                          {c}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+              </div>
+
+              <Field
+                label="Description"
+                error={errors.description}
+                hint={`${description.length}/1000 characters`}
+              >
+                <Textarea
+                  rows={5}
+                  maxLength={1000}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Describe the issue in detail — when, where, who is affected..."
                 />
               </Field>
             </div>
-            <Separator className="my-2" />
-          </>
-        )}
+          </section>
 
-        <SectionHeading>Application Details</SectionHeading>
-        <div className="grid gap-4">
-          <Field label="Subject" error={errors.subject}>
-            <Input
-              value={subject}
-              maxLength={120}
-              onChange={(e) => setSubject(e.target.value)}
-              placeholder="Brief title of the issue"
-            />
-          </Field>
+          <Separator />
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <Field label="Category" error={errors.category}>
-              <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
-                <SelectContent>
-                  {APP_CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </Field>
-            <Field
-              label="Location"
-              error={errors.location}
-              hint="Landmark, area or pincode"
-            >
-              <div className="relative">
-                <MapPin className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  className="pl-9"
-                  value={location}
-                  maxLength={150}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="e.g. Near City Hospital, MG Road"
+          <section>
+            <SectionHeading>Attachments</SectionHeading>
+            <div className="mt-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="flex items-center gap-2 text-sm font-normal text-muted-foreground">
+                  <Paperclip className="h-3.5 w-3.5" /> Optional supporting documents
+                </Label>
+                <span className="text-xs text-muted-foreground">
+                  {files.length}/{MAX_FILES} files &bull; Max 5 MB each
+                </span>
+              </div>
+
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragging(true);
+                }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={onDrop}
+                onClick={() => inputRef.current?.click()}
+                role="button"
+                tabIndex={0}
+                className={`group cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-colors ${
+                  dragging
+                    ? "border-primary bg-primary/5"
+                    : "border-border bg-secondary/30 hover:bg-secondary/50 hover:border-primary/50"
+                }`}
+              >
+                <div className="mx-auto h-11 w-11 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-3">
+                  <Upload className="h-5 w-5" />
+                </div>
+                <p className="text-sm font-medium">
+                  Drop files here or <span className="text-primary">browse</span>
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  PDF, JPG, JPEG, PNG &bull; up to 5 MB per file
+                </p>
+                <input
+                  ref={inputRef}
+                  type="file"
+                  multiple
+                  accept={ACCEPTED_MIME}
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files) addFiles(e.target.files);
+                    e.target.value = "";
+                  }}
                 />
               </div>
-            </Field>
-          </div>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <Field label="State" error={errors.state}>
-              <Select value={state} onValueChange={(v) => { setState(v); setDistrict(""); }}>
-                <SelectTrigger><SelectValue placeholder="Select state" /></SelectTrigger>
-                <SelectContent>
-                  {STATES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </Field>
-            <Field label="District" error={errors.district}>
-              <Select value={district} onValueChange={setDistrict} disabled={!state}>
-                <SelectTrigger>
-                  <SelectValue placeholder={state ? "Select district" : "Select state first"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {districts.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </Field>
-          </div>
-
-          <Field label="Description" error={errors.description} hint={`${description.length}/1000 characters`}>
-            <Textarea
-              rows={5}
-              maxLength={1000}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe the issue in detail — when, where, who is affected..."
-            />
-          </Field>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label className="flex items-center gap-2">
-                <Paperclip className="h-3.5 w-3.5" /> Attachments
-              </Label>
-              <span className="text-xs text-muted-foreground">
-                {files.length}/{MAX_FILES} files • Max 5 MB each
-              </span>
-            </div>
-
-            <div
-              onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-              onDragLeave={() => setDragging(false)}
-              onDrop={onDrop}
-              onClick={() => inputRef.current?.click()}
-              role="button"
-              tabIndex={0}
-              className={`group cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-colors ${
-                dragging
-                  ? "border-primary bg-primary/5"
-                  : "border-border bg-secondary/30 hover:bg-secondary/50 hover:border-primary/50"
-              }`}
-            >
-              <div className="mx-auto h-11 w-11 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-3">
-                <Upload className="h-5 w-5" />
-              </div>
-              <p className="text-sm font-medium">
-                Drop files here or <span className="text-primary">browse</span>
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                PDF, JPG, JPEG, PNG • up to 5 MB per file
-              </p>
-              <input
-                ref={inputRef}
-                type="file"
-                multiple
-                accept={ACCEPTED_MIME}
-                className="hidden"
-                onChange={(e) => { if (e.target.files) addFiles(e.target.files); e.target.value = ""; }}
-              />
-            </div>
-
-            {files.length > 0 && (
-              <ul className="space-y-2 pt-1">
-                {files.map((f, i) => {
-                  const isPdf = f.name.toLowerCase().endsWith(".pdf");
-                  return (
-                    <li
-                      key={`${f.name}-${i}`}
-                      className="flex items-center gap-3 rounded-lg border border-border bg-card p-2.5"
-                    >
-                      <div className="h-9 w-9 rounded-md bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                        {isPdf ? <FileText className="h-4 w-4" /> : <ImageIcon className="h-4 w-4" />}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium truncate">{f.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {(f.size / 1024 / 1024).toFixed(2)} MB
-                        </p>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                        onClick={(e) => { e.stopPropagation(); removeFile(i); }}
-                        aria-label="Remove file"
+              {files.length > 0 && (
+                <ul className="space-y-2 pt-1">
+                  {files.map((f, i) => {
+                    const isPdf = f.name.toLowerCase().endsWith(".pdf");
+                    return (
+                      <li
+                        key={`${f.name}-${i}`}
+                        className="flex items-center gap-3 rounded-lg border border-border bg-card p-2.5"
                       >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
+                        <div className="h-9 w-9 rounded-md bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                          {isPdf ? (
+                            <FileText className="h-4 w-4" />
+                          ) : (
+                            <ImageIcon className="h-4 w-4" />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium truncate">{f.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {(f.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFile(i);
+                          }}
+                          aria-label="Remove file"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          </section>
         </div>
 
         <div className="flex flex-col-reverse sm:flex-row gap-2 sm:justify-end pt-2">
-          <Button variant="outline" onClick={() => handleOpen(false)}>Cancel</Button>
-          <Button onClick={submit}>
-            {mode === "citizen" ? "Submit Application" : "Create Application"}
+          <Button variant="outline" onClick={() => handleOpen(false)} disabled={submitting}>
+            Cancel
+          </Button>
+          <Button onClick={submit} disabled={submitting}>
+            {submitting
+              ? "Submitting..."
+              : mode === "citizen"
+                ? "Submit Application"
+                : "Create Application"}
           </Button>
         </div>
       </DialogContent>

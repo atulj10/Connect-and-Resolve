@@ -1,7 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState, type ComponentType } from "react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import {
   BarChart3,
   ChevronLeft,
@@ -13,6 +19,8 @@ import {
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getStoredUser, clearStoredAuth } from "@/lib/auth";
+import { useNavigate } from "@tanstack/react-router";
 
 type NavItem = {
   label: string;
@@ -26,16 +34,27 @@ const NAV: NavItem[] = [
   { label: "Citizens", to: "/admin/citizens", icon: Users },
 ];
 
-const ADMIN = {
-  name: "Rajeev Menon",
-  email: "rajeev.menon@minister.gov.in",
-  initials: "RM",
-};
-
 export function AdminLayout({ children, title }: { children: React.ReactNode; title?: string }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const user = getStoredUser();
+  const initials = user?.fullName
+    ? user.fullName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "AD";
+  const displayName = user?.fullName ?? "Admin";
+  const displayEmail = user?.email ?? "admin@gov.in";
+
+  const handleLogout = () => {
+    clearStoredAuth();
+    navigate({ to: "/admin/login" });
+  };
 
   return (
     <div className="min-h-screen bg-secondary/30 flex">
@@ -46,7 +65,12 @@ export function AdminLayout({ children, title }: { children: React.ReactNode; ti
           collapsed ? "w-[76px]" : "w-[260px]",
         )}
       >
-        <SidebarInner collapsed={collapsed} pathname={pathname} />
+        <SidebarInner
+          collapsed={collapsed}
+          pathname={pathname}
+          user={user}
+          onLogout={handleLogout}
+        />
         <div className="px-3 pb-3">
           <button
             type="button"
@@ -54,7 +78,13 @@ export function AdminLayout({ children, title }: { children: React.ReactNode; ti
             className="w-full inline-flex items-center justify-center gap-1.5 h-8 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
             aria-label="Toggle sidebar"
           >
-            {collapsed ? <ChevronRight className="h-4 w-4" /> : <><ChevronLeft className="h-4 w-4" /> Collapse</>}
+            {collapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <>
+                <ChevronLeft className="h-4 w-4" /> Collapse
+              </>
+            )}
           </button>
         </div>
       </aside>
@@ -72,8 +102,16 @@ export function AdminLayout({ children, title }: { children: React.ReactNode; ti
                 </SheetTrigger>
                 <SheetContent side="left" className="p-0 w-[280px]">
                   <SheetTitle className="sr-only">Admin navigation</SheetTitle>
-                  <SheetDescription className="sr-only">Navigate the admin dashboard</SheetDescription>
-                  <SidebarInner collapsed={false} pathname={pathname} onNavigate={() => setMobileOpen(false)} />
+                  <SheetDescription className="sr-only">
+                    Navigate the admin dashboard
+                  </SheetDescription>
+                  <SidebarInner
+                    collapsed={false}
+                    pathname={pathname}
+                    user={user}
+                    onLogout={handleLogout}
+                    onNavigate={() => setMobileOpen(false)}
+                  />
                 </SheetContent>
               </Sheet>
               <div className="hidden sm:flex items-center gap-2.5">
@@ -92,7 +130,7 @@ export function AdminLayout({ children, title }: { children: React.ReactNode; ti
             </div>
             <div className="flex items-center gap-2">
               <div className="h-9 w-9 rounded-full bg-primary/10 text-primary font-semibold flex items-center justify-center text-sm">
-                {ADMIN.initials}
+                {initials}
               </div>
             </div>
           </div>
@@ -109,44 +147,68 @@ export function AdminLayout({ children, title }: { children: React.ReactNode; ti
 function SidebarInner({
   collapsed,
   pathname,
+  user,
+  onLogout,
   onNavigate,
 }: {
   collapsed: boolean;
   pathname: string;
+  user: { fullName?: string; email?: string } | null;
+  onLogout: () => void;
   onNavigate?: () => void;
 }) {
+  const initials = user?.fullName
+    ? user.fullName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "AD";
+  const displayName = user?.fullName ?? "Admin";
+  const displayEmail = user?.email ?? "admin@gov.in";
+
   return (
     <div className="flex flex-col h-full min-h-0">
       {/* Logo */}
-      <div className={cn("flex items-center gap-2.5 px-4 h-16 border-b border-border", collapsed && "justify-center px-2")}>
+      <div
+        className={cn(
+          "flex items-center gap-2.5 px-4 h-16 border-b border-border",
+          collapsed && "justify-center px-2",
+        )}
+      >
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary">
           <Landmark className="h-5 w-5 text-primary-foreground" />
         </div>
         {!collapsed && (
           <div className="flex flex-col min-w-0">
             <span className="text-sm font-bold leading-tight truncate">Minister Office</span>
-            <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Admin Portal</span>
+            <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              Admin Portal
+            </span>
           </div>
         )}
       </div>
 
       {/* Admin profile */}
-      <div className={cn("px-3 pt-4 pb-4 border-b border-border", collapsed && "flex justify-center")}>
+      <div
+        className={cn("px-3 pt-4 pb-4 border-b border-border", collapsed && "flex justify-center")}
+      >
         {collapsed ? (
           <div
             className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-[#7C73FF] text-primary-foreground font-semibold flex items-center justify-center text-sm"
-            title={`${ADMIN.name} — ${ADMIN.email}`}
+            title={`${displayName} — ${displayEmail}`}
           >
-            {ADMIN.initials}
+            {initials}
           </div>
         ) : (
           <div className="flex items-center gap-3 rounded-xl bg-secondary/50 p-2.5">
             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-[#7C73FF] text-primary-foreground font-semibold flex items-center justify-center text-sm shrink-0">
-              {ADMIN.initials}
+              {initials}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold truncate">{ADMIN.name}</p>
-              <p className="text-xs text-muted-foreground truncate">{ADMIN.email}</p>
+              <p className="text-sm font-semibold truncate">{displayName}</p>
+              <p className="text-xs text-muted-foreground truncate">{displayEmail}</p>
             </div>
           </div>
         )}
@@ -184,18 +246,21 @@ function SidebarInner({
 
       {/* Logout */}
       <div className="px-3 py-3 border-t border-border">
-        <Link
-          to="/admin/login"
-          onClick={onNavigate}
+        <button
+          type="button"
+          onClick={() => {
+            onLogout();
+            onNavigate?.();
+          }}
           className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors",
+            "w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors",
             collapsed && "justify-center px-0",
           )}
           title={collapsed ? "Logout" : undefined}
         >
           <LogOut className="h-4 w-4 shrink-0" />
           {!collapsed && <span>Logout</span>}
-        </Link>
+        </button>
       </div>
     </div>
   );
