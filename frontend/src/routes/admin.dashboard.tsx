@@ -138,6 +138,14 @@ function AdminAnalytics() {
             ))}
           </div>
         </>
+      ) : analytics && analytics.total === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <FileText className="h-16 w-16 text-muted-foreground/40 mb-4" />
+          <h3 className="text-lg font-semibold text-muted-foreground">No applications to show</h3>
+          <p className="text-sm text-muted-foreground/60 mt-1">
+            No applications were found in the selected time range.
+          </p>
+        </div>
       ) : (
         <>
           <div className="grid gap-6 lg:grid-cols-3">

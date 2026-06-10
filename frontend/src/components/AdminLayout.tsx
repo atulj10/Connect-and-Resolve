@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useState, type ComponentType } from "react";
+import { useState, useEffect, type ComponentType } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -37,9 +37,14 @@ const NAV: NavItem[] = [
 export function AdminLayout({ children, title }: { children: React.ReactNode; title?: string }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState<{ fullName?: string; email?: string } | null>(null);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
-  const user = getStoredUser();
+
+  useEffect(() => {
+    setUser(getStoredUser());
+  }, []);
+
   const initials = user?.fullName
     ? user.fullName
         .split(" ")

@@ -26,12 +26,14 @@ import { getStoredUser } from "@/lib/auth";
 import districtBlocks from "@/assets/district_blocks.json";
 
 export const APP_CATEGORIES = [
-  "Complaint Registration",
-  "Public Grievance",
-  "Suggestions & Ideas",
-  "Requests for Assistance",
-  "Public Representation",
-  "Event/Meeting Requests",
+  "Water Supply",
+  "Electricity",
+  "Roads & Infrastructure",
+  "Sanitation",
+  "Healthcare",
+  "Education",
+  "Public Safety",
+  "Revenue",
 ] as const;
 
 const MAX_FILES = 5;
@@ -77,7 +79,6 @@ export function NewApplicationDialog({
     setBlock("");
   };
   const [pincode, setPincode] = useState("");
-  const [address, setAddress] = useState("");
 
   const [files, setFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -98,7 +99,6 @@ export function NewApplicationDialog({
     setBlock("");
     setDistrict("");
     setPincode("");
-    setAddress("");
     setFiles([]);
     setErrors({});
   };
@@ -181,7 +181,6 @@ export function NewApplicationDialog({
         block: block.trim(),
         district: district.trim(),
         pincode,
-        address: address.trim() || undefined,
       };
       const result =
         mode === "admin"
@@ -261,81 +260,70 @@ export function NewApplicationDialog({
 
           <section>
             <SectionHeading>Address Information</SectionHeading>
-            <div className="mt-3 space-y-4">
-              <Field label="Address" error={errors.address} hint="Optional">
-                <Textarea
-                  rows={2}
-                  maxLength={200}
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="House no, Street, Locality"
+            <div className="mt-3 grid sm:grid-cols-2 gap-4">
+              <Field label="Village/Mohalla" error={errors.villageMohalla}>
+                <Input
+                  value={villageMohalla}
+                  maxLength={100}
+                  onChange={(e) => setVillageMohalla(e.target.value)}
+                  placeholder="e.g. Shiv Nagar"
                 />
               </Field>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <Field label="Village/Mohalla" error={errors.villageMohalla}>
-                  <Input
-                    value={villageMohalla}
-                    maxLength={100}
-                    onChange={(e) => setVillageMohalla(e.target.value)}
-                    placeholder="e.g. Shiv Nagar"
-                  />
-                </Field>
-                <Field label="Panchayat" error={errors.panchayat}>
-                  <Input
-                    value={panchayat}
-                    maxLength={100}
-                    onChange={(e) => setPanchayat(e.target.value)}
-                    placeholder="e.g. Gram Panchayat A"
-                  />
-                </Field>
-                <Field label="Police Station" error={errors.policeStation}>
-                  <Input
-                    value={policeStation}
-                    maxLength={100}
-                    onChange={(e) => setPoliceStation(e.target.value)}
-                    placeholder="e.g. City Police Station"
-                  />
-                </Field>
-                <Field label="Pincode" error={errors.pincode}>
-                  <Input
-                    value={pincode}
-                    inputMode="numeric"
-                    maxLength={6}
-                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
-                    placeholder="e.g. 400001"
-                  />
-                </Field>
-                <Field label="District" error={errors.district}>
-                  <Select value={district} onValueChange={handleDistrictChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select district" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {districtOptions.map((d) => (
-                        <SelectItem key={d} value={d}>
-                          {d}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field label="Block" error={errors.block}>
-                  <Select value={block} onValueChange={setBlock} disabled={!district}>
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={district ? "Select block" : "Select district first"}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {blockOptions.map((b) => (
-                        <SelectItem key={b} value={b}>
-                          {b}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-              </div>
+              <Field label="Panchayat" error={errors.panchayat}>
+                <Input
+                  value={panchayat}
+                  maxLength={100}
+                  onChange={(e) => setPanchayat(e.target.value)}
+                  placeholder="e.g. Gram Panchayat A"
+                />
+              </Field>
+              <Field label="Police Station" error={errors.policeStation}>
+                <Input
+                  value={policeStation}
+                  maxLength={100}
+                  onChange={(e) => setPoliceStation(e.target.value)}
+                  placeholder="e.g. City Police Station"
+                />
+              </Field>
+              <Field label="Pincode" error={errors.pincode}>
+                <Input
+                  value={pincode}
+                  inputMode="numeric"
+                  maxLength={6}
+                  onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
+                  placeholder="e.g. 400001"
+                />
+              </Field>
+              <Field label="District" error={errors.district}>
+                <Select value={district} onValueChange={handleDistrictChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select district" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {districtOptions.map((d) => (
+                      <SelectItem key={d} value={d}>
+                        {d}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field label="Block" error={errors.block}>
+                <Select value={block} onValueChange={setBlock} disabled={!district}>
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={district ? "Select block" : "Select district first"}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {blockOptions.map((b) => (
+                      <SelectItem key={b} value={b}>
+                        {b}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
             </div>
           </section>
 

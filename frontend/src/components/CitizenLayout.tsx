@@ -1,4 +1,4 @@
-import { useState, type ComponentType } from "react";
+import { useState, useEffect, type ComponentType } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,21 +33,6 @@ const NAV: NavItem[] = [
   { label: "Applications", tab: "applications", icon: FileText },
 ];
 
-const currentUser = () => {
-  const u = getStoredUser();
-  const name = u?.fullName ?? "Citizen";
-  const email = u?.email ?? "";
-  const mobile = u?.mobileNumber ?? "";
-  const subtitle = email || mobile;
-  const initials = name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-  return { name, email, initials, subtitle };
-};
-
 export function CitizenLayout({
   children,
   activeTab,
@@ -61,8 +46,22 @@ export function CitizenLayout({
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState({ name: "Citizen", email: "", initials: "CI", subtitle: "" });
   const navigate = useNavigate();
-  const user = currentUser();
+
+  useEffect(() => {
+    const u = getStoredUser();
+    const name = u?.fullName ?? "Citizen";
+    const email = u?.email ?? "";
+    const mobile = u?.mobileNumber ?? "";
+    const initials = name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+    setUser({ name, email, initials, subtitle: email || mobile });
+  }, []);
 
   const handleLogout = () => {
     clearStoredAuth();
