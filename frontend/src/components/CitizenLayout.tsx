@@ -37,13 +37,15 @@ const currentUser = () => {
   const u = getStoredUser();
   const name = u?.fullName ?? "Citizen";
   const email = u?.email ?? "";
+  const mobile = u?.mobileNumber ?? "";
+  const subtitle = email || mobile;
   const initials = name
     .split(" ")
     .map((n) => n[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
-  return { name, email, initials };
+  return { name, email, initials, subtitle };
 };
 
 export function CitizenLayout({
@@ -169,7 +171,7 @@ function SidebarInner({
   collapsed: boolean;
   activeTab: Tab;
   onTabChange: (tab: Tab) => void;
-  user: { name: string; email: string; initials: string };
+  user: { name: string; email: string; initials: string; subtitle: string };
   onLogout: () => void;
 }) {
   return (
@@ -201,7 +203,7 @@ function SidebarInner({
         {collapsed ? (
           <div
             className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-[#7C73FF] text-primary-foreground font-semibold flex items-center justify-center text-sm"
-            title={`${user.name} — ${user.email}`}
+            title={`${user.name} — ${user.subtitle}`}
           >
             {user.initials}
           </div>
@@ -212,7 +214,7 @@ function SidebarInner({
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold truncate">{user.name}</p>
-              <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+              <p className="text-xs text-muted-foreground truncate">{user.subtitle}</p>
             </div>
           </div>
         )}
