@@ -11,7 +11,7 @@ export const userRepository = {
   },
 
   findByEmail(email: string) {
-    return prisma.user.findFirst({ where: { email } });
+    return prisma.user.findUnique({ where: { email } });
   },
 
   findAll(skip = 0, take = 10) {
@@ -44,7 +44,6 @@ export const userRepository = {
     fullName: string;
     mobileNumber: string;
     email?: string;
-    address?: string;
     role: UserRole;
     mobileVerified?: boolean;
     emailVerified?: boolean;
@@ -58,7 +57,6 @@ export const userRepository = {
     data: Partial<{
       fullName: string;
       email: string;
-      address: string;
       mobileVerified: boolean;
       emailVerified: boolean;
       password: string;

@@ -49,7 +49,6 @@ export const registerSchema = z.object({
   fullName: z.string().min(1, "Full name is required").max(80),
   mobileNumber: z.string().regex(/^\d{10}$/, "Enter a valid 10-digit mobile number"),
   email: z.string().email("Invalid email").optional().or(z.literal("")),
-  address: z.string().max(200).optional().or(z.literal("")),
 });
 
 export const sendOtpSchema = z.object({

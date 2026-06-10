@@ -9,7 +9,7 @@ function isEmail(value: string): boolean {
 }
 
 export const authService = {
-  async register(data: { fullName: string; mobileNumber: string; email?: string; address?: string }) {
+  async register(data: { fullName: string; mobileNumber: string; email?: string }) {
     const existing = await userRepository.findByMobile(data.mobileNumber);
     if (existing) {
       throw new Error("Mobile number already registered");
@@ -18,7 +18,6 @@ export const authService = {
       fullName: data.fullName,
       mobileNumber: data.mobileNumber,
       email: data.email || undefined,
-      address: data.address || undefined,
       role: "CITIZEN",
     });
     return { id: user.id, fullName: user.fullName, mobileNumber: user.mobileNumber };
@@ -56,7 +55,7 @@ export const authService = {
     return { token, user: { id: user.id, fullName: user.fullName, mobileNumber: user.mobileNumber, email: user.email, role: user.role } };
   },
 
-  async verifyOtpAndRegister(identifier: string, code: string, registrationData: { fullName: string; mobileNumber: string; email?: string; address?: string }) {
+  async verifyOtpAndRegister(identifier: string, code: string, registrationData: { fullName: string; mobileNumber: string; email?: string }) {
     await otpService.verifyOtp(identifier, code, "REGISTER");
     const existing = await userRepository.findByMobile(registrationData.mobileNumber);
     if (existing) throw new Error("Mobile number already registered");
@@ -65,7 +64,6 @@ export const authService = {
       fullName: registrationData.fullName,
       mobileNumber: registrationData.mobileNumber,
       email: registrationData.email || undefined,
-      address: registrationData.address || undefined,
       role: "CITIZEN",
       mobileVerified: !isEmail(identifier),
       emailVerified: isEmail(identifier),
@@ -93,7 +91,7 @@ export const authService = {
   async getProfile(userId: string) {
     const user = await userRepository.findById(userId);
     if (!user) throw new Error("User not found");
-    return { id: user.id, fullName: user.fullName, mobileNumber: user.mobileNumber, email: user.email, address: user.address, role: user.role };
+    return { id: user.id, fullName: user.fullName, mobileNumber: user.mobileNumber, email: user.email, role: user.role };
   },
 
   verifyToken(token: string) {
