@@ -29,7 +29,7 @@ export const userController = {
 
   async getById(req: Request, res: Response) {
     try {
-      const user = await userService.getById(req.params.id);
+      const user = await userService.getById(req.params.id as string);
       res.json(user);
     } catch (err: any) {
       res.status(404).json({ error: err.message });

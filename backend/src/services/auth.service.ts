@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { type SignOptions } from "jsonwebtoken";
 import { env } from "../config/env.js";
 import { userRepository } from "../repositories/user.repository.js";
 import { otpService } from "./otp.service.js";
@@ -51,7 +51,7 @@ export const authService = {
 
     const token = jwt.sign({ id: user.id, role: user.role }, env.jwtSecret, {
       expiresIn: env.jwtExpiresIn,
-    });
+    } as SignOptions);
     return { token, user: { id: user.id, fullName: user.fullName, mobileNumber: user.mobileNumber, email: user.email, role: user.role } };
   },
 
@@ -71,7 +71,7 @@ export const authService = {
 
     const token = jwt.sign({ id: user.id, role: user.role }, env.jwtSecret, {
       expiresIn: env.jwtExpiresIn,
-    });
+    } as SignOptions);
     return { token, user: { id: user.id, fullName: user.fullName, mobileNumber: user.mobileNumber, email: user.email, role: user.role } };
   },
 
@@ -84,7 +84,7 @@ export const authService = {
 
     const token = jwt.sign({ id: user.id, role: user.role }, env.jwtSecret, {
       expiresIn: env.jwtExpiresIn,
-    });
+    } as SignOptions);
     return { token, user: { id: user.id, fullName: user.fullName, email: user.email, role: user.role } };
   },
 

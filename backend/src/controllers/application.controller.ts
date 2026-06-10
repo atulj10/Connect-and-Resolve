@@ -53,7 +53,7 @@ export const applicationController = {
 
   async getById(req: Request, res: Response) {
     try {
-      const app = await applicationService.getById(req.params.id);
+      const app = await applicationService.getById(req.params.id as string);
       if (req.user!.role === "CITIZEN" && app.userId !== req.user!.id) {
         res.status(403).json({ error: "Access denied" });
         return;
@@ -66,7 +66,7 @@ export const applicationController = {
 
   async updateStatus(req: Request, res: Response) {
     try {
-      const app = await applicationService.updateStatus(req.params.id, req.body.status as AppStatus, req.user!.id);
+      const app = await applicationService.updateStatus(req.params.id as string, req.body.status as AppStatus, req.user!.id);
       res.json(app);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
@@ -75,7 +75,7 @@ export const applicationController = {
 
   async updateDepartment(req: Request, res: Response) {
     try {
-      const app = await applicationService.updateDepartment(req.params.id, req.body.department as Department, req.user!.id);
+      const app = await applicationService.updateDepartment(req.params.id as string, req.body.department as Department, req.user!.id);
       res.json(app);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
@@ -84,7 +84,7 @@ export const applicationController = {
 
   async addRemarks(req: Request, res: Response) {
     try {
-      const app = await applicationService.addRemarks(req.params.id, req.body, req.user!.id);
+      const app = await applicationService.addRemarks(req.params.id as string, req.body, req.user!.id);
       res.json(app);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
@@ -103,7 +103,7 @@ export const applicationController = {
         return;
       }
       try {
-        const attachment = await applicationService.uploadAttachment(req.params.id, req.file.path, req.file.originalname);
+        const attachment = await applicationService.uploadAttachment(req.params.id as string, req.file.path, req.file.originalname);
         fs.unlink(req.file.path, () => {});
         res.status(201).json(attachment);
       } catch (err: any) {
