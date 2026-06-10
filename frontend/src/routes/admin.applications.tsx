@@ -289,8 +289,9 @@ function AdminApplications() {
         app={selected}
         open={!!selected}
         onOpenChange={(o) => !o && setSelected(null)}
+        onSuccess={fetchApps}
       />
-      <NewApplicationDialog mode="admin" open={createOpen} onOpenChange={setCreateOpen} />
+      <NewApplicationDialog mode="admin" open={createOpen} onOpenChange={setCreateOpen} onSuccess={fetchApps} />
     </AdminLayout>
   );
 }

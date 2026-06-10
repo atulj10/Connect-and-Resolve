@@ -7,7 +7,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
@@ -22,24 +21,25 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { DEPARTMENTS, STATUSES, formatDate, type AppStatus } from "@/lib/applications";
 import { applicationsApi, type ApplicationDto } from "@/lib/api/applications";
 import { getApiError } from "@/lib/api/client";
-import { Paperclip, User, Phone, MapPin, X, Upload } from "lucide-react";
+import { ExternalLink, FileText, Image, Paperclip, User, Phone, MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 export function AdminApplicationDialog({
   app,
   open,
   onOpenChange,
+  onSuccess,
 }: {
   app: ApplicationDto | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  onSuccess?: () => void;
 }) {
   const [status, setStatus] = useState<AppStatus>("Submitted");
   const [department, setDepartment] = useState<string>("");
   const [remarks, setRemarks] = useState("");
   const [notes, setNotes] = useState("");
-  const [attachments, setAttachments] = useState<string[]>([]);
-  const [newAttachment, setNewAttachment] = useState("");
+  const [attachments, setAttachments] = useState<ApplicationDto["attachments"]>([]);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export function AdminApplicationDialog({
       setDepartment(app.department || "");
       setRemarks(app.adminRemarks || "");
       setNotes(app.internalNotes || "");
-      setAttachments((app.attachments ?? []).map((a) => a.fileName));
+      setAttachments(app.attachments ?? []);
     }
   }, [app]);
 
@@ -63,6 +63,7 @@ export function AdminApplicationDialog({
         applicationsApi.addRemarks(app.id, { adminRemarks: remarks, internalNotes: notes }),
       ]);
       toast.success("Application updated successfully");
+      onSuccess?.();
       onOpenChange(false);
     } catch (err: unknown) {
       toast.error(getApiError(err, "Failed to update application"));
@@ -186,42 +187,23 @@ export function AdminApplicationDialog({
               <p className="text-sm text-muted-foreground">No attachments</p>
             ) : (
               attachments.map((a) => (
-                <div
-                  key={a}
-                  className="text-xs rounded-md border border-border bg-secondary/40 pl-2.5 pr-1 py-1 flex items-center gap-1.5"
+                <a
+                  key={a.id}
+                  href={a.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs rounded-md border border-border bg-secondary/40 px-2.5 py-1.5 hover:bg-secondary/70 transition-colors"
                 >
-                  <Paperclip className="h-3 w-3 text-muted-foreground" />
-                  {a}
-                  <button
-                    type="button"
-                    onClick={() => setAttachments((as) => as.filter((x) => x !== a))}
-                    className="rounded p-0.5 hover:bg-background"
-                    aria-label="Remove"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
+                  {a.mimeType.startsWith("image/") ? (
+                    <Image className="h-3.5 w-3.5 text-muted-foreground" />
+                  ) : (
+                    <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                  )}
+                  {a.fileName}
+                  <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                </a>
               ))
             )}
-          </div>
-          <div className="flex gap-2">
-            <Input
-              placeholder="filename.pdf"
-              maxLength={100}
-              value={newAttachment}
-              onChange={(e) => setNewAttachment(e.target.value)}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                if (!newAttachment.trim()) return;
-                setAttachments((as) => [...as, newAttachment.trim()]);
-                setNewAttachment("");
-              }}
-            >
-              <Upload className="h-4 w-4 mr-1.5" /> Add
-            </Button>
           </div>
         </div>
 

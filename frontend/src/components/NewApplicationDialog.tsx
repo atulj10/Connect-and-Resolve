@@ -47,10 +47,12 @@ export function NewApplicationDialog({
   open,
   onOpenChange,
   mode,
+  onSuccess,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   mode: Mode;
+  onSuccess?: () => void;
 }) {
   const user = getStoredUser();
   const [applicantName, setApplicantName] = useState(
@@ -187,14 +189,19 @@ export function NewApplicationDialog({
           ? await applicationsApi.createByAdmin({ ...payload, mobileNumber: mobileNumber.trim() })
           : await applicationsApi.create(payload);
 
+      if (files.length > 0) {
+        await Promise.all(files.map((f) => applicationsApi.uploadAttachment(result.id, f)));
+      }
+
       const ref = result.referenceNumber || "";
       toast.success(
         mode === "citizen"
           ? "Application submitted successfully"
           : "Application created on behalf of citizen",
-        { description: `Reference: ${ref}` },
+        { description: `Reference: ${ref}${files.length > 0 ? ` · ${files.length} file(s) attached` : ""}` },
       );
       handleOpen(false);
+      onSuccess?.();
     } catch (err: unknown) {
       toast.error(getApiError(err, "Failed to create application"));
     } finally {

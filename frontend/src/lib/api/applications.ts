@@ -114,10 +114,6 @@ export const applicationsApi = {
   uploadAttachment(id: string, file: File) {
     const formData = new FormData();
     formData.append("file", file);
-    return apiClient
-      .post(`/applications/${id}/attachments`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then((r) => r.data);
+    return apiClient.post(`/applications/${id}/attachments`, formData).then((r) => r.data);
   },
 };

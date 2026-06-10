@@ -8,11 +8,10 @@ export function getApiError(err: unknown, fallback = "An error occurred"): strin
   return fallback;
 }
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api";
+const API_BASE = "http://localhost:4000/api";
 
 export const apiClient = axios.create({
   baseURL: API_BASE,
-  headers: { "Content-Type": "application/json" },
 });
 
 apiClient.interceptors.request.use((config) => {
