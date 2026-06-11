@@ -184,6 +184,11 @@ function LoginPage() {
                       disabled={otpSent}
                     />
                   </div>
+                  {otpSent && (
+                    <p className="text-xs text-muted-foreground">
+                      Didn't receive the email? Check your spam/promotions folder.
+                    </p>
+                  )}
                 </TabsContent>
               </Tabs>
 

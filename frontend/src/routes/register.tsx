@@ -268,6 +268,9 @@ function RegisterPage() {
                     <p className="text-xs text-muted-foreground">
                       Enter the 6-digit code sent to {email}
                     </p>
+                    <p className="text-xs text-muted-foreground">
+                      Didn't receive the email? Check your spam/promotions folder.
+                    </p>
                     <InputOTP maxLength={6} value={otp} onChange={setOtp}>
                       <InputOTPGroup>
                         {[0, 1, 2, 3, 4, 5].map((i) => (
