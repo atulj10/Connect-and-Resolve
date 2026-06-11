@@ -12,7 +12,9 @@ export class NodemailerProvider implements EmailProvider {
         port: env.smtp.port,
         secure: env.smtp.port === 465,
         auth: { user: env.smtp.user, pass: env.smtp.pass },
-        connectionTimeout: 10000,
+        connectionTimeout: 30000,
+        greetingTimeout: 30000,
+        socketTimeout: 30000,
       } as nodemailer.TransportOptions);
     }
   }
