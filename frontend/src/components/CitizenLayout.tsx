@@ -17,6 +17,7 @@ import {
   LogOut,
   Menu,
 } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { getStoredUser, clearStoredAuth } from "@/lib/auth";
 
@@ -65,6 +66,7 @@ export function CitizenLayout({
 
   const handleLogout = () => {
     clearStoredAuth();
+    toast.success("Logged out successfully");
     navigate({ to: "/" });
   };
 

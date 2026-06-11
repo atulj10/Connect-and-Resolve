@@ -34,7 +34,10 @@ export const authService = {
       }
     }
     if (purpose === "REGISTER") {
-      if (!isEmail(identifier)) {
+      if (isEmail(identifier)) {
+        const user = await userRepository.findByEmail(identifier);
+        if (user) throw new Error("Email already registered");
+      } else {
         const user = await userRepository.findByMobile(identifier);
         if (user) throw new Error("Mobile number already registered");
       }

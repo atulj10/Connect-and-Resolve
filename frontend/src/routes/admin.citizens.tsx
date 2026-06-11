@@ -19,6 +19,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "sonner";
+import { getApiError } from "@/lib/api/client";
 import { CitizenDetailsDialog } from "@/components/CitizenDetailsDialog";
 import { formatDate } from "@/lib/applications";
 import { usersApi, type UserDto } from "@/lib/api/users";
@@ -60,7 +62,7 @@ function CitizensPage() {
     usersApi
       .list(page, pageSize)
       .then((r) => setUserData({ users: r.users, total: r.total, totalPages: r.totalPages }))
-      .catch(console.error)
+      .catch((err) => toast.error(getApiError(err, "Failed to load citizens")))
       .finally(() => setLoading(false));
   }, [page, pageSize]);
 

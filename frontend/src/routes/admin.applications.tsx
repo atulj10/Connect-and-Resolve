@@ -18,6 +18,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "sonner";
+import { getApiError } from "@/lib/api/client";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AdminApplicationDialog } from "@/components/AdminApplicationDialog";
 import { NewApplicationDialog } from "@/components/NewApplicationDialog";
@@ -66,7 +68,7 @@ function AdminApplications() {
       .then((r) =>
         setAppData({ applications: r.applications, total: r.total, totalPages: r.totalPages }),
       )
-      .catch(console.error)
+      .catch((err) => toast.error(getApiError(err, "Failed to load applications")))
       .finally(() => setLoading(false));
   }, [page, pageSize, search, category, department, status]);
 

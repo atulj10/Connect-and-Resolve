@@ -21,6 +21,8 @@ import {
 import { StatusBadge } from "@/components/StatusBadge";
 import { ApplicationDetailsDialog } from "@/components/ApplicationDetailsDialog";
 import { NewApplicationDialog } from "@/components/NewApplicationDialog";
+import { toast } from "sonner";
+import { getApiError } from "@/lib/api/client";
 import { formatDate } from "@/lib/applications";
 import type { ApplicationDto } from "@/lib/api/applications";
 import { applicationsApi } from "@/lib/api/applications";
@@ -107,7 +109,7 @@ function CitizenDashboard() {
     analyticsApi
       .citizen(analyticsRange)
       .then(setAnalytics)
-      .catch(console.error)
+      .catch((err) => toast.error(getApiError(err, "Failed to load analytics")))
       .finally(() => setLoadingAnalytics(false));
   }, [analyticsRange]);
 
@@ -122,7 +124,7 @@ function CitizenDashboard() {
       .then((r) =>
         setAppData({ applications: r.applications, total: r.total, totalPages: r.totalPages }),
       )
-      .catch(console.error)
+      .catch((err) => toast.error(getApiError(err, "Failed to load applications")))
       .finally(() => setLoadingApps(false));
   }, [page, pageSize, search, category, status]);
 

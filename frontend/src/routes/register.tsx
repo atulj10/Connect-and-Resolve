@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { authApi } from "@/lib/api/auth";
 import { getApiError } from "@/lib/api/client";
 import { setStoredUser } from "@/lib/auth";
+import { useRouter } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/register")({
 
 function RegisterPage() {
   const navigate = useNavigate();
+  const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [method, setMethod] = useState<"mobile" | "email">("mobile");
   const [mobile, setMobile] = useState("");
@@ -52,7 +54,13 @@ function RegisterPage() {
       setOtp("");
       toast.success(`OTP sent to your ${method === "mobile" ? "mobile" : "email"}`);
     } catch (err: unknown) {
-      toast.error(getApiError(err, "Failed to send OTP"));
+      const message = getApiError(err, "Failed to send OTP");
+      if (message.toLowerCase().includes("already registered")) {
+        toast.error(`${method === "mobile" ? "Mobile number" : "Email"} already registered. Redirecting to login...`);
+        setTimeout(() => router.navigate({ to: "/login" }), 1500);
+      } else {
+        toast.error(message);
+      }
     } finally {
       setLoading(false);
     }

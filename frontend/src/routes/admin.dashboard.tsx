@@ -8,6 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
+import { getApiError } from "@/lib/api/client";
 import { analyticsApi, type AdminAnalytics } from "@/lib/api/analytics";
 import { CheckCircle2, Clock, FileText, Gauge, XCircle } from "lucide-react";
 import {
@@ -64,7 +66,7 @@ function AdminAnalytics() {
     analyticsApi
       .admin(range)
       .then(setAnalytics)
-      .catch(console.error)
+      .catch((err) => toast.error(getApiError(err, "Failed to load analytics")))
       .finally(() => setLoading(false));
   }, [range]);
 
