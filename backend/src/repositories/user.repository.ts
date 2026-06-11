@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma.js";
-import type { UserRole } from "../types/index.js";
+import type { Prisma } from "@prisma/client";
 
 export const userRepository = {
   findById(id: string) {
@@ -40,15 +40,7 @@ export const userRepository = {
     });
   },
 
-  create(data: {
-    fullName: string;
-    mobileNumber?: string;
-    email?: string;
-    role: UserRole;
-    mobileVerified?: boolean;
-    emailVerified?: boolean;
-    password?: string;
-  }) {
+  create(data: Prisma.UserCreateInput) {
     return prisma.user.create({ data });
   },
 
