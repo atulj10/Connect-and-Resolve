@@ -22,6 +22,7 @@ export class NodemailerProvider implements EmailProvider {
         tls: {
           rejectUnauthorized: false, // Prevents Render's container from blocking the handshake
         },
+        family: 4,
       });
     }
   }
