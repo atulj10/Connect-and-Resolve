@@ -6,7 +6,7 @@ export declare const authService: {
     }): Promise<{
         id: string;
         fullName: string;
-        mobileNumber: string;
+        mobileNumber: string | null;
     }>;
     sendOtp(identifier: string, purpose: "REGISTER" | "LOGIN"): Promise<{
         message: string;
@@ -16,7 +16,7 @@ export declare const authService: {
         user: {
             id: string;
             fullName: string;
-            mobileNumber: string;
+            mobileNumber: string | null;
             email: string | null;
             role: string;
         };
@@ -30,7 +30,7 @@ export declare const authService: {
         user: {
             id: string;
             fullName: string;
-            mobileNumber: string;
+            mobileNumber: string | null;
             email: string | null;
             role: string;
         };
@@ -47,7 +47,7 @@ export declare const authService: {
     getProfile(userId: string): Promise<{
         id: string;
         fullName: string;
-        mobileNumber: string;
+        mobileNumber: string | null;
         email: string | null;
         role: string;
     }>;

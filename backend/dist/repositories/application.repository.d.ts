@@ -2,7 +2,7 @@ export declare const applicationRepository: {
     findById(id: string): import("@prisma/client").Prisma.Prisma__ApplicationClient<({
         user: {
             fullName: string;
-            mobileNumber: string;
+            mobileNumber: string | null;
             email: string | null;
             password: string | null;
             id: string;
@@ -90,7 +90,7 @@ export declare const applicationRepository: {
     }): import("@prisma/client").Prisma.PrismaPromise<({
         user: {
             fullName: string;
-            mobileNumber: string;
+            mobileNumber: string | null;
             email: string | null;
             password: string | null;
             id: string;

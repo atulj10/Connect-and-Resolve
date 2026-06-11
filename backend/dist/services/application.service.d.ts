@@ -51,7 +51,7 @@ export declare const applicationService: {
         applications: ({
             user: {
                 fullName: string;
-                mobileNumber: string;
+                mobileNumber: string | null;
                 email: string | null;
                 password: string | null;
                 id: string;
@@ -126,7 +126,7 @@ export declare const applicationService: {
         })[];
         user: {
             fullName: string;
-            mobileNumber: string;
+            mobileNumber: string | null;
             email: string | null;
             password: string | null;
             id: string;

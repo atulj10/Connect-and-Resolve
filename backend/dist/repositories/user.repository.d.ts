@@ -2,7 +2,7 @@ import type { UserRole } from "../types/index.js";
 export declare const userRepository: {
     findById(id: string): import("@prisma/client").Prisma.Prisma__UserClient<{
         fullName: string;
-        mobileNumber: string;
+        mobileNumber: string | null;
         email: string | null;
         password: string | null;
         id: string;
@@ -14,7 +14,7 @@ export declare const userRepository: {
     } | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     findByMobile(mobileNumber: string): import("@prisma/client").Prisma.Prisma__UserClient<{
         fullName: string;
-        mobileNumber: string;
+        mobileNumber: string | null;
         email: string | null;
         password: string | null;
         id: string;
@@ -26,7 +26,7 @@ export declare const userRepository: {
     } | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     findByEmail(email: string): import("@prisma/client").Prisma.Prisma__UserClient<{
         fullName: string;
-        mobileNumber: string;
+        mobileNumber: string | null;
         email: string | null;
         password: string | null;
         id: string;
@@ -38,7 +38,7 @@ export declare const userRepository: {
     } | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     findAll(skip?: number, take?: number): import("@prisma/client").Prisma.PrismaPromise<{
         fullName: string;
-        mobileNumber: string;
+        mobileNumber: string | null;
         email: string | null;
         password: string | null;
         id: string;
@@ -51,7 +51,7 @@ export declare const userRepository: {
     countAll(): import("@prisma/client").Prisma.PrismaPromise<number>;
     search(query: string): import("@prisma/client").Prisma.PrismaPromise<{
         fullName: string;
-        mobileNumber: string;
+        mobileNumber: string | null;
         email: string | null;
         password: string | null;
         id: string;
@@ -63,7 +63,7 @@ export declare const userRepository: {
     }[]>;
     create(data: {
         fullName: string;
-        mobileNumber: string;
+        mobileNumber?: string;
         email?: string;
         role: UserRole;
         mobileVerified?: boolean;
@@ -71,7 +71,7 @@ export declare const userRepository: {
         password?: string;
     }): import("@prisma/client").Prisma.Prisma__UserClient<{
         fullName: string;
-        mobileNumber: string;
+        mobileNumber: string | null;
         email: string | null;
         password: string | null;
         id: string;
@@ -89,7 +89,7 @@ export declare const userRepository: {
         password: string;
     }>): import("@prisma/client").Prisma.Prisma__UserClient<{
         fullName: string;
-        mobileNumber: string;
+        mobileNumber: string | null;
         email: string | null;
         password: string | null;
         id: string;

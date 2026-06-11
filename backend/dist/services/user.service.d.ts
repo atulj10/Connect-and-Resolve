@@ -2,7 +2,7 @@ export declare const userService: {
     list(page: number, pageSize: number): Promise<{
         users: {
             fullName: string;
-            mobileNumber: string;
+            mobileNumber: string | null;
             email: string | null;
             password: string | null;
             id: string;
@@ -19,7 +19,7 @@ export declare const userService: {
     }>;
     search(query: string): Promise<{
         fullName: string;
-        mobileNumber: string;
+        mobileNumber: string | null;
         email: string | null;
         password: string | null;
         id: string;
@@ -31,7 +31,7 @@ export declare const userService: {
     }[]>;
     getById(id: string): Promise<{
         fullName: string;
-        mobileNumber: string;
+        mobileNumber: string | null;
         email: string | null;
         password: string | null;
         id: string;

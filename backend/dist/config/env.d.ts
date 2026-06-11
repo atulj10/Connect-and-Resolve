@@ -14,8 +14,17 @@ export declare const env: {
         readonly authToken: string;
         readonly phoneNumber: string;
     };
-    readonly resend: {
-        readonly apiKey: string;
+    readonly admin: {
+        readonly name: string;
+        readonly email: string;
+        readonly password: string;
+    };
+    readonly smtp: {
+        readonly host: string;
+        readonly port: number;
+        readonly user: string;
+        readonly pass: string;
+        readonly from: string;
     };
 };
 //# sourceMappingURL=env.d.ts.map
