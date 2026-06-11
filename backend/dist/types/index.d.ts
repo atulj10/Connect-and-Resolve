@@ -15,12 +15,12 @@ export declare const registerSchema: z.ZodObject<{
     mobileNumber: z.ZodString;
     email: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
 }, "strip", z.ZodTypeAny, {
-    fullName: string;
     mobileNumber: string;
+    fullName: string;
     email?: string | undefined;
 }, {
-    fullName: string;
     mobileNumber: string;
+    fullName: string;
     email?: string | undefined;
 }>;
 export declare const sendOtpSchema: z.ZodObject<{
@@ -38,12 +38,12 @@ export declare const verifyOtpSchema: z.ZodObject<{
     code: z.ZodString;
     purpose: z.ZodEnum<["REGISTER", "LOGIN"]>;
 }, "strip", z.ZodTypeAny, {
-    code: string;
     identifier: string;
+    code: string;
     purpose: "REGISTER" | "LOGIN";
 }, {
-    code: string;
     identifier: string;
+    code: string;
     purpose: "REGISTER" | "LOGIN";
 }>;
 export declare const verifyOtpRegisterSchema: z.ZodObject<{
@@ -56,15 +56,15 @@ export declare const verifyOtpRegisterSchema: z.ZodObject<{
     email: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
 }, "strip", z.ZodTypeAny, {
     fullName: string;
-    code: string;
     identifier: string;
+    code: string;
     purpose: "REGISTER" | "LOGIN";
     mobileNumber?: string | undefined;
     email?: string | undefined;
 }, {
     fullName: string;
-    code: string;
     identifier: string;
+    code: string;
     purpose: "REGISTER" | "LOGIN";
     mobileNumber?: string | undefined;
     email?: string | undefined;
@@ -73,11 +73,11 @@ export declare const loginSchema: z.ZodObject<{
     identifier: z.ZodString;
     code: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    code: string;
     identifier: string;
+    code: string;
 }, {
-    code: string;
     identifier: string;
+    code: string;
 }>;
 export declare const adminLoginSchema: z.ZodObject<{
     email: z.ZodString;
@@ -106,8 +106,8 @@ export declare const createApplicationSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     applicantName: string;
     fatherName: string;
-    subject: string;
     category: "Water Supply" | "Electricity" | "Roads & Infrastructure" | "Sanitation" | "Healthcare" | "Education" | "Public Safety" | "Revenue";
+    subject: string;
     villageMohalla: string;
     panchayat: string;
     policeStation: string;
@@ -120,8 +120,8 @@ export declare const createApplicationSchema: z.ZodObject<{
 }, {
     applicantName: string;
     fatherName: string;
-    subject: string;
     category: "Water Supply" | "Electricity" | "Roads & Infrastructure" | "Sanitation" | "Healthcare" | "Education" | "Public Safety" | "Revenue";
+    subject: string;
     villageMohalla: string;
     panchayat: string;
     policeStation: string;
@@ -167,26 +167,26 @@ export declare const applicationQuerySchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     page: number;
     pageSize: number;
-    status?: string | undefined;
-    category?: string | undefined;
-    district?: string | undefined;
-    department?: string | undefined;
     search?: string | undefined;
-}, {
-    status?: string | undefined;
     category?: string | undefined;
     district?: string | undefined;
     department?: string | undefined;
+    status?: string | undefined;
+}, {
+    search?: string | undefined;
+    category?: string | undefined;
+    district?: string | undefined;
+    department?: string | undefined;
+    status?: string | undefined;
     page?: number | undefined;
     pageSize?: number | undefined;
-    search?: string | undefined;
 }>;
 export declare const analyticsQuerySchema: z.ZodObject<{
     range: z.ZodDefault<z.ZodOptional<z.ZodEnum<["week", "month", "year"]>>>;
 }, "strip", z.ZodTypeAny, {
-    range: "week" | "month" | "year";
+    range: "year" | "week" | "month";
 }, {
-    range?: "week" | "month" | "year" | undefined;
+    range?: "year" | "week" | "month" | undefined;
 }>;
 export declare const adminAnalyticsQuerySchema: z.ZodObject<{
     range: z.ZodDefault<z.ZodOptional<z.ZodEnum<["today", "7days", "30days", "year"]>>>;

@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { ArrowLeft, Landmark, Mail, Smartphone, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { isAxiosError } from "axios";
 import authIllustration from "@/assets/auth-illustration.png";
 import { authApi } from "@/lib/api/auth";
 import { getApiError } from "@/lib/api/client";
@@ -45,7 +46,11 @@ function LoginPage() {
       setOtpSent(true);
       toast.success(`OTP sent to your ${method === "mobile" ? "mobile" : "email"}`);
     } catch (err: unknown) {
-      toast.error(getApiError(err, "Failed to send OTP"));
+      if (isAxiosError(err) && (!err.response || err.code === "ECONNABORTED")) {
+        toast.error("Server is not responding. Please try again.");
+      } else {
+        toast.error(getApiError(err, "Failed to send OTP"));
+      }
     } finally {
       setLoading(false);
     }
@@ -63,7 +68,11 @@ function LoginPage() {
       toast.success("Login successful");
       navigate({ to: "/dashboard" });
     } catch (err: unknown) {
-      toast.error(getApiError(err, "Invalid OTP"));
+      if (isAxiosError(err) && (!err.response || err.code === "ECONNABORTED")) {
+        toast.error("Server is not responding. Please try again.");
+      } else {
+        toast.error(getApiError(err, "Invalid or expired OTP"));
+      }
     } finally {
       setLoading(false);
     }

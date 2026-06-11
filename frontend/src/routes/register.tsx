@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { ArrowLeft, BadgeCheck, Landmark, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { isAxiosError } from "axios";
 import { authApi } from "@/lib/api/auth";
 import { getApiError } from "@/lib/api/client";
 import { setStoredUser } from "@/lib/auth";
@@ -54,12 +55,16 @@ function RegisterPage() {
       setOtp("");
       toast.success(`OTP sent to your ${method === "mobile" ? "mobile" : "email"}`);
     } catch (err: unknown) {
-      const message = getApiError(err, "Failed to send OTP");
-      if (message.toLowerCase().includes("already registered")) {
-        toast.error(`${method === "mobile" ? "Mobile number" : "Email"} already registered. Redirecting to login...`);
-        setTimeout(() => router.navigate({ to: "/login" }), 1500);
+      if (isAxiosError(err) && (!err.response || err.code === "ECONNABORTED")) {
+        toast.error("Server is not responding. Please try again.");
       } else {
-        toast.error(message);
+        const message = getApiError(err, "Failed to send OTP");
+        if (message.toLowerCase().includes("already registered")) {
+          toast.error(`${method === "mobile" ? "Mobile number" : "Email"} already registered. Redirecting to login...`);
+          setTimeout(() => router.navigate({ to: "/login" }), 1500);
+        } else {
+          toast.error(message);
+        }
       }
     } finally {
       setLoading(false);
@@ -80,7 +85,11 @@ function RegisterPage() {
       toast.success("Account created successfully!");
       navigate({ to: "/dashboard" });
     } catch (err: unknown) {
-      toast.error(getApiError(err, "Verification failed"));
+      if (isAxiosError(err) && (!err.response || err.code === "ECONNABORTED")) {
+        toast.error("Server is not responding. Please try again.");
+      } else {
+        toast.error(getApiError(err, "Verification failed"));
+      }
     } finally {
       setLoading(false);
     }

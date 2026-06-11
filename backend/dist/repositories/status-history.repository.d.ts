@@ -7,9 +7,9 @@ export declare const statusHistoryRepository: {
     }): import("@prisma/client").Prisma.Prisma__ApplicationStatusHistoryClient<{
         id: string;
         createdAt: Date;
-        applicationId: string;
         oldStatus: string | null;
         newStatus: string;
+        applicationId: string;
         changedById: string;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     findByApplicationId(applicationId: string): import("@prisma/client").Prisma.PrismaPromise<({
@@ -19,9 +19,9 @@ export declare const statusHistoryRepository: {
     } & {
         id: string;
         createdAt: Date;
-        applicationId: string;
         oldStatus: string | null;
         newStatus: string;
+        applicationId: string;
         changedById: string;
     })[]>;
 };

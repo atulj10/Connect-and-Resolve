@@ -12,6 +12,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api
 
 export const apiClient = axios.create({
   baseURL: API_BASE,
+  timeout: 30000,
 });
 
 apiClient.interceptors.request.use((config) => {

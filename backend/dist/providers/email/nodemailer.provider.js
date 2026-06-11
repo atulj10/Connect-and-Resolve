@@ -9,11 +9,15 @@ export class NodemailerProvider {
                 port: env.smtp.port,
                 secure: env.smtp.port === 465,
                 auth: { user: env.smtp.user, pass: env.smtp.pass },
+                connectionTimeout: 10000,
             });
         }
     }
     async send(to, subject, body) {
         if (!this.transporter) {
+            if (env.nodeEnv === "production") {
+                throw new Error("Email provider (SMTP) is not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASS.");
+            }
             console.log(`[Email Mock] To: ${to}, Subject: ${subject}, Body: ${body}`);
             return;
         }

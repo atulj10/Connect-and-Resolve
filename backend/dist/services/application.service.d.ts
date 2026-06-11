@@ -16,11 +16,15 @@ export declare const applicationService: {
         applicationSource: string;
         department?: string;
     }): Promise<{
-        status: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        referenceNumber: string;
+        applicationSource: string;
         applicantName: string;
         fatherName: string;
-        subject: string;
         category: string;
+        subject: string;
         description: string | null;
         villageMohalla: string;
         panchayat: string;
@@ -29,13 +33,9 @@ export declare const applicationService: {
         district: string;
         pincode: string;
         department: string;
+        status: string;
         adminRemarks: string | null;
         internalNotes: string | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        referenceNumber: string;
-        applicationSource: string;
         userId: string;
     }>;
     list(params: {
@@ -50,11 +50,11 @@ export declare const applicationService: {
     }): Promise<{
         applications: ({
             user: {
-                fullName: string;
+                id: string;
                 mobileNumber: string | null;
                 email: string | null;
+                fullName: string;
                 password: string | null;
-                id: string;
                 role: string;
                 mobileVerified: boolean;
                 emailVerified: boolean;
@@ -64,19 +64,23 @@ export declare const applicationService: {
             attachments: {
                 id: string;
                 createdAt: Date;
+                applicationId: string;
                 publicId: string;
                 url: string;
                 fileName: string;
                 size: number;
                 mimeType: string;
-                applicationId: string;
             }[];
         } & {
-            status: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            referenceNumber: string;
+            applicationSource: string;
             applicantName: string;
             fatherName: string;
-            subject: string;
             category: string;
+            subject: string;
             description: string | null;
             villageMohalla: string;
             panchayat: string;
@@ -85,13 +89,9 @@ export declare const applicationService: {
             district: string;
             pincode: string;
             department: string;
+            status: string;
             adminRemarks: string | null;
             internalNotes: string | null;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            referenceNumber: string;
-            applicationSource: string;
             userId: string;
         })[];
         total: number;
@@ -107,9 +107,9 @@ export declare const applicationService: {
         } & {
             id: string;
             createdAt: Date;
-            applicationId: string;
             oldStatus: string | null;
             newStatus: string;
+            applicationId: string;
             changedById: string;
         })[];
         auditLogs: ({
@@ -125,11 +125,11 @@ export declare const applicationService: {
             details: string | null;
         })[];
         user: {
-            fullName: string;
+            id: string;
             mobileNumber: string | null;
             email: string | null;
+            fullName: string;
             password: string | null;
-            id: string;
             role: string;
             mobileVerified: boolean;
             emailVerified: boolean;
@@ -139,18 +139,22 @@ export declare const applicationService: {
         attachments: {
             id: string;
             createdAt: Date;
+            applicationId: string;
             publicId: string;
             url: string;
             fileName: string;
             size: number;
             mimeType: string;
-            applicationId: string;
         }[];
-        status: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        referenceNumber: string;
+        applicationSource: string;
         applicantName: string;
         fatherName: string;
-        subject: string;
         category: string;
+        subject: string;
         description: string | null;
         villageMohalla: string;
         panchayat: string;
@@ -159,21 +163,21 @@ export declare const applicationService: {
         district: string;
         pincode: string;
         department: string;
+        status: string;
         adminRemarks: string | null;
         internalNotes: string | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        referenceNumber: string;
-        applicationSource: string;
         userId: string;
     }>;
     updateStatus(id: string, status: AppStatus, userId: string): Promise<{
-        status: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        referenceNumber: string;
+        applicationSource: string;
         applicantName: string;
         fatherName: string;
-        subject: string;
         category: string;
+        subject: string;
         description: string | null;
         villageMohalla: string;
         panchayat: string;
@@ -182,21 +186,21 @@ export declare const applicationService: {
         district: string;
         pincode: string;
         department: string;
+        status: string;
         adminRemarks: string | null;
         internalNotes: string | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        referenceNumber: string;
-        applicationSource: string;
         userId: string;
     }>;
     updateDepartment(id: string, department: Department, userId: string): Promise<{
-        status: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        referenceNumber: string;
+        applicationSource: string;
         applicantName: string;
         fatherName: string;
-        subject: string;
         category: string;
+        subject: string;
         description: string | null;
         villageMohalla: string;
         panchayat: string;
@@ -205,24 +209,24 @@ export declare const applicationService: {
         district: string;
         pincode: string;
         department: string;
+        status: string;
         adminRemarks: string | null;
         internalNotes: string | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        referenceNumber: string;
-        applicationSource: string;
         userId: string;
     }>;
     addRemarks(id: string, data: {
         adminRemarks?: string;
         internalNotes?: string;
     }, userId: string): Promise<{
-        status: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        referenceNumber: string;
+        applicationSource: string;
         applicantName: string;
         fatherName: string;
-        subject: string;
         category: string;
+        subject: string;
         description: string | null;
         villageMohalla: string;
         panchayat: string;
@@ -231,24 +235,20 @@ export declare const applicationService: {
         district: string;
         pincode: string;
         department: string;
+        status: string;
         adminRemarks: string | null;
         internalNotes: string | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        referenceNumber: string;
-        applicationSource: string;
         userId: string;
     }>;
     uploadAttachment(applicationId: string, filePath: string, fileName: string): Promise<{
         id: string;
         createdAt: Date;
+        applicationId: string;
         publicId: string;
         url: string;
         fileName: string;
         size: number;
         mimeType: string;
-        applicationId: string;
     }>;
     createByAdmin(data: {
         applicantName: string;
@@ -266,11 +266,15 @@ export declare const applicationService: {
         mobileNumber?: string;
         adminUserId: string;
     }): Promise<{
-        status: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        referenceNumber: string;
+        applicationSource: string;
         applicantName: string;
         fatherName: string;
-        subject: string;
         category: string;
+        subject: string;
         description: string | null;
         villageMohalla: string;
         panchayat: string;
@@ -279,13 +283,9 @@ export declare const applicationService: {
         district: string;
         pincode: string;
         department: string;
+        status: string;
         adminRemarks: string | null;
         internalNotes: string | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        referenceNumber: string;
-        applicationSource: string;
         userId: string;
     }>;
 };

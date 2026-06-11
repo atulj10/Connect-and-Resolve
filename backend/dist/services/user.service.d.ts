@@ -1,11 +1,11 @@
 export declare const userService: {
     list(page: number, pageSize: number): Promise<{
         users: {
-            fullName: string;
+            id: string;
             mobileNumber: string | null;
             email: string | null;
+            fullName: string;
             password: string | null;
-            id: string;
             role: string;
             mobileVerified: boolean;
             emailVerified: boolean;
@@ -18,11 +18,11 @@ export declare const userService: {
         totalPages: number;
     }>;
     search(query: string): Promise<{
-        fullName: string;
+        id: string;
         mobileNumber: string | null;
         email: string | null;
+        fullName: string;
         password: string | null;
-        id: string;
         role: string;
         mobileVerified: boolean;
         emailVerified: boolean;
@@ -30,11 +30,11 @@ export declare const userService: {
         updatedAt: Date;
     }[]>;
     getById(id: string): Promise<{
-        fullName: string;
+        id: string;
         mobileNumber: string | null;
         email: string | null;
+        fullName: string;
         password: string | null;
-        id: string;
         role: string;
         mobileVerified: boolean;
         emailVerified: boolean;
