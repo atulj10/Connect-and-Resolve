@@ -23,7 +23,7 @@ export class NodemailerProvider implements EmailProvider {
           rejectUnauthorized: false, // Prevents Render's container from blocking the handshake
         },
         family: 4,
-      });
+      }  as any);
     }
   }
 
