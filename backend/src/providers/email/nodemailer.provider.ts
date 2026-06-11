@@ -18,6 +18,9 @@ export class NodemailerProvider implements EmailProvider {
 
   async send(to: string, subject: string, body: string): Promise<void> {
     if (!this.transporter) {
+      if (env.nodeEnv === "production") {
+        throw new Error("Email provider (SMTP) is not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASS.");
+      }
       console.log(`[Email Mock] To: ${to}, Subject: ${subject}, Body: ${body}`);
       return;
     }
