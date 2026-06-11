@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { useState, useEffect, useRef } from "react";
 import {
   Search,
   Zap,
@@ -15,6 +16,54 @@ import {
   BarChart3,
 } from "lucide-react";
 import heroIllustration from "@/assets/hero-illustration.png";
+
+function parseMetricValue(value: string): { target: number; suffix: string } {
+  const cleaned = value.replace(/,/g, "");
+  const match = cleaned.match(/^([\d.]+)(.*)$/);
+  if (!match) return { target: 0, suffix: "" };
+  return { target: parseInt(match[1], 10), suffix: match[2] };
+}
+
+function useCountUp(target: number, duration: number, start: boolean): number {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!start) {
+      setCount(0);
+      return;
+    }
+
+    let startTime: number | null = null;
+    let animationId: number;
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
+      if (progress < 1) {
+        animationId = requestAnimationFrame(animate);
+      } else {
+        setCount(target);
+      }
+    };
+
+    animationId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationId);
+  }, [target, duration, start]);
+
+  return count;
+}
+
+function AnimatedMetric({ value, visible }: { value: string; visible: boolean }) {
+  const { target, suffix } = parseMetricValue(value);
+  const count = useCountUp(target, 2000, visible);
+
+  return (
+    <>{count.toLocaleString("en-US")}{suffix}</>
+  );
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,10 +86,10 @@ export const Route = createFileRoute("/")({
 });
 
 const metrics = [
-  { label: "Total Applications", value: "125,000+", icon: FileText },
-  { label: "Resolved Cases", value: "98,500+", icon: CheckCircle2 },
-  { label: "Active Cases", value: "18,900+", icon: BarChart3 },
-  { label: "Citizen Satisfaction", value: "94%", icon: Users },
+  { label: "Total Applications", value: "25,000+", icon: FileText },
+  { label: "Resolved Cases", value: "15,000+", icon: CheckCircle2 },
+  { label: "Active Cases", value: "10,000+", icon: BarChart3 },
+  { label: "Citizen Satisfaction", value: "90%", icon: Users },
 ];
 
 const features = [
@@ -92,6 +141,27 @@ const steps = [
 ];
 
 function Index() {
+  const metricsRef = useRef<HTMLDivElement>(null);
+  const [metricsVisible, setMetricsVisible] = useState(false);
+
+  useEffect(() => {
+    const el = metricsRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setMetricsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -141,7 +211,7 @@ function Index() {
       </section>
 
       {/* Metrics Section */}
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+      <section ref={metricsRef} className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {metrics.map((metric) => (
             <div
@@ -154,7 +224,7 @@ function Index() {
                   <metric.icon className="h-5 w-5 text-primary" />
                 </div>
                 <p className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-                  {metric.value}
+                  <AnimatedMetric value={metric.value} visible={metricsVisible} />
                 </p>
                 <p className="mt-1 text-sm font-medium text-muted-foreground">{metric.label}</p>
               </div>
