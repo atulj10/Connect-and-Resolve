@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
+import dns from "node:dns";
 import { env } from "../../config/env.js";
+dns.setDefaultResultOrder("ipv4first");
 export class NodemailerProvider {
     transporter = null;
     constructor() {

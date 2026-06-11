@@ -1,6 +1,9 @@
 import nodemailer from "nodemailer";
+import dns from "node:dns";
 import type { EmailProvider } from "./email.provider.js";
 import { env } from "../../config/env.js";
+
+dns.setDefaultResultOrder("ipv4first");
 
 export class NodemailerProvider implements EmailProvider {
   private transporter: nodemailer.Transporter | null = null;
