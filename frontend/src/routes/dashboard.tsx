@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
+import { AnimatedSection, AnimatedGrid, AnimatedItem } from "@/components/AnimatedSection";
 import { CitizenLayout } from "@/components/CitizenLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -250,35 +252,44 @@ function AnalyticsView({
         </div>
       ) : (
         <>
-          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-            <KpiCard
-              label="Total Applications"
-              value={analytics?.total ?? 0}
-              icon={FileText}
-              tint="bg-primary/10 text-primary"
-            />
-            <KpiCard
-              label="Pending"
-              value={analytics?.pending ?? 0}
-              icon={Clock}
-              tint="bg-amber-100 text-amber-700"
-            />
-            <KpiCard
-              label="Resolved"
-              value={analytics?.resolved ?? 0}
-              icon={CheckCircle2}
-              tint="bg-emerald-100 text-emerald-700"
-            />
-            <KpiCard
-              label="Closed"
-              value={analytics?.closed ?? 0}
-              icon={XCircle}
-              tint="bg-slate-100 text-slate-700"
-            />
-          </div>
+          <AnimatedGrid className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+            <AnimatedItem>
+              <KpiCard
+                label="Total Applications"
+                value={analytics?.total ?? 0}
+                icon={FileText}
+                tint="bg-primary/10 text-primary"
+              />
+            </AnimatedItem>
+            <AnimatedItem>
+              <KpiCard
+                label="Pending"
+                value={analytics?.pending ?? 0}
+                icon={Clock}
+                tint="bg-amber-100 text-amber-700"
+              />
+            </AnimatedItem>
+            <AnimatedItem>
+              <KpiCard
+                label="Resolved"
+                value={analytics?.resolved ?? 0}
+                icon={CheckCircle2}
+                tint="bg-emerald-100 text-emerald-700"
+              />
+            </AnimatedItem>
+            <AnimatedItem>
+              <KpiCard
+                label="Closed"
+                value={analytics?.closed ?? 0}
+                icon={XCircle}
+                tint="bg-slate-100 text-slate-700"
+              />
+            </AnimatedItem>
+          </AnimatedGrid>
 
-          <div className="grid gap-6 lg:grid-cols-3">
-            <ChartCard title="Status Distribution" subtitle="Applications by current status">
+          <AnimatedGrid className="grid gap-6 lg:grid-cols-3">
+            <AnimatedItem>
+              <ChartCard title="Status Distribution" subtitle="Applications by current status">
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
                   <Pie
@@ -300,7 +311,9 @@ function AnalyticsView({
                 </PieChart>
               </ResponsiveContainer>
             </ChartCard>
+            </AnimatedItem>
 
+            <AnimatedItem>
             <ChartCard title="Applications by Category" subtitle="Breakdown across categories">
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart
@@ -322,7 +335,9 @@ function AnalyticsView({
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
+            </AnimatedItem>
 
+            <AnimatedItem>
             <ChartCard title="Monthly Trend" subtitle="Applications filed per month">
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={monthlyTrendData} margin={{ left: -10, right: 8 }}>
@@ -334,7 +349,8 @@ function AnalyticsView({
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
-          </div>
+            </AnimatedItem>
+          </AnimatedGrid>
         </>
       )}
     </>
@@ -380,19 +396,32 @@ function ApplicationsView({
 }) {
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">My Applications</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Track, search and manage all your applications.
-          </p>
+      <AnimatedSection>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">My Applications</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Track, search and manage all your applications.
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            <Button className="gap-2" onClick={onCreateClick}>
+              <Plus className="h-4 w-4" /> New Application
+            </Button>
+          </motion.div>
         </div>
-        <Button className="gap-2" onClick={onCreateClick}>
-          <Plus className="h-4 w-4" /> New Application
-        </Button>
-      </div>
+      </AnimatedSection>
 
-      <section className="rounded-2xl border border-border bg-card shadow-card overflow-hidden">
+      <AnimatedSection delay={0.1}>
+        <section className="rounded-2xl border border-border bg-card shadow-card overflow-hidden">
         <div className="p-4 sm:p-6 border-b border-border">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
@@ -553,6 +582,7 @@ function ApplicationsView({
           </div>
         </div>
       </section>
+      </AnimatedSection>
     </>
   );
 }

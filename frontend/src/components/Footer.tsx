@@ -36,7 +36,7 @@ export function Footer() {
             <ul className="mt-4 space-y-3">
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                <span>support@citizenconnect.gov.in</span>
+                <span>admincitizenconnect@gmail.com</span>
               </li>
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
                 <Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
@@ -44,7 +44,7 @@ export function Footer() {
               </li>
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                <span>Ministry of Citizen Affairs, New Delhi — 110001</span>
+                <span>Minister'S Office Department of UDHD & IT, Govt. of Bihar</span>
               </li>
             </ul>
           </div>

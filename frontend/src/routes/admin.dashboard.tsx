@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { AnimatedSection, AnimatedGrid, AnimatedItem } from "@/components/AnimatedSection";
 import { AdminLayout } from "@/components/AdminLayout";
 import {
   Select,
@@ -150,42 +152,55 @@ function AdminAnalytics() {
         </div>
       ) : (
         <>
-          <div className="grid gap-6 lg:grid-cols-3">
-            <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <KpiCard
-                label="Total Applications"
-                value={stats.total}
-                icon={FileText}
-                tint="bg-primary/10 text-primary"
-              />
-              <KpiCard
-                label="Pending"
-                value={stats.pending}
-                icon={Clock}
-                tint="bg-amber-100 text-amber-700"
-              />
-              <KpiCard
-                label="Under Review"
-                value={stats.review}
-                icon={Gauge}
-                tint="bg-violet-100 text-violet-700"
-              />
-              <KpiCard
-                label="Resolved"
-                value={stats.resolved}
-                icon={CheckCircle2}
-                tint="bg-emerald-100 text-emerald-700"
-              />
-              <KpiCard
-                label="Closed"
-                value={stats.closed}
-                icon={XCircle}
-                tint="bg-slate-100 text-slate-700"
-              />
-              <DisposalCard rate={stats.disposal} />
-            </div>
+          <AnimatedGrid className="grid gap-6 lg:grid-cols-3">
+            <AnimatedGrid className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <AnimatedItem>
+                <KpiCard
+                  label="Total Applications"
+                  value={stats.total}
+                  icon={FileText}
+                  tint="bg-primary/10 text-primary"
+                />
+              </AnimatedItem>
+              <AnimatedItem>
+                <KpiCard
+                  label="Pending"
+                  value={stats.pending}
+                  icon={Clock}
+                  tint="bg-amber-100 text-amber-700"
+                />
+              </AnimatedItem>
+              <AnimatedItem>
+                <KpiCard
+                  label="Under Review"
+                  value={stats.review}
+                  icon={Gauge}
+                  tint="bg-violet-100 text-violet-700"
+                />
+              </AnimatedItem>
+              <AnimatedItem>
+                <KpiCard
+                  label="Resolved"
+                  value={stats.resolved}
+                  icon={CheckCircle2}
+                  tint="bg-emerald-100 text-emerald-700"
+                />
+              </AnimatedItem>
+              <AnimatedItem>
+                <KpiCard
+                  label="Closed"
+                  value={stats.closed}
+                  icon={XCircle}
+                  tint="bg-slate-100 text-slate-700"
+                />
+              </AnimatedItem>
+              <AnimatedItem>
+                <DisposalCard rate={stats.disposal} />
+              </AnimatedItem>
+            </AnimatedGrid>
 
-            <ChartCard title="Category Distribution" subtitle="Applications by category">
+            <AnimatedItem>
+              <ChartCard title="Category Distribution" subtitle="Applications by category">
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
                   <Pie
@@ -207,71 +222,78 @@ function AdminAnalytics() {
                 </PieChart>
               </ResponsiveContainer>
             </ChartCard>
-          </div>
+            </AnimatedItem>
+          </AnimatedGrid>
 
-          <div className="grid gap-6 lg:grid-cols-3">
-            <ChartCard
-              title="Department-wise Pendency"
-              subtitle="Pending vs resolved per department"
-            >
-              <ResponsiveContainer width="100%" height={260}>
-                <BarChart
-                  data={analytics?.departmentPendency ?? []}
-                  margin={{ left: -10, right: 8 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eef0f4" />
-                  <XAxis
-                    dataKey="department"
-                    tick={{ fontSize: 10 }}
-                    interval={0}
-                    angle={-15}
-                    textAnchor="end"
-                    height={50}
-                  />
-                  <YAxis tick={{ fontSize: 11 }} />
-                  <Tooltip contentStyle={{ borderRadius: 8 }} />
-                  <Legend iconType="circle" wrapperStyle={{ fontSize: 11 }} />
-                  <Bar dataKey="pending" stackId="a" fill="#F59E0B" />
-                  <Bar dataKey="resolved" stackId="a" fill="#5147F3" radius={[6, 6, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartCard>
+          <AnimatedGrid className="grid gap-6 lg:grid-cols-3">
+            <AnimatedItem>
+              <ChartCard
+                title="Department-wise Pendency"
+                subtitle="Pending vs resolved per department"
+              >
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart
+                    data={analytics?.departmentPendency ?? []}
+                    margin={{ left: -10, right: 8 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eef0f4" />
+                    <XAxis
+                      dataKey="department"
+                      tick={{ fontSize: 10 }}
+                      interval={0}
+                      angle={-15}
+                      textAnchor="end"
+                      height={50}
+                    />
+                    <YAxis tick={{ fontSize: 11 }} />
+                    <Tooltip contentStyle={{ borderRadius: 8 }} />
+                    <Legend iconType="circle" wrapperStyle={{ fontSize: 11 }} />
+                    <Bar dataKey="pending" stackId="a" fill="#F59E0B" />
+                    <Bar dataKey="resolved" stackId="a" fill="#5147F3" radius={[6, 6, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+            </AnimatedItem>
 
-            <ChartCard title="District-wise Analysis" subtitle="Applications received per district">
-              <ResponsiveContainer width="100%" height={260}>
-                <BarChart
-                  data={analytics?.districtAnalysis ?? []}
-                  layout="vertical"
-                  margin={{ left: 10 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#eef0f4" />
-                  <XAxis type="number" tick={{ fontSize: 11 }} />
-                  <YAxis dataKey="district" type="category" tick={{ fontSize: 11 }} width={80} />
-                  <Tooltip contentStyle={{ borderRadius: 8 }} />
-                  <Bar dataKey="count" fill="#5147F3" radius={[0, 6, 6, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartCard>
+            <AnimatedItem>
+              <ChartCard title="District-wise Analysis" subtitle="Applications received per district">
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart
+                    data={analytics?.districtAnalysis ?? []}
+                    layout="vertical"
+                    margin={{ left: 10 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#eef0f4" />
+                    <XAxis type="number" tick={{ fontSize: 11 }} />
+                    <YAxis dataKey="district" type="category" tick={{ fontSize: 11 }} width={80} />
+                    <Tooltip contentStyle={{ borderRadius: 8 }} />
+                    <Bar dataKey="count" fill="#5147F3" radius={[0, 6, 6, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+            </AnimatedItem>
 
-            <ChartCard title="Top Citizen Issues" subtitle="Most reported categories">
-              <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={topIssuesData} margin={{ left: -10, right: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eef0f4" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 10 }}
-                    interval={0}
-                    angle={-15}
-                    textAnchor="end"
-                    height={50}
-                  />
-                  <YAxis tick={{ fontSize: 11 }} />
-                  <Tooltip contentStyle={{ borderRadius: 8 }} />
-                  <Bar dataKey="value" fill="#7C73FF" radius={[6, 6, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartCard>
-          </div>
+            <AnimatedItem>
+              <ChartCard title="Top Citizen Issues" subtitle="Most reported categories">
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={topIssuesData} margin={{ left: -10, right: 8 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eef0f4" />
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fontSize: 10 }}
+                      interval={0}
+                      angle={-15}
+                      textAnchor="end"
+                      height={50}
+                    />
+                    <YAxis tick={{ fontSize: 11 }} />
+                    <Tooltip contentStyle={{ borderRadius: 8 }} />
+                    <Bar dataKey="value" fill="#7C73FF" radius={[6, 6, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+            </AnimatedItem>
+          </AnimatedGrid>
         </>
       )}
     </AdminLayout>

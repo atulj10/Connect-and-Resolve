@@ -1,5 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { AnimatedSection } from "@/components/AnimatedSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -113,7 +115,12 @@ function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto flex min-h-screen max-w-3xl flex-col px-6 py-10 sm:px-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mx-auto flex min-h-screen max-w-3xl flex-col px-6 py-10 sm:px-8"
+      >
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
@@ -299,7 +306,7 @@ function RegisterPage() {
             Login here
           </Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

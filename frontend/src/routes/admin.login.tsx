@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,7 +52,12 @@ function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="grid min-h-screen lg:grid-cols-2">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="grid min-h-screen lg:grid-cols-2"
+      >
         <div className="flex flex-col px-6 py-10 sm:px-12 lg:px-16 order-2 lg:order-1">
           <Link to="/" className="flex items-center gap-2.5 w-fit">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
@@ -190,7 +196,7 @@ function AdminLoginPage() {
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

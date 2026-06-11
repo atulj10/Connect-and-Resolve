@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { AnimatedSection, AnimatedGrid, AnimatedItem } from "@/components/AnimatedSection";
 import { AdminLayout } from "@/components/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,19 +80,32 @@ function AdminApplications() {
 
   return (
     <AdminLayout title="Applications">
-      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Applications</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Review, assign and manage all citizen applications.
-          </p>
+      <AnimatedSection>
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Applications</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Review, assign and manage all citizen applications.
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            <Button className="gap-2" onClick={() => setCreateOpen(true)}>
+              <Plus className="h-4 w-4" /> Create Application
+            </Button>
+          </motion.div>
         </div>
-        <Button className="gap-2" onClick={() => setCreateOpen(true)}>
-          <Plus className="h-4 w-4" /> Create Application
-        </Button>
-      </div>
+      </AnimatedSection>
 
-      <section className="rounded-2xl border border-border bg-card shadow-card overflow-hidden">
+      <AnimatedSection delay={0.1}>
+        <section className="rounded-2xl border border-border bg-card shadow-card overflow-hidden">
         <div className="p-4 sm:p-6 border-b border-border">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
@@ -286,6 +301,7 @@ function AdminApplications() {
           </div>
         </div>
       </section>
+      </AnimatedSection>
 
       <AdminApplicationDialog
         app={selected}

@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { AnimatedSection, AnimatedGrid, AnimatedItem } from "@/components/AnimatedSection";
 import { AdminLayout } from "@/components/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -87,37 +89,50 @@ function CitizensPage() {
 
   return (
     <AdminLayout title="Citizens">
-      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-        <div>
+      <AnimatedSection>
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4 }}
+        >
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Citizens Management</h1>
           <p className="text-sm text-muted-foreground mt-1">
             View, search and manage registered citizen profiles.
           </p>
-        </div>
-      </div>
+        </motion.div>
+      </AnimatedSection>
 
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
-        <StatCard
-          label="Total Registered"
-          value={userData.total}
-          icon={Users}
-          tint="bg-primary/10 text-primary"
-        />
-        <StatCard
-          label="Active Citizens"
-          value={userData.total}
-          icon={UserCheck}
-          tint="bg-emerald-100 text-emerald-700"
-        />
-        <StatCard
-          label="With Applications"
-          value="—"
-          icon={FileText}
-          tint="bg-violet-100 text-violet-700"
-        />
-      </div>
+      <AnimatedSection delay={0.05}>
+        <AnimatedGrid className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+          <AnimatedItem>
+            <StatCard
+              label="Total Registered"
+              value={userData.total}
+              icon={Users}
+              tint="bg-primary/10 text-primary"
+            />
+          </AnimatedItem>
+          <AnimatedItem>
+            <StatCard
+              label="Active Citizens"
+              value={userData.total}
+              icon={UserCheck}
+              tint="bg-emerald-100 text-emerald-700"
+            />
+          </AnimatedItem>
+          <AnimatedItem>
+            <StatCard
+              label="With Applications"
+              value="—"
+              icon={FileText}
+              tint="bg-violet-100 text-violet-700"
+            />
+          </AnimatedItem>
+        </AnimatedGrid>
+      </AnimatedSection>
 
-      <section className="rounded-2xl border border-border bg-card shadow-card overflow-hidden">
+      <AnimatedSection delay={0.1}>
+        <section className="rounded-2xl border border-border bg-card shadow-card overflow-hidden">
         <div className="p-4 sm:p-6 border-b border-border">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
@@ -280,6 +295,7 @@ function CitizensPage() {
           </div>
         </div>
       </section>
+      </AnimatedSection>
 
       <CitizenDetailsDialog
         citizen={selected}
