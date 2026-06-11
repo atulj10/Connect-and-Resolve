@@ -1,43 +1,32 @@
 import nodemailer from "nodemailer";
-import dns from "node:dns";
 import type { EmailProvider } from "./email.provider.js";
 import { env } from "../../config/env.js";
 
 export class NodemailerProvider implements EmailProvider {
   private transporter: nodemailer.Transporter | null = null;
-  private initPromise: Promise<void> | null = null;
 
   constructor() {
     if (env.smtp.user && env.smtp.pass) {
-      this.initPromise = this.init();
-    }
-  }
-
-  private async init() {
-    try {
-      const addresses = await dns.promises.resolve4(env.smtp.host);
-      const host = addresses[0];
+      // Initialize immediately without complex asynchronous DNS wrappers
       this.transporter = nodemailer.createTransport({
-        host,
-        port: env.smtp.port,
-        secure: env.smtp.port === 465,
-        auth: { user: env.smtp.user, pass: env.smtp.pass },
-        connectionTimeout: 10000,
-      });
-    } catch (err) {
-      console.error("[Nodemailer] DNS resolution failed:", err);
-      this.transporter = nodemailer.createTransport({
-        host: env.smtp.host,
-        port: env.smtp.port,
-        secure: env.smtp.port === 465,
-        auth: { user: env.smtp.user, pass: env.smtp.pass },
-        connectionTimeout: 10000,
+        host: env.smtp.host, // Pass '://gmail.com' directly here
+        port: env.smtp.port, // Ensure env.config parses this as a number (587)
+        secure: env.smtp.port === 465, // false for 587
+        auth: { 
+          user: env.smtp.user, 
+          pass: env.smtp.pass 
+        },
+        connectionTimeout: 15000, // Slightly increased for cold-start spikes on Render
+        // Crucial cloud adjustments for Port 587:
+        requireTLS: env.smtp.port === 587, 
+        tls: {
+          rejectUnauthorized: false, // Prevents Render's container from blocking the handshake
+        },
       });
     }
   }
 
   async send(to: string, subject: string, body: string): Promise<void> {
-    if (this.initPromise) await this.initPromise;
     if (!this.transporter) {
       if (env.nodeEnv === "production") {
         throw new Error("Email provider (SMTP) is not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASS.");
@@ -45,12 +34,18 @@ export class NodemailerProvider implements EmailProvider {
       console.log(`[Email Mock] To: ${to}, Subject: ${subject}, Body: ${body}`);
       return;
     }
-    await this.transporter.sendMail({
-      from: env.smtp.from || env.smtp.user,
-      to,
-      subject,
-      html: body,
-    });
-    console.log(`[Email Sent] To: ${to}, Subject: ${subject}`);
+
+    try {
+      await this.transporter.sendMail({
+        from: env.smtp.from || env.smtp.user,
+        to,
+        subject,
+        html: body,
+      });
+      console.log(`[Email Sent] To: ${to}, Subject: ${subject}`);
+    } catch (error) {
+      console.error("[Nodemailer] Render execution failed to send email:", error);
+      throw error;
+    }
   }
 }
