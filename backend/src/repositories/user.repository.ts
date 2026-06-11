@@ -42,7 +42,7 @@ export const userRepository = {
 
   create(data: {
     fullName: string;
-    mobileNumber: string;
+    mobileNumber?: string;
     email?: string;
     role: UserRole;
     mobileVerified?: boolean;

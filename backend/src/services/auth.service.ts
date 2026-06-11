@@ -60,16 +60,19 @@ export const authService = {
 
   async verifyOtpAndRegister(identifier: string, code: string, registrationData: { fullName: string; mobileNumber: string; email?: string }) {
     await otpService.verifyOtp(identifier, code, "REGISTER");
-    const existing = await userRepository.findByMobile(registrationData.mobileNumber);
-    if (existing) throw new Error("Mobile number already registered");
+    const isEmailIdentifier = isEmail(identifier);
+    if (registrationData.mobileNumber) {
+      const existing = await userRepository.findByMobile(registrationData.mobileNumber);
+      if (existing) throw new Error("Mobile number already registered");
+    }
 
     const user = await userRepository.create({
       fullName: registrationData.fullName,
-      mobileNumber: registrationData.mobileNumber,
+      mobileNumber: registrationData.mobileNumber || undefined,
       email: registrationData.email || undefined,
       role: "CITIZEN",
-      mobileVerified: !isEmail(identifier),
-      emailVerified: isEmail(identifier),
+      mobileVerified: !isEmailIdentifier,
+      emailVerified: isEmailIdentifier,
     });
 
     const token = jwt.sign({ id: user.id, role: user.role }, env.jwtSecret, {
