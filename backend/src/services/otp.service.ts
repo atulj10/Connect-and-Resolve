@@ -22,9 +22,17 @@ export const otpService = {
     const message = `Your Connect&Resolve OTP is ${code}. It expires in ${OTP_EXPIRY_MINUTES} minutes.`;
 
     if (isEmail(identifier)) {
-      await emailProvider.send(identifier, `OTP for ${purpose.toLowerCase()}`, `<p>${message}</p>`);
+      try {
+        await emailProvider.send(identifier, `OTP for ${purpose.toLowerCase()}`, `<p>${message}</p>`);
+      } catch (err) {
+        console.error("[OTP] Email delivery failed:", err);
+      }
     } else {
-      await smsProvider.send(identifier, message);
+      try {
+        await smsProvider.send(identifier, message);
+      } catch (err) {
+        console.error("[OTP] SMS delivery failed:", err);
+      }
     }
 
     return { message: "OTP sent successfully" };
