@@ -192,7 +192,7 @@ function CitizenDashboard() {
         open={!!selected}
         onOpenChange={(o) => !o && setSelected(null)}
       />
-      <NewApplicationDialog mode="citizen" open={createOpen} onOpenChange={setCreateOpen} />
+      <NewApplicationDialog mode="citizen" open={createOpen} onOpenChange={setCreateOpen} onSuccess={fetchApps} />
     </CitizenLayout>
   );
 }
