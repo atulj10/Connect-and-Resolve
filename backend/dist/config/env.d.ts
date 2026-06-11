@@ -19,6 +19,10 @@ export declare const env: {
         readonly email: string;
         readonly password: string;
     };
+    readonly brevo: {
+        readonly apiKey: string;
+        readonly from: string;
+    };
     readonly smtp: {
         readonly host: string;
         readonly port: number;

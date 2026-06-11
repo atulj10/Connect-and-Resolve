@@ -19,8 +19,12 @@ export const env = {
         email: process.env.ADMIN_EMAIL || "rajeev.menon@minister.gov.in",
         password: process.env.ADMIN_PASSWORD || "admin@123",
     },
+    brevo: {
+        apiKey: process.env.BREVO_API_KEY || "",
+        from: process.env.EMAIL_FROM || "",
+    },
     smtp: {
-        host: process.env.SMTP_HOST || "smtp.gmail.com",
+        host: process.env.SMTP_HOST || "",
         port: parseInt(process.env.SMTP_PORT || "587", 10),
         user: process.env.SMTP_USER || "",
         pass: process.env.SMTP_PASS || "",
