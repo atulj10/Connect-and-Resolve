@@ -16,11 +16,16 @@ export class ResendProvider implements EmailProvider {
       console.log(`[Email Mock] To: ${to}, Subject: ${subject}, Body: ${body}`);
       return;
     }
-    await this.client.emails.send({
-      from: "Connect&Resolve <notifications@connect-resolve.gov.in>",
+    const { data, error } = await this.client.emails.send({
+      from: "Connect&Resolve <onboarding@resend.dev>",
       to,
       subject,
       html: body,
     });
+    if (error) {
+      console.error("[Resend Error]", error);
+      throw new Error(`Failed to send email: ${error.message}`);
+    }
+    console.log(`[Email Sent] To: ${to}, Subject: ${subject}, ResendId: ${data?.id}`);
   }
 }
