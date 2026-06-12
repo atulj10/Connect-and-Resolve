@@ -3,7 +3,7 @@ import type { Prisma } from "@prisma/client";
 
 export const userRepository = {
   findById(id: string) {
-    return prisma.user.findUnique({ where: { id } });
+    return prisma.user.findFirst({ where: { id, role: "CITIZEN" } });
   },
 
   findByMobile(mobileNumber: string) {
@@ -16,6 +16,7 @@ export const userRepository = {
 
   findAll(skip = 0, take = 10) {
     return prisma.user.findMany({
+      where: { role: "CITIZEN" },
       skip,
       take,
       orderBy: { createdAt: "desc" },
@@ -23,12 +24,13 @@ export const userRepository = {
   },
 
   countAll() {
-    return prisma.user.count();
+    return prisma.user.count({ where: { role: "CITIZEN" } });
   },
 
   search(query: string) {
     return prisma.user.findMany({
       where: {
+        role: "CITIZEN",
         OR: [
           { fullName: { contains: query } },
           { mobileNumber: { contains: query } },
