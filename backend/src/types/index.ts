@@ -21,12 +21,9 @@ export const DEPARTMENTS = [
 
 export const STATUSES = [
   "Submitted",
-  "Under Review",
-  "Forwarded to Department",
   "In Process",
-  "Action Taken",
   "Resolved",
-  "Closed",
+  "Rejected",
 ] as const;
 
 export const APPLICATION_SOURCES = ["CITIZEN", "ADMIN"] as const;

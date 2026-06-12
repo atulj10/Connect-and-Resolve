@@ -115,9 +115,9 @@ export const applicationRepository = {
     const where = { userId, createdAt: { gte: since } };
     const all = await prisma.application.findMany({ where: where as any, select: { status: true, category: true } });
     const total = all.length;
-    const pending = all.filter((a) => ["Submitted", "Under Review", "Forwarded to Department", "In Process", "Action Taken"].includes(a.status)).length;
+    const pending = all.filter((a) => a.status === "Submitted" || a.status === "In Process").length;
     const resolved = all.filter((a) => a.status === "Resolved").length;
-    const closed = all.filter((a) => a.status === "Closed").length;
+    const closed = all.filter((a) => a.status === "Rejected").length;
 
     const categoryMap = new Map<string, number>();
     const statusMap = new Map<string, number>();
@@ -142,8 +142,8 @@ export const applicationRepository = {
     const all = await prisma.application.findMany({ where: where as any, select: { status: true, category: true, department: true, district: true, createdAt: true } });
 
     const total = all.length;
-    const pending = all.filter((a) => ["Submitted", "Under Review", "Forwarded to Department", "In Process", "Action Taken"].includes(a.status)).length;
-    const resolved = all.filter((a) => ["Resolved", "Closed"].includes(a.status)).length;
+    const pending = all.filter((a) => a.status === "Submitted" || a.status === "In Process").length;
+    const resolved = all.filter((a) => a.status === "Resolved").length;
 
     const categoryMap = new Map<string, number>();
     const departmentPending = new Map<string, number>();
@@ -154,10 +154,10 @@ export const applicationRepository = {
     all.forEach((a) => {
       categoryMap.set(a.category, (categoryMap.get(a.category) ?? 0) + 1);
       districtMap.set(a.district, (districtMap.get(a.district) ?? 0) + 1);
-      if (["Submitted", "Under Review", "Forwarded to Department", "In Process", "Action Taken"].includes(a.status)) {
+      if (a.status === "Submitted" || a.status === "In Process") {
         departmentPending.set(a.department, (departmentPending.get(a.department) ?? 0) + 1);
       }
-      if (["Resolved", "Closed"].includes(a.status)) {
+      if (a.status === "Resolved") {
         departmentResolved.set(a.department, (departmentResolved.get(a.department) ?? 0) + 1);
       }
       const m = new Date(a.createdAt).toLocaleString("en-US", { month: "short", year: "numeric" });
@@ -168,7 +168,7 @@ export const applicationRepository = {
       total,
       pending,
       resolved,
-      closed: all.filter((a) => a.status === "Closed").length,
+      closed: all.filter((a) => a.status === "Rejected").length,
       categoryDistribution: Array.from(categoryMap.entries()).map(([n, v]) => ({ name: n, value: v })),
       departmentPendency: Array.from(new Set([...departmentPending.keys(), ...departmentResolved.keys()])).map((d) => ({
         department: d,

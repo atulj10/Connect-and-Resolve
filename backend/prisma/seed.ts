@@ -27,8 +27,7 @@ const DEPARTMENTS = [
 ] as const;
 
 const STATUSES = [
-  "Submitted", "Under Review", "Forwarded to Department",
-  "In Process", "Action Taken", "Resolved", "Closed",
+  "Submitted", "In Process", "Resolved", "Rejected",
 ] as const;
 
 const POLICE_STATIONS = ["City PS", "Sadar PS", "Rural PS", "Model PS"];
@@ -155,9 +154,11 @@ async function main() {
         pincode: String(800000 + Math.floor(r() * 100000)),
         department,
         status,
-        adminRemarks: status === "Resolved" || status === "Closed"
+        adminRemarks: status === "Resolved"
           ? "Issue has been addressed by the concerned department. Follow-up inspection scheduled."
-          : "Pending review from concerned department.",
+          : status === "Rejected"
+            ? "Application has been reviewed and rejected due to insufficient information."
+            : "Pending review from concerned department.",
         internalNotes: "Verified with field officer. Awaiting departmental confirmation.",
         userId: citizen.id,
         createdAt: created,

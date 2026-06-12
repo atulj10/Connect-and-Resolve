@@ -13,7 +13,7 @@ import {
 import { toast } from "sonner";
 import { getApiError } from "@/lib/api/client";
 import { analyticsApi, type AdminAnalytics } from "@/lib/api/analytics";
-import { CheckCircle2, Clock, FileText, Gauge, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, FileText, XCircle } from "lucide-react";
 import {
   ResponsiveContainer,
   PieChart,
@@ -78,13 +78,12 @@ function AdminAnalytics() {
         pending: analytics.pending,
         resolved: analytics.resolved,
         closed: analytics.closed,
-        review: analytics.pending,
         disposal:
           analytics.total > 0
             ? Math.round(((analytics.resolved + analytics.closed) / analytics.total) * 100)
             : 0,
       }
-    : { total: 0, pending: 0, review: 0, resolved: 0, closed: 0, disposal: 0 };
+    : { total: 0, pending: 0, resolved: 0, closed: 0, disposal: 0 };
 
   const topIssuesData = (analytics?.categoryDistribution ?? [])
     .slice()
@@ -172,10 +171,10 @@ function AdminAnalytics() {
               </AnimatedItem>
               <AnimatedItem>
                 <KpiCard
-                  label="Under Review"
-                  value={stats.review}
-                  icon={Gauge}
-                  tint="bg-violet-100 text-violet-700"
+                  label="Rejected"
+                  value={stats.closed}
+                  icon={XCircle}
+                  tint="bg-red-100 text-red-700"
                 />
               </AnimatedItem>
               <AnimatedItem>
@@ -184,14 +183,6 @@ function AdminAnalytics() {
                   value={stats.resolved}
                   icon={CheckCircle2}
                   tint="bg-emerald-100 text-emerald-700"
-                />
-              </AnimatedItem>
-              <AnimatedItem>
-                <KpiCard
-                  label="Closed"
-                  value={stats.closed}
-                  icon={XCircle}
-                  tint="bg-slate-100 text-slate-700"
                 />
               </AnimatedItem>
               <AnimatedItem>

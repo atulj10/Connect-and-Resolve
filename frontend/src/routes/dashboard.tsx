@@ -25,7 +25,7 @@ import { ApplicationDetailsDialog } from "@/components/ApplicationDetailsDialog"
 import { NewApplicationDialog } from "@/components/NewApplicationDialog";
 import { toast } from "sonner";
 import { getApiError } from "@/lib/api/client";
-import { CATEGORIES, formatDate } from "@/lib/applications";
+import { CATEGORIES, STATUSES, formatDate } from "@/lib/applications";
 import type { ApplicationDto } from "@/lib/api/applications";
 import { applicationsApi } from "@/lib/api/applications";
 import { analyticsApi, type CitizenAnalytics } from "@/lib/api/analytics";
@@ -279,10 +279,10 @@ function AnalyticsView({
             </AnimatedItem>
             <AnimatedItem>
               <KpiCard
-                label="Closed"
+                label="Rejected"
                 value={analytics?.closed ?? 0}
                 icon={XCircle}
-                tint="bg-slate-100 text-slate-700"
+                tint="bg-red-100 text-red-700"
               />
             </AnimatedItem>
           </AnimatedGrid>
@@ -459,15 +459,7 @@ function ApplicationsView({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Statuses</SelectItem>
-                  {[
-                    "Submitted",
-                    "Under Review",
-                    "Forwarded to Department",
-                    "In Process",
-                    "Action Taken",
-                    "Resolved",
-                    "Closed",
-                  ].map((s) => (
+                  {STATUSES.map((s) => (
                     <SelectItem key={s} value={s}>
                       {s}
                     </SelectItem>

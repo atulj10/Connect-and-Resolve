@@ -1,20 +1,14 @@
 export type AppStatus =
   | "Submitted"
-  | "Under Review"
-  | "Forwarded to Department"
   | "In Process"
-  | "Action Taken"
   | "Resolved"
-  | "Closed";
+  | "Rejected";
 
 export const STATUSES: AppStatus[] = [
   "Submitted",
-  "Under Review",
-  "Forwarded to Department",
   "In Process",
-  "Action Taken",
   "Resolved",
-  "Closed",
+  "Rejected",
 ];
 
 export const CATEGORIES = [
@@ -170,9 +164,11 @@ export function generateApplications(count = 48): Application[] {
           ? "Detailed description of the issue reported by the citizen, including location, time of occurrence, and impact on the community."
           : undefined,
       remarks:
-        status === "Resolved" || status === "Closed"
+        status === "Resolved"
           ? "Issue has been addressed by the concerned department. Follow-up inspection scheduled."
-          : "Pending review from concerned department.",
+          : status === "Rejected"
+            ? "Application has been reviewed and rejected due to insufficient information."
+            : "Pending review from concerned department.",
       internalNotes: "Verified with field officer. Awaiting departmental confirmation.",
       attachments: ["complaint_photo.jpg", "site_report.pdf"],
     };
@@ -181,12 +177,9 @@ export function generateApplications(count = 48): Application[] {
 
 export const STATUS_STYLES: Record<AppStatus, string> = {
   Submitted: "bg-blue-50 text-blue-700 border-blue-200",
-  "Under Review": "bg-amber-50 text-amber-700 border-amber-200",
-  "Forwarded to Department": "bg-violet-50 text-violet-700 border-violet-200",
   "In Process": "bg-indigo-50 text-indigo-700 border-indigo-200",
-  "Action Taken": "bg-cyan-50 text-cyan-700 border-cyan-200",
   Resolved: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  Closed: "bg-slate-100 text-slate-700 border-slate-200",
+  Rejected: "bg-red-50 text-red-700 border-red-200",
 };
 
 export function formatDate(iso: string) {
