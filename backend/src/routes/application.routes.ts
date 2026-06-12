@@ -7,6 +7,7 @@ import {
   updateStatusSchema,
   updateDepartmentSchema,
   addRemarksSchema,
+  updateApplicationSchema,
   applicationQuerySchema,
 } from "../types/index.js";
 
@@ -18,6 +19,7 @@ router.get("/", validateQuery(applicationQuerySchema), applicationController.lis
 router.get("/:id", applicationController.getById);
 router.post("/", validate(createApplicationSchema), applicationController.create);
 router.post("/admin", requireAdmin, validate(createApplicationSchema), applicationController.createByAdmin);
+router.patch("/:id", requireAdmin, validate(updateApplicationSchema), applicationController.updateApplication);
 router.patch("/:id/status", requireAdmin, validate(updateStatusSchema), applicationController.updateStatus);
 router.patch("/:id/department", requireAdmin, validate(updateDepartmentSchema), applicationController.updateDepartment);
 router.patch("/:id/remarks", requireAdmin, validate(addRemarksSchema), applicationController.addRemarks);

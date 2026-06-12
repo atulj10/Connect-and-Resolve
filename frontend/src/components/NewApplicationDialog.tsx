@@ -181,7 +181,8 @@ export function NewApplicationDialog({
           : await applicationsApi.create(payload);
 
       if (files.length > 0) {
-        await Promise.all(files.map((f) => applicationsApi.uploadAttachment(result.id, f)));
+        const timelineEntryId = (result as any).initialTimelineEntry?.id;
+        await Promise.all(files.map((f) => applicationsApi.uploadAttachment(result.id, f, timelineEntryId)));
       }
 
       const ref = result.referenceNumber || "";

@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,8 +9,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatDate } from "@/lib/applications";
-import type { ApplicationDto } from "@/lib/api/applications";
-import { Paperclip, User, Phone, MapPin, Building2 } from "lucide-react";
+import { applicationsApi, type ApplicationDto, type TimelineEntry } from "@/lib/api/applications";
+import { Paperclip, User, Phone, MapPin, Building2, Clock, ArrowRight } from "lucide-react";
 
 export function ApplicationDetailsDialog({
   app,
@@ -20,6 +21,19 @@ export function ApplicationDetailsDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
+  const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
+  const fetchIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (app && open) {
+      fetchIdRef.current = app.id;
+      applicationsApi.getById(app.id).then((res) => {
+        if (fetchIdRef.current !== app.id) return;
+        setTimeline(res.timeline ?? []);
+      }).catch(() => {});
+    }
+  }, [app?.id, open]);
+
   if (!app) return null;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -73,37 +87,91 @@ export function ApplicationDetailsDialog({
           </p>
         </div>
 
-        <div>
-          <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-primary" /> Departmental Remarks
-          </h3>
-          <p className="text-sm text-muted-foreground leading-relaxed bg-secondary/40 rounded-lg p-3 border border-border">
-            {app.adminRemarks || "No remarks yet."}
-          </p>
-        </div>
+        <Separator />
 
         <div>
-          <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
-            <Paperclip className="h-4 w-4 text-primary" /> Attachments
+          <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+            <Clock className="h-4 w-4 text-primary" /> Application Timeline
           </h3>
-          <div className="flex flex-wrap gap-2">
-            {!app.attachments || app.attachments.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No attachments</p>
+          <div className="space-y-3">
+            {timeline.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No timeline entries.</p>
             ) : (
-              app.attachments.map((a) => (
-                <div
-                  key={a.id}
-                  className="text-xs rounded-md border border-border bg-secondary/40 px-2.5 py-1.5 flex items-center gap-1.5"
-                >
-                  <Paperclip className="h-3 w-3 text-muted-foreground" />
-                  {a.fileName}
-                </div>
+              timeline.map((entry, idx) => (
+                <TimelineCard key={entry.id} entry={entry} isFirst={idx === 0} isCitizen />
               ))
             )}
           </div>
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+export function TimelineCard({
+  entry,
+  isFirst,
+  isCitizen,
+}: {
+  entry: TimelineEntry;
+  isFirst?: boolean;
+  isCitizen?: boolean;
+}) {
+  return (
+    <div className="relative pl-6 border-l-2 border-border pb-3 last:pb-0">
+      <div className="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-primary bg-card" />
+
+      <div className="rounded-lg border border-border bg-card p-3 space-y-2 text-sm">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
+            {entry.oldStatus && entry.oldStatus !== entry.status ? (
+              <span className="flex items-center gap-1 text-xs font-medium">
+                <StatusBadge status={entry.oldStatus} />
+                <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                <StatusBadge status={entry.status} />
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 text-xs font-medium">
+                <StatusBadge status={entry.status} />
+              </span>
+            )}
+            {entry.department && (
+              <span className="text-xs text-muted-foreground bg-secondary/50 px-2 py-0.5 rounded">
+                {entry.oldDepartment && entry.oldDepartment !== entry.department
+                  ? `${entry.oldDepartment} → ${entry.department}`
+                  : entry.department}
+              </span>
+            )}
+          </div>
+          <span className="text-xs text-muted-foreground whitespace-nowrap">
+            {formatDate(entry.createdAt)}
+          </span>
+        </div>
+
+        {entry.adminRemarks && (
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            <span className="font-medium text-foreground">Remarks: </span>{entry.adminRemarks}
+          </p>
+        )}
+
+        {entry.attachments && entry.attachments.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {entry.attachments.map((a) => (
+              <a
+                key={a.id}
+                href={a.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs rounded border border-border bg-secondary/40 px-2 py-1 hover:bg-secondary/70 transition-colors"
+              >
+                <Paperclip className="h-3 w-3 text-muted-foreground" />
+                {a.fileName}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

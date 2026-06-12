@@ -1,5 +1,29 @@
 import { apiClient } from "./client";
 
+export interface TimelineAttachment {
+  id: string;
+  url: string;
+  fileName: string;
+  mimeType: string;
+  size: number;
+}
+
+export interface TimelineEntry {
+  id: string;
+  applicationId: string;
+  oldStatus: string | null;
+  status: string;
+  oldDepartment: string | null;
+  department: string | null;
+  adminRemarks: string | null;
+  internalNotes: string | null;
+  changedById: string | null;
+  changedBy: { id: string; fullName: string; role: string } | null;
+  attachments: TimelineAttachment[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ApplicationDto {
   id: string;
   referenceNumber: string;
@@ -31,6 +55,12 @@ export interface ApplicationDto {
     size: number;
   }>;
   user?: { fullName: string; mobileNumber: string; email?: string };
+  initialTimelineEntry?: TimelineEntry;
+}
+
+export interface ApplicationDetailResponse {
+  application: ApplicationDto;
+  timeline: TimelineEntry[];
 }
 
 export interface PaginatedResponse<T> {
@@ -95,7 +125,20 @@ export const applicationsApi = {
   },
 
   getById(id: string) {
-    return apiClient.get<ApplicationDto>(`/applications/${id}`).then((r) => r.data);
+    return apiClient
+      .get<ApplicationDetailResponse>(`/applications/${id}`)
+      .then((r) => r.data);
+  },
+
+  updateApplication(id: string, data: {
+    status?: string;
+    department?: string;
+    adminRemarks?: string;
+    internalNotes?: string;
+  }) {
+    return apiClient
+      .patch<ApplicationDto>(`/applications/${id}`, data)
+      .then((r) => r.data);
   },
 
   updateStatus(id: string, status: string) {
@@ -114,9 +157,12 @@ export const applicationsApi = {
     return apiClient.patch<ApplicationDto>(`/applications/${id}/remarks`, data).then((r) => r.data);
   },
 
-  uploadAttachment(id: string, file: File) {
+  uploadAttachment(id: string, file: File, timelineEntryId?: string) {
     const formData = new FormData();
     formData.append("file", file);
+    if (timelineEntryId) {
+      formData.append("timelineEntryId", timelineEntryId);
+    }
     return apiClient.post(`/applications/${id}/attachments`, formData).then((r) => r.data);
   },
 };

@@ -53,14 +53,23 @@ export const applicationController = {
 
   async getById(req: Request, res: Response) {
     try {
-      const app = await applicationService.getById(req.params.id as string);
-      if (req.user!.role === "CITIZEN" && app.userId !== req.user!.id) {
+      const { application, timeline } = await applicationService.getById(req.params.id as string);
+      if (req.user!.role === "CITIZEN" && application.userId !== req.user!.id) {
         res.status(403).json({ error: "Access denied" });
         return;
       }
-      res.json(app);
+      res.json({ application, timeline });
     } catch (err: any) {
       res.status(404).json({ error: err.message });
+    }
+  },
+
+  async updateApplication(req: Request, res: Response) {
+    try {
+      const { application, timelineEntry } = await applicationService.updateApplication(req.params.id as string, req.body, req.user!.id);
+      res.json({ application, timelineEntry });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
     }
   },
 
@@ -103,7 +112,14 @@ export const applicationController = {
         return;
       }
       try {
-        const attachment = await applicationService.uploadAttachment(req.params.id as string, req.file.path, req.file.originalname);
+        const timelineEntryId = req.body.timelineEntryId as string | undefined;
+        const attachment = await applicationService.uploadAttachment(
+          req.params.id as string,
+          req.file.path,
+          req.file.originalname,
+          req.user!.id,
+          timelineEntryId,
+        );
         fs.unlink(req.file.path, () => {});
         res.status(201).json(attachment);
       } catch (err: any) {

@@ -69,24 +69,41 @@ model Attachment {
   fileName  String
   mimeType  String
   size      Int
-  applicationId String
+
+  applicationId             String
+  application               Application @relation(fields: [applicationId], references: [id])
+
+  applicationStatusHistoryId String?
+  applicationStatusHistory   ApplicationStatusHistory? @relation(fields: [applicationStatusHistoryId], references: [id])
+
   createdAt DateTime @default(now())
 
-  application Application @relation(fields: [applicationId], references: [id])
-
   @@index([applicationId])
+  @@index([applicationStatusHistoryId])
 }
 
 model ApplicationStatusHistory {
-  id            String   @id @default(cuid())
-  applicationId String
-  oldStatus     String?
-  newStatus     String
-  changedById   String
-  createdAt     DateTime @default(now())
+  id              String   @id @default(cuid())
 
-  application Application @relation(fields: [applicationId], references: [id])
-  changedBy   User        @relation(fields: [changedById], references: [id])
+  applicationId   String
+  application     Application @relation(fields: [applicationId], references: [id])
+
+  oldStatus       String?
+  status          String
+
+  oldDepartment   String?
+  department      String?
+
+  adminRemarks    String?
+  internalNotes   String?
+
+  changedById     String?
+  changedBy       User?       @relation(fields: [changedById], references: [id])
+
+  attachments     Attachment[]
+
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
   @@index([applicationId])
 }

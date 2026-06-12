@@ -103,6 +103,13 @@ export const addRemarksSchema = z.object({
   internalNotes: z.string().max(1000).optional().or(z.literal("")),
 });
 
+export const updateApplicationSchema = z.object({
+  status: z.enum(STATUSES).optional(),
+  department: z.enum(DEPARTMENTS).optional(),
+  adminRemarks: z.string().max(1000).optional().or(z.literal("")),
+  internalNotes: z.string().max(1000).optional().or(z.literal("")),
+});
+
 export const applicationQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   pageSize: z.coerce.number().int().positive().max(100).default(10),
