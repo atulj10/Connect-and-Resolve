@@ -25,7 +25,7 @@ import { ApplicationDetailsDialog } from "@/components/ApplicationDetailsDialog"
 import { NewApplicationDialog } from "@/components/NewApplicationDialog";
 import { toast } from "sonner";
 import { getApiError } from "@/lib/api/client";
-import { formatDate } from "@/lib/applications";
+import { CATEGORIES, formatDate } from "@/lib/applications";
 import type { ApplicationDto } from "@/lib/api/applications";
 import { applicationsApi } from "@/lib/api/applications";
 import { analyticsApi, type CitizenAnalytics } from "@/lib/api/analytics";
@@ -446,16 +446,7 @@ function ApplicationsView({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {[
-                    "Water Supply",
-                    "Electricity",
-                    "Roads & Infrastructure",
-                    "Sanitation",
-                    "Healthcare",
-                    "Education",
-                    "Public Safety",
-                    "Revenue",
-                  ].map((c) => (
+                  {CATEGORIES.map((c) => (
                     <SelectItem key={c} value={c}>
                       {c}
                     </SelectItem>

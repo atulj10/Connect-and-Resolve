@@ -24,14 +24,7 @@ import { applicationsApi } from "@/lib/api/applications";
 import { getApiError } from "@/lib/api/client";
 import { getStoredUser } from "@/lib/auth";
 import districtBlocks from "@/assets/district_blocks.json";
-
-export const APP_CATEGORIES = [
-  "Application (आवेदन)",
-  "Grievance (परिवाद)",
-  "Complaint (शिकायत)",
-  "Suggestion (सुझाव)",
-  "Others (अन्य)",
-] as const;
+import { CATEGORIES } from "@/lib/applications";
 
 const MAX_FILES = 5;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -363,7 +356,7 @@ export function NewApplicationDialog({
                     <SelectValue placeholder="Select category (Not Confirmed)" />
                   </SelectTrigger>
                   <SelectContent>
-                    {APP_CATEGORIES.map((c) => (
+                    {CATEGORIES.map((c) => (
                       <SelectItem key={c} value={c}>
                         {c}
                       </SelectItem>

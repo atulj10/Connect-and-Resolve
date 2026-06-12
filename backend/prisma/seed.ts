@@ -16,8 +16,8 @@ const ALL_BLOCKS = districtBlocks.flatMap((d) => d.block);
 const prisma = new PrismaClient();
 
 const CATEGORIES = [
-  "Water Supply", "Electricity", "Roads & Infrastructure",
-  "Sanitation", "Healthcare", "Education", "Public Safety", "Revenue",
+  "Application (आवेदन)", "Grievance (परिवाद)",
+  "Complaint (शिकायत)", "Suggestion (सुझाव)", "Others (अन्य)",
 ] as const;
 
 const DEPARTMENTS = [
