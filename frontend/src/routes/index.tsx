@@ -197,14 +197,14 @@ function Index() {
               >
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
                   <Shield className="h-3.5 w-3.5" />
-                  Government of Bihar Initiative
+                  Minister's cell, Govt. of Bihar
                 </div>
                 <h1 className="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                   Connecting Citizens with <span className="text-primary">Better Governance</span>
                 </h1>
                 <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
                   A unified digital platform empowering citizens to submit complaints, grievances,
-                  suggestions, and assistance requests directly to government departments — ensuring
+                  suggestions, and assistance requests directly to minister's office — ensuring
                   transparency, accountability, and faster resolution.
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
