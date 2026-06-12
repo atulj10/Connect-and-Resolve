@@ -12,6 +12,7 @@ export interface ApplicationDto {
   villageMohalla: string;
   panchayat: string;
   policeStation: string;
+  assemblyConstituency?: string;
   block: string;
   district: string;
   pincode: string;
@@ -58,11 +59,12 @@ export const applicationsApi = {
     subject: string;
     description?: string;
     villageMohalla: string;
-    panchayat: string;
-    policeStation: string;
+    panchayat?: string;
+    policeStation?: string;
+    assemblyConstituency?: string;
     block: string;
     district: string;
-    pincode: string;
+    pincode?: string;
   }) {
     return apiClient.post<ApplicationDto>("/applications", data).then((r) => r.data);
   },
@@ -74,11 +76,12 @@ export const applicationsApi = {
     subject: string;
     description?: string;
     villageMohalla: string;
-    panchayat: string;
-    policeStation: string;
+    panchayat?: string;
+    policeStation?: string;
+    assemblyConstituency?: string;
     block: string;
     district: string;
-    pincode: string;
+    pincode?: string;
     mobileNumber: string;
     department?: string;
   }) {

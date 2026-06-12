@@ -102,6 +102,7 @@ export function AdminApplicationDialog({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <Info icon={MapPin} text={`${app.villageMohalla}, ${app.panchayat}`} />
             <Info icon={MapPin} text={`PS: ${app.policeStation}, Block: ${app.block}`} />
+            {app.assemblyConstituency && <Info icon={MapPin} text={`Assembly: ${app.assemblyConstituency}`} />}
             <Info icon={MapPin} text={`${app.district} - ${app.pincode}`} />
           </div>
         </div>

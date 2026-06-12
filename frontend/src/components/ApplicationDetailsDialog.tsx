@@ -59,6 +59,7 @@ export function ApplicationDetailsDialog({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <InfoRow icon={MapPin} text={`${app.villageMohalla}, ${app.panchayat}`} />
             <InfoRow icon={MapPin} text={`PS: ${app.policeStation}, Block: ${app.block}`} />
+            {app.assemblyConstituency && <InfoRow icon={MapPin} text={`Assembly: ${app.assemblyConstituency}`} />}
             <InfoRow icon={MapPin} text={`${app.district} - ${app.pincode}`} />
           </div>
         </div>

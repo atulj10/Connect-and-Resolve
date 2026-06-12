@@ -35,11 +35,12 @@ model Application {
   subject           String
   description       String?
   villageMohalla    String
-  panchayat         String
-  policeStation     String
+  panchayat         String?
+  policeStation     String?
+  assemblyConstituency String?
   block             String
   district          String
-  pincode           String
+  pincode           String?
   department        String
   status            String   @default("Submitted")
   adminRemarks      String?

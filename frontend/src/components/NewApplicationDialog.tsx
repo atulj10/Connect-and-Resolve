@@ -26,14 +26,11 @@ import { getStoredUser } from "@/lib/auth";
 import districtBlocks from "@/assets/district_blocks.json";
 
 export const APP_CATEGORIES = [
-  "Water Supply",
-  "Electricity",
-  "Roads & Infrastructure",
-  "Sanitation",
-  "Healthcare",
-  "Education",
-  "Public Safety",
-  "Revenue",
+  "Application (आवेदन)",
+  "Grievance (परिवाद)",
+  "Complaint (शिकायत)",
+  "Suggestion (सुझाव)",
+  "Others (अन्य)",
 ] as const;
 
 const MAX_FILES = 5;
@@ -68,6 +65,7 @@ export function NewApplicationDialog({
   const [villageMohalla, setVillageMohalla] = useState("");
   const [panchayat, setPanchayat] = useState("");
   const [policeStation, setPoliceStation] = useState("");
+  const [assemblyConstituency, setAssemblyConstituency] = useState("");
   const [block, setBlock] = useState("");
   const [district, setDistrict] = useState("");
 
@@ -98,6 +96,7 @@ export function NewApplicationDialog({
     setVillageMohalla("");
     setPanchayat("");
     setPoliceStation("");
+    setAssemblyConstituency("");
     setBlock("");
     setDistrict("");
     setPincode("");
@@ -155,11 +154,9 @@ export function NewApplicationDialog({
       errs.subject = "Subject must be at least 5 characters";
     if (!category) errs.category = "Select a category";
     if (!villageMohalla.trim()) errs.villageMohalla = "Village/Mohalla is required";
-    if (!panchayat.trim()) errs.panchayat = "Panchayat is required";
-    if (!policeStation.trim()) errs.policeStation = "Police station is required";
     if (!block.trim()) errs.block = "Block is required";
     if (!district.trim()) errs.district = "District is required";
-    if (!/^\d{6}$/.test(pincode)) errs.pincode = "Enter a valid 6-digit pincode";
+    if (pincode && !/^\d{6}$/.test(pincode)) errs.pincode = "Enter a valid 6-digit pincode";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -178,11 +175,12 @@ export function NewApplicationDialog({
         subject: subject.trim(),
         description: description.trim() || undefined,
         villageMohalla: villageMohalla.trim(),
-        panchayat: panchayat.trim(),
-        policeStation: policeStation.trim(),
+        panchayat: panchayat.trim() || undefined,
+        policeStation: policeStation.trim() || undefined,
+        assemblyConstituency: assemblyConstituency.trim() || undefined,
         block: block.trim(),
         district: district.trim(),
-        pincode,
+        pincode: pincode || undefined,
       };
       const result =
         mode === "admin"
@@ -198,7 +196,9 @@ export function NewApplicationDialog({
         mode === "citizen"
           ? "Application submitted successfully"
           : "Application created on behalf of citizen",
-        { description: `Reference: ${ref}${files.length > 0 ? ` · ${files.length} file(s) attached` : ""}` },
+        {
+          description: `Reference: ${ref}${files.length > 0 ? ` · ${files.length} file(s) attached` : ""}`,
+        },
       );
       handleOpen(false);
       onSuccess?.();
@@ -225,9 +225,11 @@ export function NewApplicationDialog({
 
         <div className="space-y-6">
           <section>
-            <SectionHeading>Personal Information</SectionHeading>
+            <SectionHeading>
+              Personal Information {`(`}व्यक्तिगत जानकारी{`)`}
+            </SectionHeading>
             <div className="mt-3 grid sm:grid-cols-2 gap-4">
-              <Field label="Applicant Name" error={errors.applicantName}>
+              <Field label="Applicant Name (आवेदक का नाम )" error={errors.applicantName}>
                 <Input
                   value={applicantName}
                   maxLength={80}
@@ -241,7 +243,7 @@ export function NewApplicationDialog({
                   }
                 />
               </Field>
-              <Field label="Father's Name" error={errors.fatherName}>
+              <Field label="Father/Husband's (पिता/पति का नाम) Name" error={errors.fatherName}>
                 <Input
                   value={fatherName}
                   maxLength={80}
@@ -250,7 +252,10 @@ export function NewApplicationDialog({
                 />
               </Field>
               {mode === "admin" && (
-                <Field label="Mobile Number" error={errors.mobileNumber}>
+                <Field
+                  label="Mobile/Whatsapp Number (मोइबाइल/ व्हाट्सएप नंबर)"
+                  error={errors.mobileNumber}
+                >
                   <Input
                     value={mobileNumber}
                     maxLength={10}
@@ -266,9 +271,9 @@ export function NewApplicationDialog({
           <Separator />
 
           <section>
-            <SectionHeading>Address Information</SectionHeading>
+            <SectionHeading>Address Information {`(पूरा पता)`}</SectionHeading>
             <div className="mt-3 grid sm:grid-cols-2 gap-4">
-              <Field label="Village/Mohalla" error={errors.villageMohalla}>
+              <Field label="Village/Mohalla (गाँव/ मोहल्ला)" error={errors.villageMohalla}>
                 <Input
                   value={villageMohalla}
                   maxLength={100}
@@ -276,7 +281,7 @@ export function NewApplicationDialog({
                   placeholder="e.g. Shiv Nagar"
                 />
               </Field>
-              <Field label="Panchayat" error={errors.panchayat}>
+              <Field label="Panchayat (पंचायत)" error={errors.panchayat}>
                 <Input
                   value={panchayat}
                   maxLength={100}
@@ -284,7 +289,7 @@ export function NewApplicationDialog({
                   placeholder="e.g. Gram Panchayat A"
                 />
               </Field>
-              <Field label="Police Station" error={errors.policeStation}>
+              <Field label="Police Station (थाना)" error={errors.policeStation}>
                 <Input
                   value={policeStation}
                   maxLength={100}
@@ -292,7 +297,8 @@ export function NewApplicationDialog({
                   placeholder="e.g. City Police Station"
                 />
               </Field>
-              <Field label="Pincode" error={errors.pincode}>
+
+              <Field label="Pincode (पिनकोड)" error={errors.pincode}>
                 <Input
                   value={pincode}
                   inputMode="numeric"
@@ -301,7 +307,7 @@ export function NewApplicationDialog({
                   placeholder="e.g. 400001"
                 />
               </Field>
-              <Field label="District" error={errors.district}>
+              <Field label="District (जिला)" error={errors.district}>
                 <Select value={district} onValueChange={handleDistrictChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select district" />
@@ -315,7 +321,7 @@ export function NewApplicationDialog({
                   </SelectContent>
                 </Select>
               </Field>
-              <Field label="Block" error={errors.block}>
+              <Field label="Block (प्रखंड)" error={errors.block}>
                 <Select value={block} onValueChange={setBlock} disabled={!district}>
                   <SelectTrigger>
                     <SelectValue
@@ -331,42 +337,54 @@ export function NewApplicationDialog({
                   </SelectContent>
                 </Select>
               </Field>
+
+              <Field label="Assembly Constituency (विधानसभा क्षेत्र)">
+                <Input
+                  value={assemblyConstituency}
+                  maxLength={100}
+                  onChange={(e) => setAssemblyConstituency(e.target.value)}
+                  placeholder="e.g. Vidhan Sabha Constituency"
+                />
+              </Field>
             </div>
           </section>
 
           <Separator />
 
           <section>
-            <SectionHeading>Application Information</SectionHeading>
+            <SectionHeading>
+              Details of Application {`(`}आवेदन से संबंधित जानकारी{`)`}
+            </SectionHeading>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <Field label="Category (आवेदन का प्रकार)" error={errors.category}>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category (Not Confirmed)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {APP_CATEGORIES.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </div>
+
             <div className="mt-3 space-y-4">
-              <Field label="Subject" error={errors.subject}>
+              <Field label="Subject (विषय)" error={errors.subject}>
                 <Input
                   value={subject}
                   maxLength={120}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Brief title of the issue"
+                  placeholder="Subject of Application"
                 />
               </Field>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <Field label="Category" error={errors.category}>
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category (Not Confirmed)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {APP_CATEGORIES.map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {c}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-              </div>
-
               <Field
-                label="Description"
+                label="Description (विवरण)"
                 error={errors.description}
                 hint={`${description.length}/1000 characters`}
               >
@@ -375,7 +393,7 @@ export function NewApplicationDialog({
                   maxLength={1000}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe the issue in detail — when, where, who is affected..."
+                  placeholder="Provide more information"
                 />
               </Field>
             </div>
@@ -384,7 +402,7 @@ export function NewApplicationDialog({
           <Separator />
 
           <section>
-            <SectionHeading>Attachments</SectionHeading>
+            <SectionHeading>Attachments {`(संलग्नक)`}</SectionHeading>
             <div className="mt-3 space-y-2">
               <div className="flex items-center justify-between">
                 <Label className="flex items-center gap-2 text-sm font-normal text-muted-foreground">

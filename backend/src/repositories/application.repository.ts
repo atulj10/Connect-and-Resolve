@@ -82,11 +82,12 @@ export const applicationRepository = {
     subject: string;
     description?: string;
     villageMohalla: string;
-    panchayat: string;
-    policeStation: string;
+    panchayat?: string;
+    policeStation?: string;
+    assemblyConstituency?: string;
     block: string;
     district: string;
-    pincode: string;
+    pincode?: string;
     department: string;
     userId: string;
   }) {
