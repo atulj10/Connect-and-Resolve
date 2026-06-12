@@ -21,7 +21,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { DEPARTMENTS, STATUSES, formatDate, type AppStatus } from "@/lib/applications";
 import { applicationsApi, type ApplicationDto, type TimelineEntry } from "@/lib/api/applications";
 import { getApiError } from "@/lib/api/client";
-import { ExternalLink, FileText, Image, Paperclip, Upload, User, Phone, MapPin, Clock, X } from "lucide-react";
+import { ExternalLink, FileText, Image, Upload, User, Phone, MapPin, Clock, X } from "lucide-react";
 import { toast } from "sonner";
 
 const MAX_FILES = 5;
@@ -43,7 +43,6 @@ export function AdminApplicationDialog({
   const [department, setDepartment] = useState<string>("");
   const [remarks, setRemarks] = useState("");
   const [notes, setNotes] = useState("");
-  const [attachments, setAttachments] = useState<ApplicationDto["attachments"]>([]);
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -55,11 +54,10 @@ export function AdminApplicationDialog({
 
   useEffect(() => {
     if (app) {
-      setStatus((app.status as AppStatus) || "Submitted");
-      setDepartment(app.department || "");
-      setRemarks(app.adminRemarks || "");
-      setNotes(app.internalNotes || "");
-      setAttachments(app.attachments ?? []);
+      setStatus("");
+      setDepartment("");
+      setRemarks("");
+      setNotes("");
       setNewFiles([]);
       setTimeline([]);
       fetchedRef.current = false;
@@ -74,11 +72,6 @@ export function AdminApplicationDialog({
       applicationsApi.getById(app.id).then((res) => {
         if (fetchIdRef.current !== app.id) return;
         setTimeline(res.timeline ?? []);
-        setStatus((res.application.status as AppStatus) || "Submitted");
-        setDepartment(res.application.department || "");
-        setRemarks(res.application.adminRemarks || "");
-        setNotes(res.application.internalNotes || "");
-        setAttachments(res.application.attachments ?? []);
       }).catch((err) => {
         if (fetchIdRef.current !== app.id) return;
         toast.error(getApiError(err, "Failed to load application details"));
@@ -202,7 +195,7 @@ export function AdminApplicationDialog({
             <Label>Assign Department</Label>
             <Select value={department} onValueChange={setDepartment}>
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Select department" />
               </SelectTrigger>
               <SelectContent>
                 {DEPARTMENTS.map((d) => (
@@ -217,7 +210,7 @@ export function AdminApplicationDialog({
             <Label>Update Status</Label>
             <Select value={status} onValueChange={(v) => setStatus(v as AppStatus)}>
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
                 {STATUSES.map((s) => (
@@ -261,32 +254,6 @@ export function AdminApplicationDialog({
         </div>
 
         <div className="space-y-3">
-          <Label className="flex items-center gap-2">
-            <Paperclip className="h-3.5 w-3.5" /> Attachments
-          </Label>
-
-          {attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {attachments.map((a) => (
-                <a
-                  key={a.id}
-                  href={a.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs rounded-md border border-border bg-secondary/40 px-2.5 py-1.5 hover:bg-secondary/70 transition-colors"
-                >
-                  {a.mimeType.startsWith("image/") ? (
-                    <Image className="h-3.5 w-3.5 text-muted-foreground" />
-                  ) : (
-                    <FileText className="h-3.5 w-3.5 text-muted-foreground" />
-                  )}
-                  {a.fileName}
-                  <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                </a>
-              ))}
-            </div>
-          )}
-
           <div
             onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
             onDragLeave={() => setDragging(false)}
