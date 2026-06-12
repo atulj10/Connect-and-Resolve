@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Eye, EyeOff, Landmark, Lock, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Lock, ShieldCheck } from "lucide-react";
+import logoSrc from "@/assets/logo.png";
 import { toast } from "sonner";
 import adminIllustration from "@/assets/admin-illustration.png";
 import { authApi } from "@/lib/api/auth";
@@ -60,8 +61,8 @@ function AdminLoginPage() {
       >
         <div className="flex flex-col px-6 py-10 sm:px-12 lg:px-16 order-2 lg:order-1">
           <Link to="/" className="flex items-center gap-2.5 w-fit">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <Landmark className="h-5 w-5 text-primary-foreground" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg">
+              <img src={logoSrc} alt="Citizen Connect" className="h-9 w-9" />
             </div>
             <div className="flex flex-col">
               <span className="text-base font-bold leading-tight">Citizen Connect</span>

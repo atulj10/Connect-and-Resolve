@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Landmark, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
+import logoSrc from "@/assets/logo.png";
 
 export function Footer() {
   return (
@@ -9,8 +10,8 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-                <Landmark className="h-5 w-5 text-primary-foreground" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg">
+                <img src={logoSrc} alt="Citizen Connect" className="h-9 w-9" />
               </div>
               <div className="flex flex-col">
                 <span className="text-lg font-bold leading-tight tracking-tight text-foreground">

@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { ArrowLeft, BadgeCheck, Landmark, ShieldCheck } from "lucide-react";
+import { ArrowLeft, BadgeCheck, ShieldCheck } from "lucide-react";
+import logoSrc from "@/assets/logo.png";
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { authApi } from "@/lib/api/auth";
@@ -123,8 +124,8 @@ function RegisterPage() {
       >
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <Landmark className="h-5 w-5 text-primary-foreground" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg">
+              <img src={logoSrc} alt="Citizen Connect" className="h-9 w-9" />
             </div>
             <span className="text-lg font-bold tracking-tight">Citizen Connect</span>
           </Link>

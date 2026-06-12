@@ -13,10 +13,10 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
-  Landmark,
   LogOut,
   Menu,
 } from "lucide-react";
+import logoSrc from "@/assets/logo.png";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { getStoredUser, clearStoredAuth } from "@/lib/auth";
@@ -133,8 +133,8 @@ export function CitizenLayout({
                 </SheetContent>
               </Sheet>
               <div className="hidden sm:flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary md:hidden">
-                  <Landmark className="h-5 w-5 text-primary-foreground" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg md:hidden">
+                  <img src={logoSrc} alt="Citizen Connect" className="h-9 w-9" />
                 </div>
                 <div>
                   <h1 className="text-base sm:text-lg font-semibold leading-tight truncate">
@@ -184,8 +184,8 @@ function SidebarInner({
           collapsed && "justify-center px-2",
         )}
       >
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary">
-          <Landmark className="h-5 w-5 text-primary-foreground" />
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+          <img src={logoSrc} alt="Citizen Connect" className="h-9 w-9" />
         </div>
         {!collapsed && (
           <div className="flex flex-col min-w-0">
