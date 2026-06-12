@@ -1,13 +1,10 @@
 import { z } from "zod";
 export const CATEGORIES = [
-    "Water Supply",
-    "Electricity",
-    "Roads & Infrastructure",
-    "Sanitation",
-    "Healthcare",
-    "Education",
-    "Public Safety",
-    "Revenue",
+    "Application (आवेदन)",
+    "Grievance (परिवाद)",
+    "Complaint (शिकायत)",
+    "Suggestion (सुझाव)",
+    "Others (अन्य)",
 ];
 export const DEPARTMENTS = [
     "Public Works",
@@ -21,12 +18,9 @@ export const DEPARTMENTS = [
 ];
 export const STATUSES = [
     "Submitted",
-    "Under Review",
-    "Forwarded to Department",
     "In Process",
-    "Action Taken",
     "Resolved",
-    "Closed",
+    "Rejected",
 ];
 export const APPLICATION_SOURCES = ["CITIZEN", "ADMIN"];
 export const OTP_PURPOSES = ["REGISTER", "LOGIN"];
@@ -65,11 +59,12 @@ export const createApplicationSchema = z.object({
     category: z.enum(CATEGORIES),
     description: z.string().max(1000).optional().or(z.literal("")),
     villageMohalla: z.string().min(1, "Village/Mohalla is required").max(100),
-    panchayat: z.string().min(1, "Panchayat is required").max(100),
-    policeStation: z.string().min(1, "Police station is required").max(100),
+    panchayat: z.string().max(100).optional().or(z.literal("")),
+    policeStation: z.string().max(100).optional().or(z.literal("")),
+    assemblyConstituency: z.string().max(100).optional().or(z.literal("")),
     block: z.string().min(1, "Block is required").max(100),
     district: z.string().min(1, "District is required").max(100),
-    pincode: z.string().regex(/^\d{6}$/, "Enter a valid 6-digit pincode"),
+    pincode: z.string().regex(/^\d{6}$/, "Enter a valid 6-digit pincode").optional().or(z.literal("")),
     department: z.string().optional(),
     // Admin-only: link to existing user
     mobileNumber: z.string().regex(/^\d{10}$/).optional(),

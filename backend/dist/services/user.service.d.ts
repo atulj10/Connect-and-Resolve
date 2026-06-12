@@ -2,9 +2,9 @@ export declare const userService: {
     list(page: number, pageSize: number): Promise<{
         users: {
             id: string;
+            fullName: string;
             mobileNumber: string | null;
             email: string | null;
-            fullName: string;
             password: string | null;
             role: string;
             mobileVerified: boolean;
@@ -19,9 +19,9 @@ export declare const userService: {
     }>;
     search(query: string): Promise<{
         id: string;
+        fullName: string;
         mobileNumber: string | null;
         email: string | null;
-        fullName: string;
         password: string | null;
         role: string;
         mobileVerified: boolean;
@@ -31,9 +31,9 @@ export declare const userService: {
     }[]>;
     getById(id: string): Promise<{
         id: string;
+        fullName: string;
         mobileNumber: string | null;
         email: string | null;
-        fullName: string;
         password: string | null;
         role: string;
         mobileVerified: boolean;

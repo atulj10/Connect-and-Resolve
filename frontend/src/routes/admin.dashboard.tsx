@@ -13,7 +13,7 @@ import {
 import { toast } from "sonner";
 import { getApiError } from "@/lib/api/client";
 import { analyticsApi, type AdminAnalytics } from "@/lib/api/analytics";
-import { CheckCircle2, Clock, FileText, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, FileText, Gauge, XCircle } from "lucide-react";
 import {
   ResponsiveContainer,
   PieChart,

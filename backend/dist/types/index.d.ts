@@ -1,7 +1,7 @@
 import { z } from "zod";
-export declare const CATEGORIES: readonly ["Water Supply", "Electricity", "Roads & Infrastructure", "Sanitation", "Healthcare", "Education", "Public Safety", "Revenue"];
+export declare const CATEGORIES: readonly ["Application (आवेदन)", "Grievance (परिवाद)", "Complaint (शिकायत)", "Suggestion (सुझाव)", "Others (अन्य)"];
 export declare const DEPARTMENTS: readonly ["Public Works", "Water Resources", "Electricity Board", "Municipal Corporation", "Health Department", "Education Department", "Police Department", "Revenue Department"];
-export declare const STATUSES: readonly ["Submitted", "Under Review", "Forwarded to Department", "In Process", "Action Taken", "Resolved", "Closed"];
+export declare const STATUSES: readonly ["Submitted", "In Process", "Resolved", "Rejected"];
 export declare const APPLICATION_SOURCES: readonly ["CITIZEN", "ADMIN"];
 export declare const OTP_PURPOSES: readonly ["REGISTER", "LOGIN"];
 export type Category = (typeof CATEGORIES)[number];
@@ -15,12 +15,12 @@ export declare const registerSchema: z.ZodObject<{
     mobileNumber: z.ZodString;
     email: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
 }, "strip", z.ZodTypeAny, {
-    mobileNumber: string;
     fullName: string;
+    mobileNumber: string;
     email?: string | undefined;
 }, {
-    mobileNumber: string;
     fullName: string;
+    mobileNumber: string;
     email?: string | undefined;
 }>;
 export declare const sendOtpSchema: z.ZodObject<{
@@ -93,51 +93,54 @@ export declare const createApplicationSchema: z.ZodObject<{
     applicantName: z.ZodString;
     fatherName: z.ZodString;
     subject: z.ZodString;
-    category: z.ZodEnum<["Water Supply", "Electricity", "Roads & Infrastructure", "Sanitation", "Healthcare", "Education", "Public Safety", "Revenue"]>;
+    category: z.ZodEnum<["Application (आवेदन)", "Grievance (परिवाद)", "Complaint (शिकायत)", "Suggestion (सुझाव)", "Others (अन्य)"]>;
     description: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
     villageMohalla: z.ZodString;
-    panchayat: z.ZodString;
-    policeStation: z.ZodString;
+    panchayat: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
+    policeStation: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
+    assemblyConstituency: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
     block: z.ZodString;
     district: z.ZodString;
-    pincode: z.ZodString;
+    pincode: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
     department: z.ZodOptional<z.ZodString>;
     mobileNumber: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     applicantName: string;
     fatherName: string;
-    category: "Water Supply" | "Electricity" | "Roads & Infrastructure" | "Sanitation" | "Healthcare" | "Education" | "Public Safety" | "Revenue";
+    category: "Application (आवेदन)" | "Grievance (परिवाद)" | "Complaint (शिकायत)" | "Suggestion (सुझाव)" | "Others (अन्य)";
     subject: string;
     villageMohalla: string;
-    panchayat: string;
-    policeStation: string;
     block: string;
     district: string;
-    pincode: string;
     mobileNumber?: string | undefined;
     description?: string | undefined;
+    panchayat?: string | undefined;
+    policeStation?: string | undefined;
+    assemblyConstituency?: string | undefined;
+    pincode?: string | undefined;
     department?: string | undefined;
 }, {
     applicantName: string;
     fatherName: string;
-    category: "Water Supply" | "Electricity" | "Roads & Infrastructure" | "Sanitation" | "Healthcare" | "Education" | "Public Safety" | "Revenue";
+    category: "Application (आवेदन)" | "Grievance (परिवाद)" | "Complaint (शिकायत)" | "Suggestion (सुझाव)" | "Others (अन्य)";
     subject: string;
     villageMohalla: string;
-    panchayat: string;
-    policeStation: string;
     block: string;
     district: string;
-    pincode: string;
     mobileNumber?: string | undefined;
     description?: string | undefined;
+    panchayat?: string | undefined;
+    policeStation?: string | undefined;
+    assemblyConstituency?: string | undefined;
+    pincode?: string | undefined;
     department?: string | undefined;
 }>;
 export declare const updateStatusSchema: z.ZodObject<{
-    status: z.ZodEnum<["Submitted", "Under Review", "Forwarded to Department", "In Process", "Action Taken", "Resolved", "Closed"]>;
+    status: z.ZodEnum<["Submitted", "In Process", "Resolved", "Rejected"]>;
 }, "strip", z.ZodTypeAny, {
-    status: "Submitted" | "Under Review" | "Forwarded to Department" | "In Process" | "Action Taken" | "Resolved" | "Closed";
+    status: "Submitted" | "In Process" | "Resolved" | "Rejected";
 }, {
-    status: "Submitted" | "Under Review" | "Forwarded to Department" | "In Process" | "Action Taken" | "Resolved" | "Closed";
+    status: "Submitted" | "In Process" | "Resolved" | "Rejected";
 }>;
 export declare const updateDepartmentSchema: z.ZodObject<{
     department: z.ZodEnum<["Public Works", "Water Resources", "Electricity Board", "Municipal Corporation", "Health Department", "Education Department", "Police Department", "Revenue Department"]>;

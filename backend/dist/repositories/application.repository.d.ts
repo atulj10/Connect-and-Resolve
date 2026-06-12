@@ -2,9 +2,9 @@ export declare const applicationRepository: {
     findById(id: string): import("@prisma/client").Prisma.Prisma__ApplicationClient<({
         user: {
             id: string;
+            fullName: string;
             mobileNumber: string | null;
             email: string | null;
-            fullName: string;
             password: string | null;
             role: string;
             mobileVerified: boolean;
@@ -42,11 +42,12 @@ export declare const applicationRepository: {
         subject: string;
         description: string | null;
         villageMohalla: string;
-        panchayat: string;
-        policeStation: string;
+        panchayat: string | null;
+        policeStation: string | null;
+        assemblyConstituency: string | null;
         block: string;
         district: string;
-        pincode: string;
+        pincode: string | null;
         department: string;
         status: string;
         adminRemarks: string | null;
@@ -65,11 +66,12 @@ export declare const applicationRepository: {
         subject: string;
         description: string | null;
         villageMohalla: string;
-        panchayat: string;
-        policeStation: string;
+        panchayat: string | null;
+        policeStation: string | null;
+        assemblyConstituency: string | null;
         block: string;
         district: string;
-        pincode: string;
+        pincode: string | null;
         department: string;
         status: string;
         adminRemarks: string | null;
@@ -90,9 +92,9 @@ export declare const applicationRepository: {
     }): import("@prisma/client").Prisma.PrismaPromise<({
         user: {
             id: string;
+            fullName: string;
             mobileNumber: string | null;
             email: string | null;
-            fullName: string;
             password: string | null;
             role: string;
             mobileVerified: boolean;
@@ -122,11 +124,12 @@ export declare const applicationRepository: {
         subject: string;
         description: string | null;
         villageMohalla: string;
-        panchayat: string;
-        policeStation: string;
+        panchayat: string | null;
+        policeStation: string | null;
+        assemblyConstituency: string | null;
         block: string;
         district: string;
-        pincode: string;
+        pincode: string | null;
         department: string;
         status: string;
         adminRemarks: string | null;
@@ -150,11 +153,12 @@ export declare const applicationRepository: {
         subject: string;
         description?: string;
         villageMohalla: string;
-        panchayat: string;
-        policeStation: string;
+        panchayat?: string;
+        policeStation?: string;
+        assemblyConstituency?: string;
         block: string;
         district: string;
-        pincode: string;
+        pincode?: string;
         department: string;
         userId: string;
     }): import("@prisma/client").Prisma.Prisma__ApplicationClient<{
@@ -169,11 +173,12 @@ export declare const applicationRepository: {
         subject: string;
         description: string | null;
         villageMohalla: string;
-        panchayat: string;
-        policeStation: string;
+        panchayat: string | null;
+        policeStation: string | null;
+        assemblyConstituency: string | null;
         block: string;
         district: string;
-        pincode: string;
+        pincode: string | null;
         department: string;
         status: string;
         adminRemarks: string | null;
@@ -197,11 +202,12 @@ export declare const applicationRepository: {
         subject: string;
         description: string | null;
         villageMohalla: string;
-        panchayat: string;
-        policeStation: string;
+        panchayat: string | null;
+        policeStation: string | null;
+        assemblyConstituency: string | null;
         block: string;
         district: string;
-        pincode: string;
+        pincode: string | null;
         department: string;
         status: string;
         adminRemarks: string | null;
@@ -231,11 +237,12 @@ export declare const applicationRepository: {
         subject: string;
         description: string | null;
         villageMohalla: string;
-        panchayat: string;
-        policeStation: string;
+        panchayat: string | null;
+        policeStation: string | null;
+        assemblyConstituency: string | null;
         block: string;
         district: string;
-        pincode: string;
+        pincode: string | null;
         department: string;
         status: string;
         adminRemarks: string | null;
