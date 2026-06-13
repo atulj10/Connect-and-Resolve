@@ -296,9 +296,42 @@ function Index() {
         </section>
       </AnimatedSection>
 
+      {/* CTA Section */}
+      <AnimatedSection delay={0.1}>
+        <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+          <div className="group relative overflow-hidden rounded-3xl bg-primary px-6 py-14 sm:px-12 sm:py-16 lg:py-20">
+            <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-white/10 transition-transform duration-500 group-hover:scale-150" />
+            <div className="absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-white/10 transition-transform duration-500 group-hover:scale-150" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="relative mx-auto max-w-2xl text-center"
+            >
+              <h2 className="text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
+                Ready to Get Started?
+              </h2>
+              <p className="mt-4 text-base leading-relaxed text-primary-foreground/80">
+                Join thousands of citizens who are already using Citizen Connect to raise their
+                concerns and contribute to better governance.
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-3">
+                <Button asChild size="lg" className="bg-background px-8 font-semibold text-primary hover:bg-background/90">
+                  <Link to="/register">Register Now</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="border-primary-foreground/30 bg-transparent px-8 text-primary-foreground hover:bg-primary-foreground/10">
+                  <Link to="/login">Login</Link>
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      </AnimatedSection>
+
       {/* How It Works */}
       <AnimatedSection delay={0.1}>
-        <section className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <section className="relative mx-auto max-w-7xl px-4 py-14 pb-20 sm:px-6 lg:px-8">
           <div className="absolute inset-0 -z-10 gradient-primary-soft rounded-3xl" />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -338,39 +371,6 @@ function Index() {
               </AnimatedItem>
             ))}
           </AnimatedGrid>
-        </section>
-      </AnimatedSection>
-
-      {/* CTA Section */}
-      <AnimatedSection delay={0.1}>
-        <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-          <div className="group relative overflow-hidden rounded-3xl bg-primary px-6 py-14 sm:px-12 sm:py-16 lg:py-20">
-            <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-white/10 transition-transform duration-500 group-hover:scale-150" />
-            <div className="absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-white/10 transition-transform duration-500 group-hover:scale-150" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="relative mx-auto max-w-2xl text-center"
-            >
-              <h2 className="text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
-                Ready to Get Started?
-              </h2>
-              <p className="mt-4 text-base leading-relaxed text-primary-foreground/80">
-                Join thousands of citizens who are already using Citizen Connect to raise their
-                concerns and contribute to better governance.
-              </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-3">
-                <Button asChild size="lg" className="bg-background px-8 font-semibold text-primary hover:bg-background/90">
-                  <Link to="/register">Register Now</Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="border-primary-foreground/30 bg-transparent px-8 text-primary-foreground hover:bg-primary-foreground/10">
-                  <Link to="/login">Login</Link>
-                </Button>
-              </div>
-            </motion.div>
-          </div>
         </section>
       </AnimatedSection>
 
