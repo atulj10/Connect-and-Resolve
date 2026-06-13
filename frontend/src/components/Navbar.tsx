@@ -15,7 +15,7 @@ export function Navbar() {
               Citizen Connect
             </span>
             <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-              Grievance Portal
+              For Better Governance
             </span>
           </div>
         </Link>
