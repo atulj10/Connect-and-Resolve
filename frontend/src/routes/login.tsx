@@ -109,7 +109,7 @@ function LoginPage() {
               Your voice. Better governance.
             </h2>
             <p className="mt-2 max-w-sm text-muted-foreground">
-              Submit grievances, track applications, and connect directly with your representatives.
+              Submit, track and connect applications directly with your representatives.
             </p>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
