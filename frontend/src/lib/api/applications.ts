@@ -79,6 +79,7 @@ export interface ApplicationQuery {
   status?: string;
   department?: string;
   district?: string;
+  block?: string;
 }
 
 export const applicationsApi = {

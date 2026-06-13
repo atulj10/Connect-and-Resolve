@@ -118,6 +118,7 @@ export const applicationQuerySchema = z.object({
   status: z.string().optional(),
   department: z.string().optional(),
   district: z.string().optional(),
+  block: z.string().optional(),
 });
 
 export const analyticsQuerySchema = z.object({

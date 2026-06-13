@@ -20,23 +20,27 @@ export const applicationRepository = {
     status?: string;
     department?: string;
     district?: string;
+    block?: string;
     userId?: string;
     orderBy?: "createdAt" | "updatedAt";
     orderDir?: "asc" | "desc";
   }) {
-    const { skip = 0, take = 10, search, category, status, department, district, userId, orderBy = "createdAt", orderDir = "desc" } = params;
+    const { skip = 0, take = 10, search, category, status, department, district, block, userId, orderBy = "createdAt", orderDir = "desc" } = params;
     const where: Record<string, unknown> = {};
     if (search) {
       where.OR = [
-        { referenceNumber: { contains: search } },
-        { subject: { contains: search } },
-        { applicantName: { contains: search } },
+        { referenceNumber: { contains: search, mode: "insensitive" } },
+        { subject: { contains: search, mode: "insensitive" } },
+        { applicantName: { contains: search, mode: "insensitive" } },
+        { user: { mobileNumber: { contains: search, mode: "insensitive" } } },
+        { user: { email: { contains: search, mode: "insensitive" } } },
       ];
     }
     if (category) where.category = category;
     if (status) where.status = status;
     if (department) where.department = department;
     if (district) where.district = district;
+    if (block) where.block = block;
     if (userId) where.userId = userId;
 
     return prisma.application.findMany({
@@ -54,21 +58,25 @@ export const applicationRepository = {
     status?: string;
     department?: string;
     district?: string;
+    block?: string;
     userId?: string;
   }) {
-    const { search, category, status, department, district, userId } = params;
+    const { search, category, status, department, district, block, userId } = params;
     const where: Record<string, unknown> = {};
     if (search) {
       where.OR = [
-        { referenceNumber: { contains: search } },
-        { subject: { contains: search } },
-        { applicantName: { contains: search } },
+        { referenceNumber: { contains: search, mode: "insensitive" } },
+        { subject: { contains: search, mode: "insensitive" } },
+        { applicantName: { contains: search, mode: "insensitive" } },
+        { user: { mobileNumber: { contains: search, mode: "insensitive" } } },
+        { user: { email: { contains: search, mode: "insensitive" } } },
       ];
     }
     if (category) where.category = category;
     if (status) where.status = status;
     if (department) where.department = department;
     if (district) where.district = district;
+    if (block) where.block = block;
     if (userId) where.userId = userId;
     return prisma.application.count({ where: where as any });
   },

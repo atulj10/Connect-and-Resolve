@@ -237,7 +237,7 @@ export function NewApplicationDialog({
                   }
                 />
               </Field>
-              <Field label="Father/Husband's (पिता/पति का नाम) Name" error={errors.fatherName}>
+              <Field label="Father/Husband's Name (पिता/पति का नाम) " error={errors.fatherName}>
                 <Input
                   value={fatherName}
                   maxLength={80}

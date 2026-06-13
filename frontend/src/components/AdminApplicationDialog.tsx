@@ -69,15 +69,19 @@ export function AdminApplicationDialog({
       fetchedRef.current = true;
       fetchIdRef.current = app.id;
       setLoadingDetails(true);
-      applicationsApi.getById(app.id).then((res) => {
-        if (fetchIdRef.current !== app.id) return;
-        setTimeline(res.timeline ?? []);
-      }).catch((err) => {
-        if (fetchIdRef.current !== app.id) return;
-        toast.error(getApiError(err, "Failed to load application details"));
-      }).finally(() => {
-        if (fetchIdRef.current === app.id) setLoadingDetails(false);
-      });
+      applicationsApi
+        .getById(app.id)
+        .then((res) => {
+          if (fetchIdRef.current !== app.id) return;
+          setTimeline(res.timeline ?? []);
+        })
+        .catch((err) => {
+          if (fetchIdRef.current !== app.id) return;
+          toast.error(getApiError(err, "Failed to load application details"));
+        })
+        .finally(() => {
+          if (fetchIdRef.current === app.id) setLoadingDetails(false);
+        });
     }
   }, [app?.id, open]);
 
@@ -132,7 +136,7 @@ export function AdminApplicationDialog({
 
       if (newFiles.length > 0) {
         await Promise.all(
-          newFiles.map((f) => applicationsApi.uploadAttachment(app.id, f, timelineEntryId))
+          newFiles.map((f) => applicationsApi.uploadAttachment(app.id, f, timelineEntryId)),
         );
       }
 
@@ -176,7 +180,9 @@ export function AdminApplicationDialog({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <Info icon={MapPin} text={`${app.villageMohalla}, ${app.panchayat}`} />
             <Info icon={MapPin} text={`PS: ${app.policeStation}, Block: ${app.block}`} />
-            {app.assemblyConstituency && <Info icon={MapPin} text={`Assembly: ${app.assemblyConstituency}`} />}
+            {app.assemblyConstituency && (
+              <Info icon={MapPin} text={`Assembly: ${app.assemblyConstituency}`} />
+            )}
             <Info icon={MapPin} text={`${app.district} - ${app.pincode}`} />
           </div>
         </div>
@@ -192,21 +198,6 @@ export function AdminApplicationDialog({
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Assign Department</Label>
-            <Select value={department} onValueChange={setDepartment}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select department" />
-              </SelectTrigger>
-              <SelectContent>
-                {DEPARTMENTS.map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
             <Label>Update Status</Label>
             <Select value={status} onValueChange={(v) => setStatus(v as AppStatus)}>
               <SelectTrigger>
@@ -216,6 +207,22 @@ export function AdminApplicationDialog({
                 {STATUSES.map((s) => (
                   <SelectItem key={s} value={s}>
                     {s}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Assign Department</Label>
+            <Select value={department} onValueChange={setDepartment}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select department" />
+              </SelectTrigger>
+              <SelectContent>
+                {DEPARTMENTS.map((d) => (
+                  <SelectItem key={d} value={d}>
+                    {d}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -255,7 +262,10 @@ export function AdminApplicationDialog({
 
         <div className="space-y-3">
           <div
-            onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragging(true);
+            }}
             onDragLeave={() => setDragging(false)}
             onDrop={onDrop}
             onClick={() => inputRef.current?.click()}
@@ -269,7 +279,8 @@ export function AdminApplicationDialog({
           >
             <Upload className="mx-auto h-5 w-5 text-muted-foreground mb-1" />
             <p className="text-xs text-muted-foreground">
-              Drop files or <span className="text-primary">browse</span> &bull; PDF, JPG, PNG &bull; Max 5 MB
+              Drop files or <span className="text-primary">browse</span> &bull; PDF, JPG, PNG &bull;
+              Max 5 MB
             </p>
             <input
               ref={inputRef}
@@ -287,7 +298,10 @@ export function AdminApplicationDialog({
           {newFiles.length > 0 && (
             <ul className="space-y-1.5">
               {newFiles.map((f, i) => (
-                <li key={`${f.name}-${i}`} className="flex items-center gap-2 rounded-lg border border-border bg-card p-2">
+                <li
+                  key={`${f.name}-${i}`}
+                  className="flex items-center gap-2 rounded-lg border border-border bg-card p-2"
+                >
                   {f.name.toLowerCase().endsWith(".pdf") ? (
                     <FileText className="h-4 w-4 text-primary shrink-0" />
                   ) : (
@@ -296,7 +310,10 @@ export function AdminApplicationDialog({
                   <span className="text-xs truncate flex-1">{f.name}</span>
                   <button
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); removeFile(i); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFile(i);
+                    }}
                     className="text-muted-foreground hover:text-destructive"
                   >
                     <X className="h-3.5 w-3.5" />
@@ -341,13 +358,7 @@ export function AdminApplicationDialog({
   );
 }
 
-function AdminTimelineCard({
-  entry,
-  isFirst,
-}: {
-  entry: TimelineEntry;
-  isFirst?: boolean;
-}) {
+function AdminTimelineCard({ entry, isFirst }: { entry: TimelineEntry; isFirst?: boolean }) {
   return (
     <div className="relative pl-6 border-l-2 border-border pb-3 last:pb-0">
       <div className="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-primary bg-card" />
@@ -381,19 +392,22 @@ function AdminTimelineCard({
 
         {entry.adminRemarks && (
           <p className="text-xs text-muted-foreground leading-relaxed">
-            <span className="font-medium text-foreground">Remarks: </span>{entry.adminRemarks}
+            <span className="font-medium text-foreground">Remarks: </span>
+            {entry.adminRemarks}
           </p>
         )}
 
         {entry.internalNotes && (
           <p className="text-xs text-muted-foreground leading-relaxed">
-            <span className="font-medium text-foreground">Internal Notes: </span>{entry.internalNotes}
+            <span className="font-medium text-foreground">Internal Notes: </span>
+            {entry.internalNotes}
           </p>
         )}
 
         {entry.changedBy && (
           <p className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">By: </span>{entry.changedBy.fullName}
+            <span className="font-medium text-foreground">By: </span>
+            {entry.changedBy.fullName}
           </p>
         )}
 

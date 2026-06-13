@@ -704,5 +704,59 @@
       "Palasi",
       "Jokihat"
     ]
+  },
+  {
+    "district": "Gaya",
+    "block": [
+      "Belaganj", 
+      "Mohanpur",
+      "Konch", 
+      "Barachatti", 
+      "Manpur",
+      "Gurua", 
+      "Tekari",
+      "Imamganj", 
+      "Gaya Sadar",
+      "Wazirganj", 
+      "Fatehpur", 
+      "Paraiya", 
+      "Sherghati", 
+      "Bodh Gaya", 
+      "Khizarsarai", 
+      "Amas", 
+      "Dumaria", 
+      "Bankey Bazar",
+      "Dobhi", 
+      "Tankuppa", 
+      "Nimchakbathani", 
+      "Guraru", 
+      "Muhra"
+    ]
+  },
+  {
+    "district": "Saran",
+    "block": [
+      "Chapra", 
+      "Manjhi",
+      "Dighwara",
+      "Rivilganj",
+      "Parsa",
+      "Baniapur",
+      "Amnaur",
+      "Taraiya",
+      "Sonepur",
+      "Garkha",
+      "Ekma",
+      "Dariyapur",
+      "Jalalpur",
+      "Marhaura",
+      "Masarakh",
+      "Maker",
+      "Nagra",
+      "Panapur",
+      "Eisuapur",
+      "Lahladpur",
+      "Jantabazar"
+    ]
   }
 ]

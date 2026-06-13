@@ -43,6 +43,7 @@ export const applicationController = {
       if (q.status && q.status !== "all") params.status = q.status;
       if (q.department && q.department !== "all") params.department = q.department;
       if (q.district && q.district !== "all") params.district = q.district;
+      if (q.block && q.block !== "all") params.block = q.block;
       if (req.user!.role === "CITIZEN") params.userId = req.user!.id;
       const result = await applicationService.list(params);
       res.json(result);

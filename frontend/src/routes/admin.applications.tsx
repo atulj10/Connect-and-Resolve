@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { AnimatedSection, AnimatedGrid, AnimatedItem } from "@/components/AnimatedSection";
 import { AdminLayout } from "@/components/AdminLayout";
@@ -25,8 +25,9 @@ import { getApiError } from "@/lib/api/client";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AdminApplicationDialog } from "@/components/AdminApplicationDialog";
 import { NewApplicationDialog } from "@/components/NewApplicationDialog";
-import { CATEGORIES, DEPARTMENTS, STATUSES, formatDate } from "@/lib/applications";
+import { CATEGORIES, STATUSES, formatDate } from "@/lib/applications";
 import { applicationsApi, type ApplicationDto } from "@/lib/api/applications";
+import districtBlocks from "@/assets/district_blocks.json";
 import { ChevronLeft, ChevronRight, Eye, Plus, Search } from "lucide-react";
 
 export const Route = createFileRoute("/admin/applications")({
@@ -45,12 +46,19 @@ export const Route = createFileRoute("/admin/applications")({
 function AdminApplications() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
-  const [department, setDepartment] = useState("all");
+  const [district, setDistrict] = useState("all");
+  const [block, setBlock] = useState("");
   const [status, setStatus] = useState("all");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<ApplicationDto | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const districtOptions = useMemo(() => districtBlocks.map((d) => d.district), []);
+  const blockOptions = useMemo(
+    () => (district !== "all" ? districtBlocks.find((d) => d.district === district)?.block ?? [] : []),
+    [district],
+  );
+
   const [loading, setLoading] = useState(true);
   const [appData, setAppData] = useState<{
     applications: ApplicationDto[];
@@ -63,7 +71,8 @@ function AdminApplications() {
     const params: Record<string, string | number | undefined> = { page, pageSize };
     if (search) params.search = search;
     if (category !== "all") params.category = category;
-    if (department !== "all") params.department = department;
+    if (district !== "all") params.district = district;
+    if (block) params.block = block;
     if (status !== "all") params.status = status;
     applicationsApi
       .list(params)
@@ -72,7 +81,7 @@ function AdminApplications() {
       )
       .catch((err) => toast.error(getApiError(err, "Failed to load applications")))
       .finally(() => setLoading(false));
-  }, [page, pageSize, search, category, department, status]);
+  }, [page, pageSize, search, category, district, block, status]);
 
   useEffect(() => {
     fetchApps();
@@ -118,7 +127,7 @@ function AdminApplications() {
               <div className="relative col-span-2 sm:col-span-1">
                 <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search ref no, citizen, mobile..."
+                  placeholder="Search ref no, name, mobile, email..."
                   value={search}
                   onChange={(e) => {
                     setSearch(e.target.value);
@@ -147,20 +156,40 @@ function AdminApplications() {
                 </SelectContent>
               </Select>
               <Select
-                value={department}
+                value={district}
                 onValueChange={(v) => {
-                  setDepartment(v);
+                  setDistrict(v);
+                  setBlock("");
                   setPage(1);
                 }}
               >
                 <SelectTrigger className="sm:w-44">
-                  <SelectValue placeholder="Department" />
+                  <SelectValue placeholder="District" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Departments</SelectItem>
-                  {DEPARTMENTS.map((d) => (
+                  <SelectItem value="all">All Districts</SelectItem>
+                  {districtOptions.map((d) => (
                     <SelectItem key={d} value={d}>
                       {d}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={block}
+                onValueChange={(v) => {
+                  setBlock(v);
+                  setPage(1);
+                }}
+                disabled={district === "all"}
+              >
+                <SelectTrigger className="sm:w-44">
+                  <SelectValue placeholder={district !== "all" ? "Block" : "Select district first"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {blockOptions.map((b) => (
+                    <SelectItem key={b} value={b}>
+                      {b}
                     </SelectItem>
                   ))}
                 </SelectContent>

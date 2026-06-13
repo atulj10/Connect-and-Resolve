@@ -32,9 +32,9 @@ export const userRepository = {
       where: {
         role: "CITIZEN",
         OR: [
-          { fullName: { contains: query } },
-          { mobileNumber: { contains: query } },
-          { email: { contains: query } },
+          { fullName: { contains: query, mode: "insensitive" } },
+          { mobileNumber: { contains: query, mode: "insensitive" } },
+          { email: { contains: query, mode: "insensitive" } },
         ],
       },
       take: 20,
