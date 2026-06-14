@@ -4,12 +4,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -17,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatusBadge } from "@/components/StatusBadge";
 import { DEPARTMENTS, STATUSES, formatDate, type AppStatus } from "@/lib/applications";
 import { applicationsApi, type ApplicationDto, type TimelineEntry } from "@/lib/api/applications";
@@ -54,8 +53,8 @@ export function AdminApplicationDialog({
 
   useEffect(() => {
     if (app) {
-      setStatus("");
-      setDepartment("");
+      setStatus(app.status as AppStatus || "Submitted");
+      setDepartment(app.department || "");
       setRemarks("");
       setNotes("");
       setNewFiles([]);
@@ -154,205 +153,214 @@ export function AdminApplicationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div>
-              <p className="text-xs font-mono text-muted-foreground">{app.referenceNumber}</p>
-              <DialogTitle className="text-xl mt-1">{app.subject}</DialogTitle>
-              <p className="text-xs text-muted-foreground mt-1">
-                Filed on {formatDate(app.createdAt)} &bull; Category: {app.category}
-              </p>
-            </div>
-            <StatusBadge status={status} />
-          </div>
-          <DialogDescription className="sr-only">Manage application</DialogDescription>
+          <p className="text-xs font-mono text-muted-foreground">{app.referenceNumber}</p>
+          <DialogTitle className="sr-only">Manage application</DialogTitle>
         </DialogHeader>
 
-        <div className="rounded-xl border border-border bg-secondary/30 p-4">
-          <h3 className="text-sm font-semibold mb-3">Personal Information</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-            <Info icon={User} text={`${app.applicantName} S/O ${app.fatherName}`} />
-            <Info icon={Phone} text={app.user?.mobileNumber ?? "—"} />
-          </div>
-        </div>
+        <Tabs defaultValue="details" className="w-full">
+          <TabsList className="w-full">
+            <TabsTrigger value="details" className="flex-1">Application Details</TabsTrigger>
+            <TabsTrigger value="actions" className="flex-1">Actions</TabsTrigger>
+            <TabsTrigger value="timeline" className="flex-1">Timeline</TabsTrigger>
+          </TabsList>
 
-        <div className="rounded-xl border border-border bg-secondary/30 p-4">
-          <h3 className="text-sm font-semibold mb-3">Address Information</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-            <Info icon={MapPin} text={`${app.villageMohalla}, ${app.panchayat}`} />
-            <Info icon={MapPin} text={`PS: ${app.policeStation}, Block: ${app.block}`} />
-            {app.assemblyConstituency && (
-              <Info icon={MapPin} text={`Assembly: ${app.assemblyConstituency}`} />
-            )}
-            <Info icon={MapPin} text={`${app.district} - ${app.pincode}`} />
-          </div>
-        </div>
+          <TabsContent value="details" className="space-y-4 mt-4">
+            <div className="flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <h2 className="text-xl font-semibold">{app.subject}</h2>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Filed on {formatDate(app.createdAt)} &bull; Category: {app.category}
+                </p>
+              </div>
+              <StatusBadge status={status} />
+            </div>
 
-        <div>
-          <h3 className="text-sm font-semibold mb-2">Description</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {app.description || "No description provided."}
-          </p>
-        </div>
+            <div className="rounded-xl border border-border bg-secondary/30 p-4">
+              <h3 className="text-sm font-semibold mb-3">Personal Information</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <Info icon={User} text={`${app.applicantName} S/O ${app.fatherName}`} />
+                <Info icon={Phone} text={app.user?.mobileNumber ?? "—"} />
+              </div>
+            </div>
 
-        <Separator />
+            <div className="rounded-xl border border-border bg-secondary/30 p-4">
+              <h3 className="text-sm font-semibold mb-3">Address Information</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <Info icon={MapPin} text={`${app.villageMohalla}, ${app.panchayat}`} />
+                <Info icon={MapPin} text={`PS: ${app.policeStation}, Block: ${app.block}`} />
+                {app.assemblyConstituency && (
+                  <Info icon={MapPin} text={`Assembly: ${app.assemblyConstituency}`} />
+                )}
+                <Info icon={MapPin} text={`${app.district} - ${app.pincode}`} />
+              </div>
+            </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>Update Status</Label>
-            <Select value={status} onValueChange={(v) => setStatus(v as AppStatus)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUSES.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div>
+              <h3 className="text-sm font-semibold mb-2">Description</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {app.description || "No description provided."}
+              </p>
+            </div>
+          </TabsContent>
 
-          <div className="space-y-2">
-            <Label>Assign Department</Label>
-            <Select value={department} onValueChange={setDepartment}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select department" />
-              </SelectTrigger>
-              <SelectContent>
-                {DEPARTMENTS.map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+          <TabsContent value="actions" className="space-y-4 mt-4">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Update Status</Label>
+                <Select value={status} onValueChange={(v) => setStatus(v as AppStatus)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUSES.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="remarks">
-            Admin Remarks{" "}
-            <span className="text-xs text-muted-foreground font-normal">(visible to citizen)</span>
-          </Label>
-          <Textarea
-            id="remarks"
-            rows={3}
-            maxLength={1000}
-            value={remarks}
-            onChange={(e) => setRemarks(e.target.value)}
-            placeholder="Provide an update or resolution remark for the citizen..."
-          />
-        </div>
+              <div className="space-y-2">
+                <Label>Assign Department</Label>
+                <Select value={department} onValueChange={setDepartment}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEPARTMENTS.map((d) => (
+                      <SelectItem key={d} value={d}>
+                        {d}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="notes">
-            Internal Notes{" "}
-            <span className="text-xs text-muted-foreground font-normal">(office only)</span>
-          </Label>
-          <Textarea
-            id="notes"
-            rows={3}
-            maxLength={1000}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Add internal notes for office reference..."
-          />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="remarks">
+                Admin Remarks{" "}
+                <span className="text-xs text-muted-foreground font-normal">(visible to citizen)</span>
+              </Label>
+              <Textarea
+                id="remarks"
+                rows={3}
+                maxLength={1000}
+                value={remarks}
+                onChange={(e) => setRemarks(e.target.value)}
+                placeholder="Provide an update or resolution remark for the citizen..."
+              />
+            </div>
 
-        <div className="space-y-3">
-          <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragging(true);
-            }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={onDrop}
-            onClick={() => inputRef.current?.click()}
-            role="button"
-            tabIndex={0}
-            className={`cursor-pointer rounded-xl border-2 border-dashed p-4 text-center transition-colors ${
-              dragging
-                ? "border-primary bg-primary/5"
-                : "border-border bg-secondary/30 hover:bg-secondary/50 hover:border-primary/50"
-            }`}
-          >
-            <Upload className="mx-auto h-5 w-5 text-muted-foreground mb-1" />
-            <p className="text-xs text-muted-foreground">
-              Drop files or <span className="text-primary">browse</span> &bull; PDF, JPG, PNG &bull;
-              Max 5 MB
-            </p>
-            <input
-              ref={inputRef}
-              type="file"
-              multiple
-              accept={ACCEPTED_MIME}
-              className="hidden"
-              onChange={(e) => {
-                if (e.target.files) addFiles(e.target.files);
-                e.target.value = "";
-              }}
-            />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="notes">
+                Internal Notes{" "}
+                <span className="text-xs text-muted-foreground font-normal">(office only)</span>
+              </Label>
+              <Textarea
+                id="notes"
+                rows={3}
+                maxLength={1000}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Add internal notes for office reference..."
+              />
+            </div>
 
-          {newFiles.length > 0 && (
-            <ul className="space-y-1.5">
-              {newFiles.map((f, i) => (
-                <li
-                  key={`${f.name}-${i}`}
-                  className="flex items-center gap-2 rounded-lg border border-border bg-card p-2"
-                >
-                  {f.name.toLowerCase().endsWith(".pdf") ? (
-                    <FileText className="h-4 w-4 text-primary shrink-0" />
-                  ) : (
-                    <Image className="h-4 w-4 text-primary shrink-0" />
-                  )}
-                  <span className="text-xs truncate flex-1">{f.name}</span>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeFile(i);
-                    }}
-                    className="text-muted-foreground hover:text-destructive"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <Separator />
-
-        <div>
-          <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-            <Clock className="h-4 w-4 text-primary" /> Application Timeline
-          </h3>
-          {loadingDetails ? (
-            <p className="text-sm text-muted-foreground">Loading timeline...</p>
-          ) : (
             <div className="space-y-3">
-              {timeline.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No timeline entries.</p>
-              ) : (
-                timeline.map((entry, idx) => (
-                  <AdminTimelineCard key={entry.id} entry={entry} isFirst={idx === 0} />
-                ))
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragging(true);
+                }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={onDrop}
+                onClick={() => inputRef.current?.click()}
+                role="button"
+                tabIndex={0}
+                className={`cursor-pointer rounded-xl border-2 border-dashed p-4 text-center transition-colors ${
+                  dragging
+                    ? "border-primary bg-primary/5"
+                    : "border-border bg-secondary/30 hover:bg-secondary/50 hover:border-primary/50"
+                }`}
+              >
+                <Upload className="mx-auto h-5 w-5 text-muted-foreground mb-1" />
+                <p className="text-xs text-muted-foreground">
+                  Drop files or <span className="text-primary">browse</span> &bull; PDF, JPG, PNG &bull;
+                  Max 5 MB
+                </p>
+                <input
+                  ref={inputRef}
+                  type="file"
+                  multiple
+                  accept={ACCEPTED_MIME}
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files) addFiles(e.target.files);
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+
+              {newFiles.length > 0 && (
+                <ul className="space-y-1.5">
+                  {newFiles.map((f, i) => (
+                    <li
+                      key={`${f.name}-${i}`}
+                      className="flex items-center gap-2 rounded-lg border border-border bg-card p-2"
+                    >
+                      {f.name.toLowerCase().endsWith(".pdf") ? (
+                        <FileText className="h-4 w-4 text-primary shrink-0" />
+                      ) : (
+                        <Image className="h-4 w-4 text-primary shrink-0" />
+                      )}
+                      <span className="text-xs truncate flex-1">{f.name}</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFile(i);
+                        }}
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
-          )}
-        </div>
 
-        <div className="flex flex-col sm:flex-row gap-2 sm:justify-end pt-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : "Save Changes"}
-          </Button>
-        </div>
+            <div className="flex flex-col sm:flex-row gap-2 sm:justify-end pt-2">
+              <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
+                Cancel
+              </Button>
+              <Button onClick={handleSave} disabled={saving}>
+                {saving ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="timeline" className="space-y-3 mt-4">
+            <h3 className="text-sm font-semibold flex items-center gap-2">
+              <Clock className="h-4 w-4 text-primary" /> Application Timeline
+            </h3>
+            {loadingDetails ? (
+              <p className="text-sm text-muted-foreground">Loading timeline...</p>
+            ) : (
+              <div className="space-y-3">
+                {timeline.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No timeline entries.</p>
+                ) : (
+                  timeline.map((entry, idx) => (
+                    <AdminTimelineCard key={entry.id} entry={entry} isFirst={idx === 0} />
+                  ))
+                )}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
