@@ -16,11 +16,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { StatusBadge } from "@/components/StatusBadge";
 import { DEPARTMENTS, STATUSES, formatDate, type AppStatus } from "@/lib/applications";
 import { applicationsApi, type ApplicationDto, type TimelineEntry } from "@/lib/api/applications";
 import { getApiError } from "@/lib/api/client";
-import { ExternalLink, FileText, Image, Upload, User, Phone, MapPin, Clock, X } from "lucide-react";
+import { AlertTriangle, ExternalLink, FileText, Image, Upload, User, Phone, MapPin, Clock, X } from "lucide-react";
 import { toast } from "sonner";
 
 const MAX_FILES = 5;
@@ -47,6 +57,7 @@ export function AdminApplicationDialog({
   const [dragging, setDragging] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loadingDetails, setLoadingDetails] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const fetchedRef = useRef(false);
   const fetchIdRef = useRef<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -121,7 +132,10 @@ export function AdminApplicationDialog({
 
   if (!app) return null;
 
-  const handleSave = async () => {
+  const isTerminal = ["Resolved", "Rejected"].includes(app.status);
+  const isChangingToTerminal = ["Resolved", "Rejected"].includes(status) && status !== app.status;
+
+  const doSave = async () => {
     setSaving(true);
     try {
       const result: any = await applicationsApi.updateApplication(app.id, {
@@ -146,6 +160,14 @@ export function AdminApplicationDialog({
       toast.error(getApiError(err, "Failed to update application"));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSave = () => {
+    if (isChangingToTerminal) {
+      setConfirmOpen(true);
+    } else {
+      doSave();
     }
   };
 
@@ -204,10 +226,19 @@ export function AdminApplicationDialog({
           </TabsContent>
 
           <TabsContent value="actions" className="space-y-4 mt-4">
+            {isTerminal && (
+              <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-950/30 dark:text-amber-400">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                <span>
+                  This application has been marked as <strong>{app.status}</strong>. No further changes are
+                  allowed.
+                </span>
+              </div>
+            )}
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Update Status</Label>
-                <Select value={status} onValueChange={(v) => setStatus(v as AppStatus)}>
+                <Select value={status} onValueChange={(v) => setStatus(v as AppStatus)} disabled={isTerminal}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
@@ -223,7 +254,7 @@ export function AdminApplicationDialog({
 
               <div className="space-y-2">
                 <Label>Assign Department</Label>
-                <Select value={department} onValueChange={setDepartment}>
+                <Select value={department} onValueChange={setDepartment} disabled={isTerminal}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
@@ -250,6 +281,7 @@ export function AdminApplicationDialog({
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
                 placeholder="Provide an update or resolution remark for the citizen..."
+                disabled={isTerminal}
               />
             </div>
 
@@ -265,6 +297,7 @@ export function AdminApplicationDialog({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add internal notes for office reference..."
+                disabled={isTerminal}
               />
             </div>
 
@@ -275,15 +308,15 @@ export function AdminApplicationDialog({
                   setDragging(true);
                 }}
                 onDragLeave={() => setDragging(false)}
-                onDrop={onDrop}
-                onClick={() => inputRef.current?.click()}
+                onDrop={isTerminal ? undefined : onDrop}
+                onClick={() => !isTerminal && inputRef.current?.click()}
                 role="button"
                 tabIndex={0}
-                className={`cursor-pointer rounded-xl border-2 border-dashed p-4 text-center transition-colors ${
-                  dragging
-                    ? "border-primary bg-primary/5"
-                    : "border-border bg-secondary/30 hover:bg-secondary/50 hover:border-primary/50"
-                }`}
+                className={`rounded-xl border-2 border-dashed p-4 text-center transition-colors ${
+                  isTerminal
+                    ? "cursor-not-allowed border-border bg-secondary/10 opacity-50"
+                    : "cursor-pointer border-border bg-secondary/30 hover:bg-secondary/50 hover:border-primary/50"
+                } ${dragging ? "border-primary bg-primary/5" : ""}`}
               >
                 <Upload className="mx-auto h-5 w-5 text-muted-foreground mb-1" />
                 <p className="text-xs text-muted-foreground">
@@ -336,7 +369,7 @@ export function AdminApplicationDialog({
               <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
                 Cancel
               </Button>
-              <Button onClick={handleSave} disabled={saving}>
+              <Button onClick={handleSave} disabled={saving || isTerminal}>
                 {saving ? "Saving..." : "Save Changes"}
               </Button>
             </div>
@@ -361,6 +394,27 @@ export function AdminApplicationDialog({
             )}
           </TabsContent>
         </Tabs>
+
+        <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Confirm Status Change</AlertDialogTitle>
+              <AlertDialogDescription>
+                You are about to mark this application as{" "}
+                <strong className="text-foreground">{status}</strong>. Once confirmed, no further
+                updates will be allowed for this application.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setConfirmOpen(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={doSave}>
+                Confirm
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </DialogContent>
     </Dialog>
   );

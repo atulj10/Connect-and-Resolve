@@ -8,6 +8,16 @@ import { notificationService } from "./notification.service.js";
 import { storageProvider } from "../providers/index.js";
 import type { AppStatus, Department } from "../types/index.js";
 
+const TERMINAL_STATUSES = ["Resolved", "Rejected"];
+
+function checkNotTerminal(app: { status: string }, action = "update") {
+  if (TERMINAL_STATUSES.includes(app.status)) {
+    throw new Error(
+      `Application is already ${app.status}. No further ${action} is allowed.`,
+    );
+  }
+}
+
 export const applicationService = {
   async create(data: {
     applicantName: string;
@@ -98,6 +108,7 @@ export const applicationService = {
   }, userId: string) {
     const app = await applicationRepository.findById(id);
     if (!app) throw new Error("Application not found");
+    checkNotTerminal(app);
 
     const updates: Record<string, string> = {};
     let oldStatus: string | null = null;
@@ -175,6 +186,7 @@ export const applicationService = {
   async updateStatus(id: string, status: AppStatus, userId: string) {
     const app = await applicationRepository.findById(id);
     if (!app) throw new Error("Application not found");
+    checkNotTerminal(app);
     if (app.status === status) return app;
     const oldStatus = app.status;
     const updated = await applicationRepository.update(id, { status });
@@ -212,6 +224,7 @@ export const applicationService = {
   async updateDepartment(id: string, department: Department, userId: string) {
     const app = await applicationRepository.findById(id);
     if (!app) throw new Error("Application not found");
+    checkNotTerminal(app);
     if (app.department === department) return app;
     const oldDepartment = app.department;
     const updated = await applicationRepository.update(id, { department });
@@ -239,6 +252,7 @@ export const applicationService = {
   async addRemarks(id: string, data: { adminRemarks?: string; internalNotes?: string }, userId: string) {
     const app = await applicationRepository.findById(id);
     if (!app) throw new Error("Application not found");
+    checkNotTerminal(app);
     const updated = await applicationRepository.update(id, data);
 
     await statusHistoryRepository.createTimelineEntry({
@@ -264,6 +278,7 @@ export const applicationService = {
   async uploadAttachment(applicationId: string, filePath: string, fileName: string, userId: string, timelineEntryId?: string) {
     const app = await applicationRepository.findById(applicationId);
     if (!app) throw new Error("Application not found");
+    checkNotTerminal(app);
     const existing = await attachmentRepository.findByApplicationId(applicationId);
     if (existing.length >= 5) throw new Error("Maximum 5 attachments allowed");
     const result = await storageProvider.upload(filePath, fileName);
