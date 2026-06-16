@@ -2,13 +2,14 @@ import { Badge } from "@/components/ui/badge";
 import { STATUS_STYLES, type AppStatus } from "@/lib/applications";
 import { cn } from "@/lib/utils";
 
-export function StatusBadge({ status, className }: { status: AppStatus; className?: string }) {
+export function StatusBadge({ status, className }: { status: string; className?: string }) {
+  const appStatus = status as AppStatus;
   return (
     <Badge
       variant="outline"
       className={cn(
         "font-medium rounded-full px-2.5 py-0.5 text-xs whitespace-nowrap",
-        STATUS_STYLES[status],
+        STATUS_STYLES[appStatus],
         className,
       )}
     >

@@ -32,6 +32,8 @@ export const applicationService = {
     block: string;
     district: string;
     pincode?: string;
+    subDepartment?: string;
+    area?: string;
     userId: string;
     applicationSource: string;
     department?: string;
@@ -103,6 +105,8 @@ export const applicationService = {
   async updateApplication(id: string, data: {
     status?: AppStatus;
     department?: Department;
+    subDepartment?: string;
+    area?: string;
     adminRemarks?: string;
     internalNotes?: string;
   }, userId: string) {
@@ -130,6 +134,16 @@ export const applicationService = {
       updates.department = data.department;
       oldDepartment = app.department;
       newDepartment = data.department;
+      hasChanges = true;
+    }
+
+    if (data.subDepartment !== undefined && data.subDepartment !== (app.subDepartment ?? "")) {
+      updates.subDepartment = data.subDepartment || "";
+      hasChanges = true;
+    }
+
+    if (data.area !== undefined && data.area !== (app.area ?? "")) {
+      updates.area = data.area || "";
       hasChanges = true;
     }
 
@@ -318,6 +332,8 @@ export const applicationService = {
     district: string;
     pincode?: string;
     department?: string;
+    subDepartment?: string;
+    area?: string;
     mobileNumber?: string;
     adminUserId: string;
   }) {

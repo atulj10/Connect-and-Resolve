@@ -96,6 +96,8 @@ export const applicationRepository = {
     block: string;
     district: string;
     pincode?: string;
+    subDepartment?: string;
+    area?: string;
     department: string;
     userId: string;
   }) {
@@ -107,7 +109,7 @@ export const applicationRepository = {
     });
   },
 
-  update(id: string, data: Partial<{ status: string; department: string; adminRemarks: string; internalNotes: string }>) {
+  update(id: string, data: Partial<{ status: string; department: string; subDepartment: string; area: string; adminRemarks: string; internalNotes: string }>) {
     return prisma.application.update({ where: { id }, data });
   },
 

@@ -135,6 +135,8 @@ export const createApplicationSchema = z.object({
   district: z.string().min(1, "District is required").max(100),
   pincode: z.string().regex(/^\d{6}$/, "Enter a valid 6-digit pincode").optional().or(z.literal("")),
   department: z.string().optional(),
+  subDepartment: z.string().optional().or(z.literal("")),
+  area: z.string().optional().or(z.literal("")),
   // Admin-only: link to existing user
   mobileNumber: z.string().regex(/^\d{10}$/).optional(),
 });
@@ -153,6 +155,8 @@ export const adminCreateApplicationSchema = z.object({
   district: z.string().min(1, "District is required").max(100),
   pincode: z.string().regex(/^\d{6}$/, "Enter a valid 6-digit pincode").optional().or(z.literal("")),
   department: z.string().optional(),
+  subDepartment: z.string().optional().or(z.literal("")),
+  area: z.string().optional().or(z.literal("")),
   mobileNumber: z.string().regex(/^\d{10}$/).optional(),
 });
 
@@ -172,6 +176,8 @@ export const addRemarksSchema = z.object({
 export const updateApplicationSchema = z.object({
   status: z.enum(STATUSES).optional(),
   department: z.enum(DEPARTMENTS).optional(),
+  subDepartment: z.string().optional().or(z.literal("")),
+  area: z.string().optional().or(z.literal("")),
   adminRemarks: z.string().max(1000).optional().or(z.literal("")),
   internalNotes: z.string().max(1000).optional().or(z.literal("")),
 });

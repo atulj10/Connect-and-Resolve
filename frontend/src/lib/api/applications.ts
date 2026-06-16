@@ -41,6 +41,8 @@ export interface ApplicationDto {
   district: string;
   pincode: string;
   department: string;
+  subDepartment?: string;
+  area?: string;
   status: string;
   adminRemarks?: string;
   internalNotes?: string;
@@ -134,6 +136,8 @@ export const applicationsApi = {
   updateApplication(id: string, data: {
     status?: string;
     department?: string;
+    subDepartment?: string;
+    area?: string;
     adminRemarks?: string;
     internalNotes?: string;
   }) {

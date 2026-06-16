@@ -1,0 +1,63 @@
+[
+  {
+    "department": "Urban Development & Housing Department",
+    "subDepartments": [
+      {
+        "name": "Nagar Nigam (Municipal Corporation)",
+        "areas": [
+          "Patna",
+          "Gaya",
+          "Muzaffarpur",
+          "Bhagalpur",
+          "Darbhanga",
+          "Purnea",
+          "Bihar Sharif",
+          "Arrah",
+          "Chhapra",
+          "Begusarai",
+          "Katihar",
+          "Sasaram",
+          "Samastipur",
+          "Bettiah",
+          "Motihari",
+          "Sitamarhi",
+          "Saharsa",
+          "Munger",
+          "Madhubani"
+        ]
+      },
+      {
+        "name": "Nagar Parishad (Municipal Council)",
+        "areas": []
+      },
+      {
+        "name": "Nagar Panchayat",
+        "areas": []
+      },
+      {
+        "name": "Smart City",
+        "areas": []
+      },
+      {
+        "name": "BUDCO",
+        "areas": []
+      },
+      {
+        "name": "Patna Metro",
+        "areas": []
+      },
+      {
+        "name": "RERA",
+        "areas": []
+      },
+      {
+        "name": "PMA",
+        "areas": []
+      },
+      {
+        "name": "Bihar Rajya Awas Board",
+        "areas": []
+      }
+    ]
+  }
+]

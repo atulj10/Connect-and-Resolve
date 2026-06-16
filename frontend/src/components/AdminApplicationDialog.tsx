@@ -32,6 +32,7 @@ import { applicationsApi, type ApplicationDto, type TimelineEntry } from "@/lib/
 import { getApiError } from "@/lib/api/client";
 import { AlertTriangle, ExternalLink, FileText, Image, Upload, User, Phone, MapPin, Clock, X } from "lucide-react";
 import { toast } from "sonner";
+import subDepartmentsData from "@/assets/sub_departments.json";
 
 const MAX_FILES = 5;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -50,6 +51,8 @@ export function AdminApplicationDialog({
 }) {
   const [status, setStatus] = useState<AppStatus>("Submitted");
   const [department, setDepartment] = useState<string>("");
+  const [subDepartment, setSubDepartment] = useState<string>("");
+  const [area, setArea] = useState<string>("");
   const [remarks, setRemarks] = useState("");
   const [notes, setNotes] = useState("");
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
@@ -66,6 +69,8 @@ export function AdminApplicationDialog({
     if (app) {
       setStatus(app.status as AppStatus || "Submitted");
       setDepartment(app.department || "");
+      setSubDepartment(app.subDepartment || "");
+      setArea(app.area || "");
       setRemarks("");
       setNotes("");
       setNewFiles([]);
@@ -141,6 +146,8 @@ export function AdminApplicationDialog({
       const result: any = await applicationsApi.updateApplication(app.id, {
         status,
         department,
+        subDepartment,
+        area,
         adminRemarks: remarks,
         internalNotes: notes,
       });
@@ -270,6 +277,58 @@ export function AdminApplicationDialog({
                 </Select>
               </div>
             </div>
+
+            {department === "Urban Development & Housing Department" && (
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Sub Department / Office</Label>
+                  <Select value={subDepartment} onValueChange={(v) => { setSubDepartment(v); setArea(""); }} disabled={isTerminal}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select sub department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {subDepartmentsData
+                        .find((d) => d.department === department)
+                        ?.subDepartments.map((sd) => (
+                          <SelectItem key={sd.name} value={sd.name}>
+                            {sd.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Area</Label>
+                  <Select
+                    value={area}
+                    onValueChange={setArea}
+                    disabled={isTerminal || subDepartment !== "Nagar Nigam (Municipal Corporation)"}
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          subDepartment === "Nagar Nigam (Municipal Corporation)"
+                            ? "Select area"
+                            : subDepartment
+                              ? "No areas available"
+                              : "Select sub department first"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {subDepartmentsData
+                        .find((d) => d.department === department)
+                        ?.subDepartments.find((sd) => sd.name === subDepartment)
+                        ?.areas.map((a) => (
+                          <SelectItem key={a} value={a}>
+                            {a}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="remarks">
