@@ -84,6 +84,9 @@ export const applicationService = {
     category?: string;
     status?: string;
     department?: string;
+    departmentNot?: string;
+    subDepartment?: string;
+    area?: string;
     district?: string;
     userId?: string;
   }) {

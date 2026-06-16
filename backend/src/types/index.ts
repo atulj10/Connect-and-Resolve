@@ -189,6 +189,8 @@ export const applicationQuerySchema = z.object({
   category: z.string().optional(),
   status: z.string().optional(),
   department: z.string().optional(),
+  subDepartment: z.string().optional(),
+  area: z.string().optional(),
   district: z.string().optional(),
   block: z.string().optional(),
 });

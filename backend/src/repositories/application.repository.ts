@@ -19,13 +19,16 @@ export const applicationRepository = {
     category?: string;
     status?: string;
     department?: string;
+    departmentNot?: string;
+    subDepartment?: string;
+    area?: string;
     district?: string;
     block?: string;
     userId?: string;
     orderBy?: "createdAt" | "updatedAt";
     orderDir?: "asc" | "desc";
   }) {
-    const { skip = 0, take = 10, search, category, status, department, district, block, userId, orderBy = "createdAt", orderDir = "desc" } = params;
+    const { skip = 0, take = 10, search, category, status, department, departmentNot, subDepartment, area, district, block, userId, orderBy = "createdAt", orderDir = "desc" } = params;
     const where: Record<string, unknown> = {};
     if (search) {
       where.OR = [
@@ -39,6 +42,9 @@ export const applicationRepository = {
     if (category) where.category = category;
     if (status) where.status = status;
     if (department) where.department = department;
+    if (departmentNot) where.department = { not: departmentNot };
+    if (subDepartment) where.subDepartment = subDepartment;
+    if (area) where.area = area;
     if (district) where.district = district;
     if (block) where.block = block;
     if (userId) where.userId = userId;
@@ -57,11 +63,14 @@ export const applicationRepository = {
     category?: string;
     status?: string;
     department?: string;
+    departmentNot?: string;
+    subDepartment?: string;
+    area?: string;
     district?: string;
     block?: string;
     userId?: string;
   }) {
-    const { search, category, status, department, district, block, userId } = params;
+    const { search, category, status, department, departmentNot, subDepartment, area, district, block, userId } = params;
     const where: Record<string, unknown> = {};
     if (search) {
       where.OR = [
@@ -75,6 +84,9 @@ export const applicationRepository = {
     if (category) where.category = category;
     if (status) where.status = status;
     if (department) where.department = department;
+    if (departmentNot) where.department = { not: departmentNot };
+    if (subDepartment) where.subDepartment = subDepartment;
+    if (area) where.area = area;
     if (district) where.district = district;
     if (block) where.block = block;
     if (userId) where.userId = userId;

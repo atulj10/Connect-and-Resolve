@@ -25,9 +25,9 @@ import { getApiError } from "@/lib/api/client";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AdminApplicationDialog } from "@/components/AdminApplicationDialog";
 import { NewApplicationDialog } from "@/components/NewApplicationDialog";
-import { CATEGORIES, STATUSES, formatDate } from "@/lib/applications";
+import { CATEGORIES, DEPARTMENTS, STATUSES, formatDate } from "@/lib/applications";
 import { applicationsApi, type ApplicationDto } from "@/lib/api/applications";
-import districtBlocks from "@/assets/district_blocks.json";
+import subDepartmentsData from "@/assets/sub_departments.json";
 import { ChevronLeft, ChevronRight, Eye, Plus, Search } from "lucide-react";
 
 export const Route = createFileRoute("/admin/applications")({
@@ -46,17 +46,21 @@ export const Route = createFileRoute("/admin/applications")({
 function AdminApplications() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
-  const [district, setDistrict] = useState("all");
-  const [block, setBlock] = useState("");
+  const [department, setDepartment] = useState("all");
+  const [subDepartment, setSubDepartment] = useState("");
+  const [area, setArea] = useState("");
   const [status, setStatus] = useState("all");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<ApplicationDto | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
-  const districtOptions = useMemo(() => districtBlocks.map((d) => d.district), []);
-  const blockOptions = useMemo(
-    () => (district !== "all" ? districtBlocks.find((d) => d.district === district)?.block ?? [] : []),
-    [district],
+  const subDeptOptions = useMemo(
+    () => (department !== "all" ? subDepartmentsData.find((d) => d.department === department)?.subDepartments ?? [] : []),
+    [department],
+  );
+  const areaOptions = useMemo(
+    () => subDeptOptions.find((sd) => sd.name === subDepartment)?.areas ?? [],
+    [subDeptOptions, subDepartment],
   );
 
   const [loading, setLoading] = useState(true);
@@ -71,8 +75,10 @@ function AdminApplications() {
     const params: Record<string, string | number | undefined> = { page, pageSize };
     if (search) params.search = search;
     if (category !== "all") params.category = category;
-    if (district !== "all") params.district = district;
-    if (block) params.block = block;
+    if (department === "others") params.department = "others";
+    else if (department !== "all") params.department = department;
+    if (subDepartment) params.subDepartment = subDepartment;
+    if (area) params.area = area;
     if (status !== "all") params.status = status;
     applicationsApi
       .list(params)
@@ -81,7 +87,7 @@ function AdminApplications() {
       )
       .catch((err) => toast.error(getApiError(err, "Failed to load applications")))
       .finally(() => setLoading(false));
-  }, [page, pageSize, search, category, district, block, status]);
+  }, [page, pageSize, search, category, department, subDepartment, area, status]);
 
   useEffect(() => {
     fetchApps();
@@ -156,44 +162,73 @@ function AdminApplications() {
                 </SelectContent>
               </Select>
               <Select
-                value={district}
+                value={department}
                 onValueChange={(v) => {
-                  setDistrict(v);
-                  setBlock("");
+                  setDepartment(v);
+                  setSubDepartment("");
+                  setArea("");
                   setPage(1);
                 }}
               >
-                <SelectTrigger className="sm:w-44">
-                  <SelectValue placeholder="District" />
+                <SelectTrigger className="sm:w-56">
+                  <SelectValue placeholder="Department" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Districts</SelectItem>
-                  {districtOptions.map((d) => (
-                    <SelectItem key={d} value={d}>
-                      {d}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="all">All Departments</SelectItem>
+                  <SelectItem value="Urban Development & Housing Department">Urban Development & Housing Department</SelectItem>
+                  <SelectItem value="others">Others</SelectItem>
                 </SelectContent>
               </Select>
-              <Select
-                value={block}
-                onValueChange={(v) => {
-                  setBlock(v);
-                  setPage(1);
-                }}
-                disabled={district === "all"}
-              >
-                <SelectTrigger className="sm:w-44">
-                  <SelectValue placeholder={district !== "all" ? "Block" : "Select district first"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {blockOptions.map((b) => (
-                    <SelectItem key={b} value={b}>
-                      {b}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {department !== "all" && subDeptOptions.length > 0 && (
+                <>
+                  <Select
+                    value={subDepartment}
+                    onValueChange={(v) => {
+                      setSubDepartment(v);
+                      setArea("");
+                      setPage(1);
+                    }}
+                  >
+                    <SelectTrigger className="sm:w-48">
+                      <SelectValue placeholder="Sub Department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {subDeptOptions.map((sd) => (
+                        <SelectItem key={sd.name} value={sd.name}>
+                          {sd.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={area}
+                    onValueChange={(v) => {
+                      setArea(v);
+                      setPage(1);
+                    }}
+                    disabled={!subDepartment || areaOptions.length === 0}
+                  >
+                    <SelectTrigger className="sm:w-44">
+                      <SelectValue
+                        placeholder={
+                          !subDepartment
+                            ? "Select sub dept first"
+                            : areaOptions.length === 0
+                              ? "No areas"
+                              : "Area"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {areaOptions.map((a) => (
+                        <SelectItem key={a} value={a}>
+                          {a}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
               <Select
                 value={status}
                 onValueChange={(v) => {

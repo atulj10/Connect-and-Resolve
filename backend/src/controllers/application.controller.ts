@@ -41,7 +41,10 @@ export const applicationController = {
       if (q.search) params.search = q.search;
       if (q.category && q.category !== "all") params.category = q.category;
       if (q.status && q.status !== "all") params.status = q.status;
-      if (q.department && q.department !== "all") params.department = q.department;
+      if (q.department === "others") params.departmentNot = "Urban Development & Housing Department";
+      else if (q.department && q.department !== "all") params.department = q.department;
+      if (q.subDepartment && q.subDepartment !== "all") params.subDepartment = q.subDepartment;
+      if (q.area && q.area !== "all") params.area = q.area;
       if (q.district && q.district !== "all") params.district = q.district;
       if (q.block && q.block !== "all") params.block = q.block;
       if (req.user!.role === "CITIZEN") params.userId = req.user!.id;
