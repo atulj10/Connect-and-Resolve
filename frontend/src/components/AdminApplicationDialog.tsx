@@ -253,7 +253,7 @@ export function AdminApplicationDialog({
               </div>
 
               <div className="space-y-2">
-                <Label>Assign Department</Label>
+                <Label>Assign to Department/Office</Label>
                 <Select value={department} onValueChange={setDepartment} disabled={isTerminal}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select department" />
