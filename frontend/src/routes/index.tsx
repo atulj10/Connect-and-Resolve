@@ -114,7 +114,7 @@ const features = [
   {
     title: "Citizen Engagement",
     description:
-      "Engage directly with government officials, provide feedback, and stay informed about policy updates.",
+      "Engage directly with ministers, provide feedback, and stay informed about current status of your application.",
     icon: Users,
   },
 ];

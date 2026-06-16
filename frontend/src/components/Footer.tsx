@@ -24,8 +24,7 @@ export function Footer() {
             </div>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/70">
               Empowering citizens with a transparent, efficient, and accessible platform for
-              submitting grievances, suggestions, and assistance requests directly to government
-              departments.
+              submitting grievances, suggestions, and assistance requests directly to O/O Minister UDHD, Govt Of Bihar.
             </p>
           </div>
 
@@ -96,7 +95,7 @@ export function Footer() {
           <p className="text-xs text-white/60">
             &copy; {new Date().getFullYear()} Citizen Connect Portal. All rights reserved.
           </p>
-          <p className="text-xs text-white/60">A Government of India Initiative</p>
+          <p className="text-xs text-white/60">A Innitiave of O/O Minister UDHD, Govt Of Bihar</p>
         </div>
       </div>
     </footer>
