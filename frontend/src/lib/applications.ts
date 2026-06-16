@@ -16,6 +16,8 @@ export const CATEGORIES = [
   "Grievance (परिवाद)",
   "Complaint (शिकायत)",
   "Suggestion (सुझाव)",
+  "Construction Work Related (निर्माण कार्य से संबंधित)",
+  "Transfer Posting (स्थानांतरण)",
   "Others (अन्य)",
 ] as const;
 
