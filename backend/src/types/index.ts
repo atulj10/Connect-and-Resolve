@@ -137,6 +137,23 @@ export const createApplicationSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/).optional(),
 });
 
+export const adminCreateApplicationSchema = z.object({
+  applicantName: z.string().min(1, "Applicant name is required").max(80),
+  fatherName: z.string().max(80).optional().or(z.literal("")),
+  subject: z.string().min(5, "Subject must be at least 5 characters").max(120),
+  category: z.enum(CATEGORIES),
+  description: z.string().max(1000).optional().or(z.literal("")),
+  villageMohalla: z.string().max(100).optional().or(z.literal("")),
+  panchayat: z.string().max(100).optional().or(z.literal("")),
+  policeStation: z.string().max(100).optional().or(z.literal("")),
+  assemblyConstituency: z.string().max(100).optional().or(z.literal("")),
+  block: z.string().min(1, "Block is required").max(100),
+  district: z.string().min(1, "District is required").max(100),
+  pincode: z.string().regex(/^\d{6}$/, "Enter a valid 6-digit pincode").optional().or(z.literal("")),
+  department: z.string().optional(),
+  mobileNumber: z.string().regex(/^\d{10}$/).optional(),
+});
+
 export const updateStatusSchema = z.object({
   status: z.enum(STATUSES),
 });

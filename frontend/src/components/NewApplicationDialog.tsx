@@ -140,13 +140,13 @@ export function NewApplicationDialog({
   const validate = () => {
     const errs: Record<string, string> = {};
     if (!applicantName.trim()) errs.applicantName = "Applicant name is required";
-    if (!fatherName.trim()) errs.fatherName = "Father's name is required";
+    if (mode === "citizen" && !fatherName.trim()) errs.fatherName = "Father's name is required";
     if (mode === "admin" && !/^\d{10}$/.test(mobileNumber.trim()))
       errs.mobileNumber = "Enter a valid 10-digit mobile number";
     if (!subject.trim() || subject.trim().length < 5)
       errs.subject = "Subject must be at least 5 characters";
     if (!category) errs.category = "Select a category";
-    if (!villageMohalla.trim()) errs.villageMohalla = "Village/Mohalla is required";
+    if (mode === "citizen" && !villageMohalla.trim()) errs.villageMohalla = "Village/Mohalla is required";
     if (!block.trim()) errs.block = "Block is required";
     if (!district.trim()) errs.district = "District is required";
     if (pincode && !/^\d{6}$/.test(pincode)) errs.pincode = "Enter a valid 6-digit pincode";

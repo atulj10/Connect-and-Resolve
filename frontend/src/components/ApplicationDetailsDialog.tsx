@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatDate } from "@/lib/applications";
 import { applicationsApi, type ApplicationDto, type TimelineEntry } from "@/lib/api/applications";
-import { Paperclip, User, Phone, MapPin, Building2, Clock, ArrowRight } from "lucide-react";
+import { Paperclip, FileText, Image, ExternalLink, User, Phone, MapPin, Building2, Clock, ArrowRight } from "lucide-react";
 
 export function ApplicationDetailsDialog({
   app,
@@ -71,10 +71,13 @@ export function ApplicationDetailsDialog({
         <div>
           <h3 className="text-sm font-semibold mb-3">Address Information</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-            <InfoRow icon={MapPin} text={`${app.villageMohalla}, ${app.panchayat}`} />
-            <InfoRow icon={MapPin} text={`PS: ${app.policeStation}, Block: ${app.block}`} />
-            {app.assemblyConstituency && <InfoRow icon={MapPin} text={`Assembly: ${app.assemblyConstituency}`} />}
-            <InfoRow icon={MapPin} text={`${app.district} - ${app.pincode}`} />
+            <InfoRow icon={MapPin} text={`Village: ${app.villageMohalla || "Not provided"}`} />
+            <InfoRow icon={MapPin} text={`Panchayat: ${app.panchayat || "Not provided"}`} />
+            <InfoRow icon={MapPin} text={`Police Station: ${app.policeStation || "Not provided"}`} />
+            <InfoRow icon={MapPin} text={`Block: ${app.block}`} />
+            <InfoRow icon={MapPin} text={`Assembly Constituency: ${app.assemblyConstituency || "Not provided"}`} />
+            <InfoRow icon={MapPin} text={`District: ${app.district}`} />
+            <InfoRow icon={MapPin} text={`Pincode: ${app.pincode || "Not provided"}`} />
           </div>
         </div>
 

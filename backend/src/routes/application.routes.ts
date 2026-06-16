@@ -4,6 +4,7 @@ import { authenticate, requireAdmin } from "../middleware/auth.middleware.js";
 import { validate, validateQuery } from "../middleware/validate.middleware.js";
 import {
   createApplicationSchema,
+  adminCreateApplicationSchema,
   updateStatusSchema,
   updateDepartmentSchema,
   addRemarksSchema,
@@ -18,7 +19,7 @@ router.use(authenticate);
 router.get("/", validateQuery(applicationQuerySchema), applicationController.list);
 router.get("/:id", applicationController.getById);
 router.post("/", validate(createApplicationSchema), applicationController.create);
-router.post("/admin", requireAdmin, validate(createApplicationSchema), applicationController.createByAdmin);
+router.post("/admin", requireAdmin, validate(adminCreateApplicationSchema), applicationController.createByAdmin);
 router.patch("/:id", requireAdmin, validate(updateApplicationSchema), applicationController.updateApplication);
 router.patch("/:id/status", requireAdmin, validate(updateStatusSchema), applicationController.updateStatus);
 router.patch("/:id/department", requireAdmin, validate(updateDepartmentSchema), applicationController.updateDepartment);

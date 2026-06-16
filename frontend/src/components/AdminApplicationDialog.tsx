@@ -208,12 +208,13 @@ export function AdminApplicationDialog({
             <div className="rounded-xl border border-border bg-secondary/30 p-4">
               <h3 className="text-sm font-semibold mb-3">Address Information</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                <Info icon={MapPin} text={`${app.villageMohalla}, ${app.panchayat}`} />
-                <Info icon={MapPin} text={`PS: ${app.policeStation}, Block: ${app.block}`} />
-                {app.assemblyConstituency && (
-                  <Info icon={MapPin} text={`Assembly: ${app.assemblyConstituency}`} />
-                )}
-                <Info icon={MapPin} text={`${app.district} - ${app.pincode}`} />
+                <Info icon={MapPin} text={`Village: ${app.villageMohalla || "Not provided"}`} />
+                <Info icon={MapPin} text={`Panchayat: ${app.panchayat || "Not provided"}`} />
+                <Info icon={MapPin} text={`Police Station: ${app.policeStation || "Not provided"}`} />
+                <Info icon={MapPin} text={`Block: ${app.block}`} />
+                <Info icon={MapPin} text={`Assembly Constituency: ${app.assemblyConstituency || "Not provided"}`} />
+                <Info icon={MapPin} text={`District: ${app.district}`} />
+                <Info icon={MapPin} text={`Pincode: ${app.pincode || "Not provided"}`} />
               </div>
             </div>
 
@@ -223,6 +224,7 @@ export function AdminApplicationDialog({
                 {app.description || "No description provided."}
               </p>
             </div>
+
           </TabsContent>
 
           <TabsContent value="actions" className="space-y-4 mt-4">
