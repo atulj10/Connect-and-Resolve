@@ -139,6 +139,11 @@ export function AdminApplicationDialog({
 
   const isTerminal = ["Resolved", "Rejected"].includes(app.status);
   const isChangingToTerminal = ["Resolved", "Rejected"].includes(status) && status !== app.status;
+  const selectedSubDeptAreas =
+    subDepartmentsData
+      .find((d) => d.department === department)
+      ?.subDepartments.find((sd) => sd.name === subDepartment)
+      ?.areas ?? [];
 
   const doSave = async () => {
     setSaving(true);
@@ -302,12 +307,12 @@ export function AdminApplicationDialog({
                   <Select
                     value={area}
                     onValueChange={setArea}
-                    disabled={isTerminal || subDepartment !== "Nagar Nigam (Municipal Corporation)"}
+                    disabled={isTerminal || !selectedSubDeptAreas.length}
                   >
                     <SelectTrigger>
                       <SelectValue
                         placeholder={
-                          subDepartment === "Nagar Nigam (Municipal Corporation)"
+                          selectedSubDeptAreas.length > 0
                             ? "Select area"
                             : subDepartment
                               ? "No areas available"
@@ -316,14 +321,11 @@ export function AdminApplicationDialog({
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      {subDepartmentsData
-                        .find((d) => d.department === department)
-                        ?.subDepartments.find((sd) => sd.name === subDepartment)
-                        ?.areas.map((a) => (
-                          <SelectItem key={a} value={a}>
-                            {a}
-                          </SelectItem>
-                        ))}
+                      {selectedSubDeptAreas.map((a) => (
+                        <SelectItem key={a} value={a}>
+                          {a}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

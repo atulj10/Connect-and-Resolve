@@ -219,17 +219,17 @@ function AdminAnalytics() {
           <AnimatedGrid className="grid gap-6 lg:grid-cols-3">
             <AnimatedItem>
               <ChartCard
-                title="Department-wise Pendency"
-                subtitle="Pending vs resolved per department"
+                title="Urban Development & Housing Department"
+                subtitle="Sub-department wise pending vs resolved"
               >
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart
-                    data={analytics?.departmentPendency ?? []}
+                    data={analytics?.subDepartmentPendency ?? []}
                     margin={{ left: -10, right: 8 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eef0f4" />
                     <XAxis
-                      dataKey="department"
+                      dataKey="subDepartment"
                       tick={{ fontSize: 10 }}
                       interval={0}
                       angle={-15}

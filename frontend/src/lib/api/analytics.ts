@@ -17,6 +17,7 @@ export interface AdminAnalytics {
   closed: number;
   categoryDistribution: Array<{ name: string; value: number }>;
   departmentPendency: Array<{ department: string; pending: number; resolved: number }>;
+  subDepartmentPendency: Array<{ subDepartment: string; pending: number; resolved: number }>;
   districtAnalysis: Array<{ district: string; count: number }>;
   monthlyTrend: Array<{ month: string; count: number }>;
 }

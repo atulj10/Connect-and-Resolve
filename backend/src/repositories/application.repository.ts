@@ -161,7 +161,7 @@ export const applicationRepository = {
   async getAdminStats(since?: Date) {
     const where: Record<string, unknown> = {};
     if (since) where.createdAt = { gte: since };
-    const all = await prisma.application.findMany({ where: where as any, select: { status: true, category: true, department: true, district: true, createdAt: true } });
+    const all = await prisma.application.findMany({ where: where as any, select: { status: true, category: true, department: true, subDepartment: true, district: true, createdAt: true } });
 
     const total = all.length;
     const pending = all.filter((a) => a.status === "Submitted" || a.status === "In Process").length;
@@ -172,6 +172,8 @@ export const applicationRepository = {
     const departmentResolved = new Map<string, number>();
     const districtMap = new Map<string, number>();
     const monthlyMap = new Map<string, number>();
+    const subDeptPending = new Map<string, number>();
+    const subDeptResolved = new Map<string, number>();
 
     all.forEach((a) => {
       categoryMap.set(a.category, (categoryMap.get(a.category) ?? 0) + 1);
@@ -181,6 +183,15 @@ export const applicationRepository = {
       }
       if (a.status === "Resolved") {
         departmentResolved.set(a.department, (departmentResolved.get(a.department) ?? 0) + 1);
+      }
+      if (a.department === "Urban Development & Housing Department") {
+        const sd = a.subDepartment || "Unspecified";
+        if (a.status === "Submitted" || a.status === "In Process") {
+          subDeptPending.set(sd, (subDeptPending.get(sd) ?? 0) + 1);
+        }
+        if (a.status === "Resolved") {
+          subDeptResolved.set(sd, (subDeptResolved.get(sd) ?? 0) + 1);
+        }
       }
       const m = new Date(a.createdAt).toLocaleString("en-US", { month: "short", year: "numeric" });
       monthlyMap.set(m, (monthlyMap.get(m) ?? 0) + 1);
@@ -196,6 +207,11 @@ export const applicationRepository = {
         department: d,
         pending: departmentPending.get(d) ?? 0,
         resolved: departmentResolved.get(d) ?? 0,
+      })),
+      subDepartmentPendency: Array.from(new Set([...subDeptPending.keys(), ...subDeptResolved.keys()])).map((sd) => ({
+        subDepartment: sd,
+        pending: subDeptPending.get(sd) ?? 0,
+        resolved: subDeptResolved.get(sd) ?? 0,
       })),
       districtAnalysis: Array.from(districtMap.entries()).map(([n, v]) => ({ district: n, count: v })),
       monthlyTrend: Array.from(monthlyMap.entries()).map(([m, c]) => ({ month: m, count: c })),
