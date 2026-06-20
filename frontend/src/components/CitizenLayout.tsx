@@ -67,7 +67,7 @@ export function CitizenLayout({
   const handleLogout = () => {
     clearStoredAuth();
     toast.success("Logged out successfully");
-    navigate({ to: "/" });
+    navigate({ to: "/home" });
   };
 
   return (

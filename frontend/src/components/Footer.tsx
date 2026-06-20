@@ -56,37 +56,37 @@ export function Footer() {
             </h3>
             <ul className="mt-4 space-y-3">
               <li>
-                <Link
-                  to="/"
-                  className="text-sm text-white/70 transition-colors hover:text-white"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-sm text-white/70 transition-colors hover:text-white"
-                >
-                  Terms & Conditions
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-sm text-white/70 transition-colors hover:text-white"
-                >
-                  Accessibility Statement
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-sm text-white/70 transition-colors hover:text-white"
-                >
-                  Help Center
-                </Link>
-              </li>
+                  <Link
+                    to="/home"
+                    className="text-sm text-white/70 transition-colors hover:text-white"
+                  >
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/home"
+                    className="text-sm text-white/70 transition-colors hover:text-white"
+                  >
+                    Terms & Conditions
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/home"
+                    className="text-sm text-white/70 transition-colors hover:text-white"
+                  >
+                    Accessibility Statement
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/home"
+                    className="text-sm text-white/70 transition-colors hover:text-white"
+                  >
+                    Help Center
+                  </Link>
+                </li>
             </ul>
           </div>
         </div>

@@ -282,7 +282,7 @@ function LoginPage() {
         className="grid min-h-screen lg:grid-cols-2"
       >
         <div className="hidden lg:flex flex-col justify-between gradient-primary-soft p-12">
-          <Link to="/" className="flex items-center gap-2.5 w-fit">
+          <Link to="/home" className="flex items-center gap-2.5 w-fit">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg">
               <img src={logoSrc} alt="Citizen Connect" className="h-9 w-9" />
             </div>
@@ -312,7 +312,7 @@ function LoginPage() {
 
         <div className="flex flex-col px-6 py-10 sm:px-12 lg:px-16">
           <div className="lg:hidden mb-8 flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2.5">
+            <Link to="/home" className="flex items-center gap-2.5">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg">
                 <img src={logoSrc} alt="Citizen Connect" className="h-9 w-9" />
               </div>
@@ -322,7 +322,7 @@ function LoginPage() {
 
           <div className="mx-auto w-full max-w-md flex-1 flex flex-col justify-center">
             <Link
-              to="/"
+              to="/home"
               className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-8 w-fit"
             >
               <ArrowLeft className="h-4 w-4" /> Back to Home
