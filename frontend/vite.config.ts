@@ -8,15 +8,15 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
   tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
+    // Redirect TanStack Start's bundled server entry to src/server.ts
     server: { entry: "server" },
   },
   nitro: {
-    preset: "vercel",
+    // Forces Nitro to compile a production-ready standalone Node.js server
+    preset: "node-server",
+    // Configures the base output directory for your build assets
     output: {
-      dir: ".vercel/output",
-      serverDir: ".vercel/output/functions/__server.func",
-      publicDir: ".vercel/output/static",
+      dir: "dist",
     },
   },
 });
