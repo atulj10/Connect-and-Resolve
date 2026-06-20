@@ -65,20 +65,23 @@ function AdminLoginPage() {
               <img src={logoSrc} alt="Citizen Connect" className="h-9 w-9" />
             </div>
             <div className="flex flex-col">
-              <span className="text-base font-bold leading-tight">Citizen Connect</span>
+              <span className="text-base font-bold leading-tight">UDD-ARMS</span>
               <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                Minister Office
+                Application Record Management System
+              </span>
+              <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                Minister's office, UDHD
               </span>
             </div>
           </Link>
 
           <div className="mx-auto w-full max-w-md flex-1 flex flex-col justify-center">
-            <Link
+            {/* <Link
               to="/home"
               className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-8 w-fit"
             >
               <ArrowLeft className="h-4 w-4" /> Back to Home
-            </Link>
+            </Link> */}
 
             <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium">
               <Lock className="h-3 w-3 text-primary" /> Restricted Access
@@ -149,12 +152,12 @@ function AdminLoginPage() {
               </div>
             </form>
 
-            <p className="mt-6 text-center text-sm text-muted-foreground">
+            {/* <p className="mt-6 text-center text-sm text-muted-foreground">
               Are you a citizen?{" "}
               <Link to="/login" className="font-semibold text-primary hover:underline">
                 Go to citizen login
               </Link>
-            </p>
+            </p> */}
           </div>
         </div>
 
@@ -175,7 +178,7 @@ function AdminLoginPage() {
               Minister Office Dashboard
             </h2>
             <p className="mt-2 max-w-sm text-muted-foreground">
-              Review grievances, coordinate with departments, and drive faster resolutions for your
+              Review applications, coordinate with departments, and drive faster resolutions for your
               constituents.
             </p>
           </div>
