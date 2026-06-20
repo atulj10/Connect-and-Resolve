@@ -1,7 +1,10 @@
 import "dotenv/config";
 
+const rawPort = process.env.PORT || "4000";
+
 export const env = {
-  port: parseInt(process.env.PORT || "4000", 10),
+  // Gracefully handles Hostinger named pipes/sockets, numeric strings, and local fallbacks
+  port: isNaN(Number(rawPort)) ? rawPort : parseInt(rawPort, 10),
   nodeEnv: process.env.NODE_ENV || "development",
   jwtSecret: process.env.JWT_SECRET || "dev-secret-change-in-production",
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
