@@ -32,11 +32,11 @@ export const applicationRepository = {
     const where: Record<string, unknown> = {};
     if (search) {
       where.OR = [
-        { referenceNumber: { contains: search, mode: "insensitive" } },
-        { subject: { contains: search, mode: "insensitive" } },
-        { applicantName: { contains: search, mode: "insensitive" } },
-        { user: { mobileNumber: { contains: search, mode: "insensitive" } } },
-        { user: { email: { contains: search, mode: "insensitive" } } },
+        { referenceNumber: { contains: search } },
+        { subject: { contains: search } },
+        { applicantName: { contains: search } },
+        { user: { mobileNumber: { contains: search } } },
+        { user: { email: { contains: search } } },
       ];
     }
     if (category) where.category = category;
@@ -74,11 +74,11 @@ export const applicationRepository = {
     const where: Record<string, unknown> = {};
     if (search) {
       where.OR = [
-        { referenceNumber: { contains: search, mode: "insensitive" } },
-        { subject: { contains: search, mode: "insensitive" } },
-        { applicantName: { contains: search, mode: "insensitive" } },
-        { user: { mobileNumber: { contains: search, mode: "insensitive" } } },
-        { user: { email: { contains: search, mode: "insensitive" } } },
+        { referenceNumber: { contains: search } },
+        { subject: { contains: search } },
+        { applicantName: { contains: search } },
+        { user: { mobileNumber: { contains: search } } },
+        { user: { email: { contains: search } } },
       ];
     }
     if (category) where.category = category;

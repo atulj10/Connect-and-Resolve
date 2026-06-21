@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -23,6 +22,8 @@ model User {
   applications   Application[]
   statusChanges  ApplicationStatusHistory[]
   auditLogs      AuditLog[]
+
+  @@index([role])
 }
 
 model Application {
@@ -62,6 +63,8 @@ model Application {
   @@index([category])
   @@index([department])
   @@index([district])
+  @@index([block])
+  @@index([createdAt])
 }
 
 model Attachment {
@@ -108,6 +111,7 @@ model ApplicationStatusHistory {
   updatedAt       DateTime   @updatedAt
 
   @@index([applicationId])
+  @@index([createdAt])
 }
 
 model AuditLog {
@@ -135,6 +139,7 @@ model Otp {
   createdAt DateTime @default(now())
 
   @@index([identifier, purpose])
+  @@index([expiresAt])
 }
 
 model ReferenceCounter {

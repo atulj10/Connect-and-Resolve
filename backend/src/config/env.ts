@@ -1,5 +1,6 @@
 import "dotenv/config";
 import path from "node:path";
+import { URL } from "node:url";
 
 const rawPort = process.env.PORT || "4000";
 
@@ -7,6 +8,13 @@ export const env = {
   // Gracefully handles Hostinger named pipes/sockets, numeric strings, and local fallbacks
   port: isNaN(Number(rawPort)) ? rawPort : parseInt(rawPort, 10),
   nodeEnv: process.env.NODE_ENV || "development",
+  db: {
+    host: process.env.DB_HOST || "",
+    port: parseInt(process.env.DB_PORT || "3306", 10),
+    name: process.env.DB_NAME || "",
+    user: process.env.DB_USER || "",
+    password: process.env.DB_PASSWORD || "",
+  },
   jwtSecret: process.env.JWT_SECRET || "dev-secret-change-in-production",
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
   cloudinary: {
