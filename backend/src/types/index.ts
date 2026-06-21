@@ -1,12 +1,14 @@
 import { z } from "zod";
 
 export const CATEGORIES = [
-  "Application (आवेदन)",
   "Grievance (परिवाद)",
-  "Complaint (शिकायत)",
   "Suggestion (सुझाव)",
-  "Construction Work Related (निर्माण कार्य से संबंधित)",
   "Transfer Posting (स्थानांतरण)",
+  "Complaint Against Officer (अधिकारी के विरुद्ध शिकायत आवेदन)",
+  "Complaint Against Representative (प्रतिनिधि के विरुद्ध शिकायत आवेदन)",
+  "General Application (सामान्य आवेदन)",
+  "VIP Application (विशेष आवेदन)",
+  "New Construction Work Demand (नए निर्माण कार्य हेतु आवेदन)",
   "Others (अन्य)",
 ] as const;
 
@@ -90,7 +92,9 @@ export type UserRole = "ADMIN" | "CITIZEN";
 
 export const registerSchema = z.object({
   fullName: z.string().min(1, "Full name is required").max(80),
-  mobileNumber: z.string().regex(/^\d{10}$/, "Enter a valid 10-digit mobile number"),
+  mobileNumber: z
+    .string()
+    .regex(/^\d{10}$/, "Enter a valid 10-digit mobile number"),
   email: z.string().email("Invalid email").optional().or(z.literal("")),
 });
 
@@ -107,7 +111,11 @@ export const verifyOtpSchema = z.object({
 
 export const verifyOtpRegisterSchema = verifyOtpSchema.extend({
   fullName: z.string().min(1, "Full name is required").max(80),
-  mobileNumber: z.string().regex(/^\d{10}$/, "Enter a valid 10-digit mobile number").optional().or(z.literal("")),
+  mobileNumber: z
+    .string()
+    .regex(/^\d{10}$/, "Enter a valid 10-digit mobile number")
+    .optional()
+    .or(z.literal("")),
   email: z.string().email("Invalid email").optional().or(z.literal("")),
 });
 
@@ -133,12 +141,19 @@ export const createApplicationSchema = z.object({
   assemblyConstituency: z.string().max(100).optional().or(z.literal("")),
   block: z.string().min(1, "Block is required").max(100),
   district: z.string().min(1, "District is required").max(100),
-  pincode: z.string().regex(/^\d{6}$/, "Enter a valid 6-digit pincode").optional().or(z.literal("")),
+  pincode: z
+    .string()
+    .regex(/^\d{6}$/, "Enter a valid 6-digit pincode")
+    .optional()
+    .or(z.literal("")),
   department: z.string().optional(),
   subDepartment: z.string().optional().or(z.literal("")),
   area: z.string().optional().or(z.literal("")),
   // Admin-only: link to existing user
-  mobileNumber: z.string().regex(/^\d{10}$/).optional(),
+  mobileNumber: z
+    .string()
+    .regex(/^\d{10}$/)
+    .optional(),
 });
 
 export const adminCreateApplicationSchema = z.object({
@@ -153,11 +168,18 @@ export const adminCreateApplicationSchema = z.object({
   assemblyConstituency: z.string().max(100).optional().or(z.literal("")),
   block: z.string().min(1, "Block is required").max(100),
   district: z.string().min(1, "District is required").max(100),
-  pincode: z.string().regex(/^\d{6}$/, "Enter a valid 6-digit pincode").optional().or(z.literal("")),
+  pincode: z
+    .string()
+    .regex(/^\d{6}$/, "Enter a valid 6-digit pincode")
+    .optional()
+    .or(z.literal("")),
   department: z.string().optional(),
   subDepartment: z.string().optional().or(z.literal("")),
   area: z.string().optional().or(z.literal("")),
-  mobileNumber: z.string().regex(/^\d{10}$/).optional(),
+  mobileNumber: z
+    .string()
+    .regex(/^\d{10}$/)
+    .optional(),
 });
 
 export const updateStatusSchema = z.object({
@@ -200,5 +222,8 @@ export const analyticsQuerySchema = z.object({
 });
 
 export const adminAnalyticsQuerySchema = z.object({
-  range: z.enum(["today", "7days", "30days", "year"]).optional().default("year"),
+  range: z
+    .enum(["today", "7days", "30days", "year"])
+    .optional()
+    .default("year"),
 });

@@ -1,23 +1,16 @@
-export type AppStatus =
-  | "Submitted"
-  | "In Process"
-  | "Resolved"
-  | "Rejected";
+export type AppStatus = "Submitted" | "In Process" | "Resolved" | "Rejected";
 
-export const STATUSES: AppStatus[] = [
-  "Submitted",
-  "In Process",
-  "Resolved",
-  "Rejected",
-];
+export const STATUSES: AppStatus[] = ["Submitted", "In Process", "Resolved", "Rejected"];
 
 export const CATEGORIES = [
-  "Application (आवेदन)",
   "Grievance (परिवाद)",
-  "Complaint (शिकायत)",
   "Suggestion (सुझाव)",
-  "Construction Work Related (निर्माण कार्य से संबंधित)",
   "Transfer Posting (स्थानांतरण)",
+  "Complaint Against Officer (अधिकारी के विरुद्ध शिकायत आवेदन)",
+  "Complaint Against Representative (प्रतिनिधि के विरुद्ध शिकायत आवेदन)",
+  "General Application (सामान्य आवेदन)",
+  "VIP Application (विशेष आवेदन)",
+  "New Construction Work Demand (नए निर्माण कार्य हेतु आवेदन)",
   "Others (अन्य)",
 ] as const;
 
