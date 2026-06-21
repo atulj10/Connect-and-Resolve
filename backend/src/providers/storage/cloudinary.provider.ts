@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
-import type { StorageProvider, UploadResult } from "./storage.provider.js";
+import type { StorageProvider, UploadResult, UploadContext } from "./storage.provider.js";
 import { env } from "../../config/env.js";
 import fs from "node:fs";
 
@@ -17,7 +17,7 @@ export class CloudinaryProvider implements StorageProvider {
     }
   }
 
-  async upload(filePath: string, fileName: string): Promise<UploadResult> {
+  async upload(filePath: string, fileName: string, _context?: UploadContext): Promise<UploadResult> {
     if (!this.ready) {
       this.logFallback("upload", fileName);
       return this.mockResult(fileName);

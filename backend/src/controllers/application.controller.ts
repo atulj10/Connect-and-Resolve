@@ -1,12 +1,8 @@
 import type { Request, Response } from "express";
 import { applicationService } from "../services/application.service.js";
 import type { AppStatus, Department } from "../types/index.js";
-import multer from "multer";
-import path from "node:path";
-import os from "node:os";
-import fs from "node:fs";
-
-const upload = multer({ dest: os.tmpdir() });
+import { upload } from "../lib/upload.js";
+import type { MulterError } from "multer";
 
 export const applicationController = {
   async create(req: Request, res: Response) {
@@ -108,7 +104,10 @@ export const applicationController = {
     const uploadMiddleware = upload.single("file");
     uploadMiddleware(req, res, async (err) => {
       if (err) {
-        res.status(400).json({ error: "File upload failed" });
+        const message = (err as MulterError)?.code === "LIMIT_FILE_SIZE"
+          ? "File too large. Maximum size is 5 MB."
+          : err.message || "File upload failed";
+        res.status(400).json({ error: message });
         return;
       }
       if (!req.file) {
@@ -124,7 +123,6 @@ export const applicationController = {
           req.user!.id,
           timelineEntryId,
         );
-        fs.unlink(req.file.path, () => {});
         res.status(201).json(attachment);
       } catch (err: any) {
         res.status(400).json({ error: err.message });

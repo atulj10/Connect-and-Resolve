@@ -6,7 +6,12 @@ export interface UploadResult {
   size: number;
 }
 
+export interface UploadContext {
+  referenceNumber?: string;
+  applicationId?: string;
+}
+
 export interface StorageProvider {
-  upload(filePath: string, fileName: string): Promise<UploadResult>;
+  upload(filePath: string, fileName: string, context?: UploadContext): Promise<UploadResult>;
   delete(publicId: string): Promise<void>;
 }

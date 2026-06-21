@@ -1,4 +1,5 @@
 import "dotenv/config";
+import path from "node:path";
 
 const rawPort = process.env.PORT || "4000";
 
@@ -33,5 +34,10 @@ export const env = {
     user: process.env.SMTP_USER || "",
     pass: process.env.SMTP_PASS || "",
     from: process.env.EMAIL_FROM || "",
+  },
+  storage: {
+    provider: (process.env.STORAGE_PROVIDER || "cloudinary") as "local" | "cloudinary",
+    uploadDir: path.resolve(process.env.UPLOAD_DIR || "./uploads"),
+    baseUrl: process.env.UPLOAD_BASE_URL || `http://localhost:${process.env.PORT || "4000"}`,
   },
 } as const;

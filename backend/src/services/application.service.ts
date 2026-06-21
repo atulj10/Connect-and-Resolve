@@ -298,7 +298,10 @@ export const applicationService = {
     checkNotTerminal(app);
     const existing = await attachmentRepository.findByApplicationId(applicationId);
     if (existing.length >= 5) throw new Error("Maximum 5 attachments allowed");
-    const result = await storageProvider.upload(filePath, fileName);
+    const result = await storageProvider.upload(filePath, fileName, {
+      referenceNumber: app.referenceNumber,
+      applicationId: app.id,
+    });
     const attachment = await attachmentRepository.create({ ...result, applicationId });
 
     if (timelineEntryId) {
