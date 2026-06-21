@@ -4,6 +4,6 @@ export const referenceService = {
   async generate(): Promise<string> {
     const year = new Date().getFullYear();
     const count = await referenceCounterRepository.incrementAndGet(year);
-    return `MIN/${year}/${String(count).padStart(8, "0")}`;
+    return `UDDARMS/${year}/${String(count).padStart(8, "0")}`;
   },
 };
