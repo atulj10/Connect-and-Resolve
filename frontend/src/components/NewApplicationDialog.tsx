@@ -368,10 +368,14 @@ export function NewApplicationDialog({
             </div>
 
             <div className="mt-3 space-y-4">
-              <Field label="Subject (विषय)" error={errors.subject}>
+              <Field
+                label="Subject (विषय)"
+                error={errors.subject}
+                hint={`${subject.length}/250 characters`}
+              >
                 <Input
                   value={subject}
-                  maxLength={120}
+                  maxLength={250}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder="Subject of Application"
                 />

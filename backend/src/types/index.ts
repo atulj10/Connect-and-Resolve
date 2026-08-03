@@ -132,7 +132,7 @@ export const adminLoginSchema = z.object({
 export const createApplicationSchema = z.object({
   applicantName: z.string().min(1, "Applicant name is required").max(80),
   fatherName: z.string().min(1, "Father's name is required").max(80),
-  subject: z.string().min(5, "Subject must be at least 5 characters").max(120),
+  subject: z.string().min(5, "Subject must be at least 5 characters").max(250),
   category: z.enum(CATEGORIES),
   description: z.string().max(1000).optional().or(z.literal("")),
   villageMohalla: z.string().min(1, "Village/Mohalla is required").max(100),
@@ -159,7 +159,7 @@ export const createApplicationSchema = z.object({
 export const adminCreateApplicationSchema = z.object({
   applicantName: z.string().min(1, "Applicant name is required").max(80),
   fatherName: z.string().max(80).optional().or(z.literal("")),
-  subject: z.string().min(5, "Subject must be at least 5 characters").max(120),
+  subject: z.string().min(5, "Subject must be at least 5 characters").max(250),
   category: z.enum(CATEGORIES),
   description: z.string().max(1000).optional().or(z.literal("")),
   villageMohalla: z.string().max(100).optional().or(z.literal("")),
