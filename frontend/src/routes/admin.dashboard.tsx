@@ -42,8 +42,9 @@ export const Route = createFileRoute("/admin/dashboard")({
 });
 
 const RANGE_OPTIONS = [
-  { label: "This Week", value: "week" },
-  { label: "This Month", value: "month" },
+  { label: "Last 24 hrs", value: "today" },
+  { label: "This Week", value: "7days" },
+  { label: "This Month", value: "30days" },
   { label: "This Year", value: "year" },
 ] as const;
 
@@ -192,27 +193,27 @@ function AdminAnalytics() {
 
             <AnimatedItem>
               <ChartCard title="Category Distribution" subtitle="Applications by category">
-              <ResponsiveContainer width="100%" height={260}>
-                <PieChart>
-                  <Pie
-                    data={analytics?.categoryDistribution ?? []}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={90}
-                    paddingAngle={2}
-                  >
-                    {(analytics?.categoryDistribution ?? []).map((_, i) => (
-                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={{ borderRadius: 8 }} />
-                  <Legend iconType="circle" wrapperStyle={{ fontSize: 11 }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartCard>
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie
+                      data={analytics?.categoryDistribution ?? []}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={50}
+                      outerRadius={90}
+                      paddingAngle={2}
+                    >
+                      {(analytics?.categoryDistribution ?? []).map((_, i) => (
+                        <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ borderRadius: 8 }} />
+                    <Legend iconType="circle" wrapperStyle={{ fontSize: 11 }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartCard>
             </AnimatedItem>
           </AnimatedGrid>
 
@@ -247,7 +248,10 @@ function AdminAnalytics() {
             </AnimatedItem>
 
             <AnimatedItem>
-              <ChartCard title="District-wise Analysis" subtitle="Applications received per district">
+              <ChartCard
+                title="District-wise Analysis"
+                subtitle="Applications received per district"
+              >
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart
                     data={analytics?.districtAnalysis ?? []}
