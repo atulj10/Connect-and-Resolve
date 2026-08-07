@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { getApiError } from "@/lib/api/client";
+import { requireAdmin } from "@/lib/auth-guard";
 import { CitizenDetailsDialog } from "@/components/CitizenDetailsDialog";
 import { formatDate } from "@/lib/applications";
 import { usersApi, type UserDto } from "@/lib/api/users";
@@ -39,6 +40,8 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/citizens")({
+  ssr: false,
+  beforeLoad: requireAdmin,
   head: () => ({
     meta: [
       { title: "Citizens — Minister Office Admin" },
@@ -133,168 +136,170 @@ function CitizensPage() {
 
       <AnimatedSection delay={0.1}>
         <section className="rounded-2xl border border-border bg-card shadow-card overflow-hidden">
-        <div className="p-4 sm:p-6 border-b border-border">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold">All Citizens</h2>
-              <p className="text-xs text-muted-foreground">
-                {filtered.length} of {userData.total} citizens
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap gap-2">
-              <div className="relative">
-                <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Search by name, mobile or email"
-                  value={searchQ}
-                  onChange={(e) => {
-                    setSearchQ(e.target.value);
-                    setPage(1);
-                  }}
-                  className="pl-9 lg:w-64"
-                />
+          <div className="p-4 sm:p-6 border-b border-border">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold">All Citizens</h2>
+                <p className="text-xs text-muted-foreground">
+                  {filtered.length} of {userData.total} citizens
+                </p>
               </div>
-              <Select value={sortDir} onValueChange={(v) => setSortDir(v as "newest" | "oldest")}>
-                <SelectTrigger className="lg:w-44">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap gap-2">
+                <div className="relative">
+                  <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by name, mobile or email"
+                    value={searchQ}
+                    onChange={(e) => {
+                      setSearchQ(e.target.value);
+                      setPage(1);
+                    }}
+                    className="pl-9 lg:w-64"
+                  />
+                </div>
+                <Select value={sortDir} onValueChange={(v) => setSortDir(v as "newest" | "oldest")}>
+                  <SelectTrigger className="lg:w-44">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-secondary/40 hover:bg-secondary/40">
+                  <TableHead className="font-semibold">Full Name</TableHead>
+                  <TableHead className="font-semibold">Email</TableHead>
+                  <TableHead className="font-semibold">Mobile</TableHead>
+                  <TableHead className="font-semibold">Role</TableHead>
+                  <TableHead className="font-semibold">Verified</TableHead>
+                  <TableHead className="font-semibold">Registered</TableHead>
+                  <TableHead className="font-semibold text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                      Loading...
+                    </TableCell>
+                  </TableRow>
+                ) : filtered.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                      No citizens match your filters.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filtered.map((u) => (
+                    <TableRow key={u.id} className="hover:bg-secondary/30">
+                      <TableCell className="whitespace-nowrap">
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-8 w-8 rounded-full bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center">
+                            {u.fullName
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              .slice(0, 2)}
+                          </div>
+                          <div>
+                            <p className="font-medium leading-tight">{u.fullName}</p>
+                            <p className="text-[11px] text-muted-foreground font-mono">{u.id}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                        {u.email ?? "—"}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                        {u.mobileNumber}
+                      </TableCell>
+                      <TableCell className="text-sm whitespace-nowrap">
+                        <Badge variant={u.role === "ADMIN" ? "default" : "secondary"}>
+                          {u.role}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                        {u.mobileVerified ? "Mobile" : ""}
+                        {u.mobileVerified && u.emailVerified ? " & " : ""}
+                        {u.emailVerified ? "Email" : ""}
+                        {!u.mobileVerified && !u.emailVerified ? "No" : ""}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                        {formatDate(u.createdAt)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="gap-1.5"
+                          onClick={() => setSelected(u)}
+                        >
+                          <Eye className="h-4 w-4" /> View
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          <div className="p-4 sm:px-6 flex flex-col sm:flex-row gap-3 items-center justify-between border-t border-border">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span>Rows per page</span>
+              <Select
+                value={String(pageSize)}
+                onValueChange={(v) => {
+                  setPageSize(Number(v));
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger className="h-8 w-20">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="newest">Newest First</SelectItem>
-                  <SelectItem value="oldest">Oldest First</SelectItem>
+                  {[5, 10, 20, 50].map((n) => (
+                    <SelectItem key={n} value={String(n)}>
+                      {n}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+              <span>
+                Showing {userData.total === 0 ? 0 : (page - 1) * pageSize + 1}–
+                {Math.min(page * pageSize, userData.total)} of {userData.total}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page === 1}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                <ChevronLeft className="h-4 w-4" /> Prev
+              </Button>
+              <span className="text-xs text-muted-foreground px-2">
+                Page {page} of {userData.totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page >= userData.totalPages}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                Next <ChevronRight className="h-4 w-4" />
+              </Button>
             </div>
           </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-secondary/40 hover:bg-secondary/40">
-                <TableHead className="font-semibold">Full Name</TableHead>
-                <TableHead className="font-semibold">Email</TableHead>
-                <TableHead className="font-semibold">Mobile</TableHead>
-                <TableHead className="font-semibold">Role</TableHead>
-                <TableHead className="font-semibold">Verified</TableHead>
-                <TableHead className="font-semibold">Registered</TableHead>
-                <TableHead className="font-semibold text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              ) : filtered.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
-                    No citizens match your filters.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filtered.map((u) => (
-                  <TableRow key={u.id} className="hover:bg-secondary/30">
-                    <TableCell className="whitespace-nowrap">
-                      <div className="flex items-center gap-2.5">
-                        <div className="h-8 w-8 rounded-full bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center">
-                          {u.fullName
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .slice(0, 2)}
-                        </div>
-                        <div>
-                          <p className="font-medium leading-tight">{u.fullName}</p>
-                          <p className="text-[11px] text-muted-foreground font-mono">{u.id}</p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {u.email ?? "—"}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {u.mobileNumber}
-                    </TableCell>
-                    <TableCell className="text-sm whitespace-nowrap">
-                      <Badge variant={u.role === "ADMIN" ? "default" : "secondary"}>{u.role}</Badge>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {u.mobileVerified ? "Mobile" : ""}
-                      {u.mobileVerified && u.emailVerified ? " & " : ""}
-                      {u.emailVerified ? "Email" : ""}
-                      {!u.mobileVerified && !u.emailVerified ? "No" : ""}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {formatDate(u.createdAt)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="gap-1.5"
-                        onClick={() => setSelected(u)}
-                      >
-                        <Eye className="h-4 w-4" /> View
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        <div className="p-4 sm:px-6 flex flex-col sm:flex-row gap-3 items-center justify-between border-t border-border">
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span>Rows per page</span>
-            <Select
-              value={String(pageSize)}
-              onValueChange={(v) => {
-                setPageSize(Number(v));
-                setPage(1);
-              }}
-            >
-              <SelectTrigger className="h-8 w-20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {[5, 10, 20, 50].map((n) => (
-                  <SelectItem key={n} value={String(n)}>
-                    {n}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <span>
-              Showing {userData.total === 0 ? 0 : (page - 1) * pageSize + 1}–
-              {Math.min(page * pageSize, userData.total)} of {userData.total}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page === 1}
-              onClick={() => setPage((p) => p - 1)}
-            >
-              <ChevronLeft className="h-4 w-4" /> Prev
-            </Button>
-            <span className="text-xs text-muted-foreground px-2">
-              Page {page} of {userData.totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= userData.totalPages}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Next <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </section>
+        </section>
       </AnimatedSection>
 
       <CitizenDetailsDialog

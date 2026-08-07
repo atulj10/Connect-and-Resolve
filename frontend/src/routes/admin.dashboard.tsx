@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import { getApiError } from "@/lib/api/client";
 import { analyticsApi, type AdminAnalytics } from "@/lib/api/analytics";
+import { requireAdmin } from "@/lib/auth-guard";
 import { CheckCircle2, Clock, FileText, Gauge, XCircle } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -29,6 +30,8 @@ import {
 } from "recharts";
 
 export const Route = createFileRoute("/admin/dashboard")({
+  ssr: false,
+  beforeLoad: requireAdmin,
   head: () => ({
     meta: [
       { title: "Analytics — Minister Office Admin" },

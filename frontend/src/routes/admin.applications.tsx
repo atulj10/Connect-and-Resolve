@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { getApiError } from "@/lib/api/client";
+import { requireAdmin } from "@/lib/auth-guard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AdminApplicationDialog } from "@/components/AdminApplicationDialog";
 import { NewApplicationDialog } from "@/components/NewApplicationDialog";
@@ -31,6 +32,8 @@ import subDepartmentsData from "@/assets/sub_departments.json";
 import { ChevronLeft, ChevronRight, Eye, Plus, Search } from "lucide-react";
 
 export const Route = createFileRoute("/admin/applications")({
+  ssr: false,
+  beforeLoad: requireAdmin,
   head: () => ({
     meta: [
       { title: "Applications — Minister Office Admin" },

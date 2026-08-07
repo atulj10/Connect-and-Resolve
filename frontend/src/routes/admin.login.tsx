@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -10,9 +10,15 @@ import { toast } from "sonner";
 import adminIllustration from "@/assets/admin-illustration.png";
 import { authApi } from "@/lib/api/auth";
 import { getApiError } from "@/lib/api/client";
-import { setStoredUser } from "@/lib/auth";
+import { isAdmin, isAuthenticated, setStoredUser } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/login")({
+  ssr: false,
+  beforeLoad: () => {
+    if (isAuthenticated() && isAdmin()) {
+      throw redirect({ to: "/admin/dashboard" });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Admin Login — Minister Office Dashboard" },
@@ -178,8 +184,8 @@ function AdminLoginPage() {
               Minister Office Dashboard
             </h2>
             <p className="mt-2 max-w-sm text-muted-foreground">
-              Review applications, coordinate with departments, and drive faster resolutions for your
-              constituents.
+              Review applications, coordinate with departments, and drive faster resolutions for
+              your constituents.
             </p>
           </div>
           <div className="grid grid-cols-3 gap-4 text-center">
