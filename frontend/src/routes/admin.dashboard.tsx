@@ -46,9 +46,9 @@ export const Route = createFileRoute("/admin/dashboard")({
 
 const RANGE_OPTIONS = [
   { label: "Last 24 hrs", value: "today" },
-  { label: "This Week", value: "7days" },
-  { label: "This Month", value: "30days" },
-  { label: "This Year", value: "year" },
+  { label: "Last 7 days", value: "7days" },
+  { label: "Last 30 days", value: "30days" },
+  { label: "This year", value: "year" },
 ] as const;
 
 const PIE_COLORS = [
