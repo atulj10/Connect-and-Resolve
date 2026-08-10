@@ -35,7 +35,7 @@ import { toast } from "sonner";
 import subDepartmentsData from "@/assets/sub_departments.json";
 
 const MAX_FILES = 5;
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ACCEPTED_MIME = "application/pdf,image/jpeg,image/jpg,image/png";
 
 export function AdminApplicationDialog({
@@ -110,7 +110,7 @@ export function AdminApplicationDialog({
         continue;
       }
       if (f.size > MAX_FILE_SIZE) {
-        toast.error(`"${f.name}" exceeds 5 MB limit`);
+        toast.error(`"${f.name}" exceeds 10 MB limit`);
         continue;
       }
       accepted.push(f);
@@ -384,7 +384,7 @@ export function AdminApplicationDialog({
                 <Upload className="mx-auto h-5 w-5 text-muted-foreground mb-1" />
                 <p className="text-xs text-muted-foreground">
                   Drop files or <span className="text-primary">browse</span> &bull; PDF, JPG, PNG &bull;
-                  Max 5 MB
+                  Max 10 MB
                 </p>
                 <input
                   ref={inputRef}

@@ -1,7 +1,7 @@
 import multer from "multer";
 import os from "node:os";
 
-const MAX_SIZE = 5 * 1024 * 1024;
+const MAX_SIZE = 10 * 1024 * 1024;
 
 const ALLOWED_MIMES = [
   "application/pdf",

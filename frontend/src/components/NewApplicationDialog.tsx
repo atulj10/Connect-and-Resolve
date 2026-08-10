@@ -27,7 +27,7 @@ import districtBlocks from "@/assets/district_blocks.json";
 import { CATEGORIES } from "@/lib/applications";
 
 const MAX_FILES = 5;
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ACCEPTED_EXT = ["pdf", "jpg", "jpeg", "png"];
 const ACCEPTED_MIME = "application/pdf,image/jpeg,image/jpg,image/png";
 
@@ -112,7 +112,7 @@ export function NewApplicationDialog({
         continue;
       }
       if (f.size > MAX_FILE_SIZE) {
-        toast.error(`"${f.name}" exceeds 5 MB limit`);
+        toast.error(`"${f.name}" exceeds 10 MB limit`);
         continue;
       }
       accepted.push(f);
@@ -407,7 +407,7 @@ export function NewApplicationDialog({
                   <Paperclip className="h-3.5 w-3.5" /> Optional supporting documents
                 </Label>
                 <span className="text-xs text-muted-foreground">
-                  {files.length}/{MAX_FILES} files &bull; Max 5 MB each
+                  {files.length}/{MAX_FILES} files &bull; Max 10 MB each
                 </span>
               </div>
 
@@ -434,7 +434,7 @@ export function NewApplicationDialog({
                   Drop files here or <span className="text-primary">browse</span>
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  PDF, JPG, JPEG, PNG &bull; up to 5 MB per file
+                  PDF, JPG, JPEG, PNG &bull; up to 10 MB per file
                 </p>
                 <input
                   ref={inputRef}

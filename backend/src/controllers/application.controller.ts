@@ -105,7 +105,7 @@ export const applicationController = {
     uploadMiddleware(req, res, async (err) => {
       if (err) {
         const message = (err as MulterError)?.code === "LIMIT_FILE_SIZE"
-          ? "File too large. Maximum size is 5 MB."
+          ? "File too large. Maximum size is 10 MB."
           : err.message || "File upload failed";
         res.status(400).json({ error: message });
         return;
